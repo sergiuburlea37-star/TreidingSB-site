@@ -137,6 +137,25 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data.message || 'Error sending email.' });
     }
 
+    // La abonare (welcome): notificare catre proprietar cu adresa noului abonat
+    if (type !== 'report') {
+      try {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'TreidingSB <semnale@treidingsb.com>',
+            to: ['semnale@treidingsb.com'],
+            subject: 'Abonat nou pe TreidingSB',
+            html: `<p>Abonat nou la rapoarte:</p><p><b>${to}</b></p><p>Limba: ${lang || 'ro'}</p>`
+          })
+        });
+      } catch (e) { /* notificarea nu blocheaza raspunsul */ }
+    }
+
     return res.status(200).json({ success: true, id: data.id });
   } catch (err) {
     return res.status(500).json({ error: 'Server error: ' + err.message });
