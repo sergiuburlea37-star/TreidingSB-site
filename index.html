@@ -3,77 +3,59 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TreidingSB — Smart Trading Intelligence</title>
-  <meta name="description" content="TreidingSB: idei de tranzacționare, rapoarte săptămânale, educație și calendar economic." />
+  <title>TreidingSB — Trading Intelligence</title>
+  <meta name="description" content="TreidingSB: idei de tranzacționare, rapoarte săptămânale, educație și calendar economic pentru Forex, Gold și piețe financiare." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="loader"><div class="loader-logo">TSB</div><p>Se încarcă inteligența pieței...</p></div>
-
-  <header class="topbar">
-    <a class="brand" href="#home"><span class="brand-mark">SB</span><span><b>TREIDING<span>SB</span></b><small>Smarter decisions. Better results.</small></span></a>
-    <button class="menu-btn" aria-label="Meniu" id="menuBtn">☰</button>
+  <div class="boot-bg"></div>
+  <header class="topbar reveal">
+    <a class="brand" href="#home"><span class="brand-mark">SB</span><span><strong>TREIDING<span>SB</span></strong><small>Smarter decisions. Better results.</small></span></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Meniu">☰</button>
     <nav id="nav">
-      <a href="#home">Home</a>
-      <a href="#ideas">Idei de tranzacționare</a>
-      <a href="#reports">Rapoarte</a>
-      <a href="#education">Educație</a>
-      <a href="#calendar">Calendar economic</a>
-      <a href="#contact">Contact</a>
-      <a class="member" href="#ideas">Cont membru</a>
+      <a href="#home">Home</a><a href="#ideas">Idei de tranzacționare</a><a href="#reports">Rapoarte</a><a href="#education">Educație</a><a href="#calendar">Calendar economic</a><a href="#contact">Contact</a>
     </nav>
+    <a class="member-btn" href="#ideas">Cont membru</a>
   </header>
 
   <main>
-    <section class="section hero" id="home">
-      <div class="overlay"></div>
-      <div class="hero-card reveal center-pop">
-        <div class="pill">● IDEI DE TRANZACȚIONARE ACTIVE · MEMBRI</div>
+    <section id="home" class="section hero page-bg hero-bg">
+      <div class="hero-card reveal center-expand">
+        <div class="pill">● Trading intelligence activ</div>
         <h1>Tranzacționează mai bine cu <span>TreidingSB</span></h1>
-        <p>Strategii reale pe Forex și Gold, calendar economic live, idei de tranzacționare verificate și rapoarte săptămânale agregate din 50 de surse.</p>
-        <div class="actions"><a class="btn primary" href="#ideas">Vezi ideile de tranzacționare</a><a class="btn ghost" href="#calendar">Calendar economic</a></div>
-        <div class="subscribe"><b>Abonează-te la rapoarte</b><p>Primești notificări când publicăm analize noi pentru XAU/USD, XAG/USD, EUR/USD și GBP/USD.</p><form><input type="email" placeholder="Adresa ta de email"><button>Abonează-te</button></form></div>
+        <p>Strategii reale pe Forex și Gold, calendar economic live, idei de tranzacționare verificate și rapoarte săptămânale agregate din surse importante.</p>
+        <div class="actions"><a class="primary" href="#ideas">Vezi ideile de tranzacționare</a><a class="secondary" href="#calendar">Calendar economic</a></div>
+        <form class="subscribe" id="subscribeForm"><label>Abonează-te la rapoarte</label><div><input type="email" placeholder="Adresa ta de email" required><button>Abonează-te</button></div><small id="subscribeMsg"></small></form>
       </div>
     </section>
 
-    <section class="section ideas" id="ideas">
-      <div class="overlay light"></div>
-      <div class="access-card reveal">
-        <div class="lock">🔐</div>
-        <h2>Acces Idei de Tranzacționare — Membri</h2>
-        <p>Ideile de tranzacționare sunt disponibile exclusiv membrilor TreidingSB. Introdu parola pentru acces.</p>
-        <label>Parola acces</label><input type="password" value="••••••••" aria-label="parola"><button class="btn primary full">Intră în cont</button>
-        <small>Nu ai acces? <a href="#contact">Contactează-ne pe TikTok</a></small>
+    <section id="ideas" class="section page-bg ideas-bg">
+      <div class="access-panel reveal">
+        <div class="lock">🔐</div><h2>Acces Idei de Tranzacționare — Membri</h2>
+        <p>Ideile de tranzacționare sunt actualizate zilnic. Introdu parola pentru acces.</p>
+        <label>Parola acces</label><input id="memberPass" type="password" placeholder="••••••••"><button id="unlockIdeas">Intră în cont</button><small id="loginMsg">Parola demo: <b>treidingsb</b></small>
+      </div>
+      <div class="content-wrap hidden" id="ideasContent">
+        <div class="section-head"><span class="pill">● idei active</span><h2>Idei de tranzacționare</h2><p>Datele se modifică din fișierul <b>data/ideas.json</b>, fără să rescrii tot site-ul.</p></div>
+        <div class="cards" id="ideasGrid"></div>
       </div>
     </section>
 
-    <section class="section reports" id="reports">
-      <div class="overlay orange"></div>
-      <div class="section-head reveal"><h2>Rapoarte săptămânale</h2><p>Analize detaliate și perspective săptămânale pentru piețele financiare.</p></div>
-      <div class="reports-grid reveal">
-        <article class="feature-card"><p class="accent">▣ Analiză săptămânală</p><h3>Analiza săptămânală</h3><p>O imagine completă asupra piețelor financiare pentru săptămâna curentă. Perspective tehnice, fundamentale și factori cheie.</p><a class="btn orangeBtn" href="#contact">Vezi analiza săptămânală</a></article>
-        <article class="market-card"><span>🟡 XAU/USD</span><b>4,040.52</b><em class="red">−65.19 (−1.59%)</em><button>Analiză săptămânală</button></article>
-        <article class="market-card"><span>⚪ XAG/USD</span><b>57.762</b><em class="red">−2.20 (−3.66%)</em><button>Analiză săptămânală</button></article>
-        <article class="market-card"><span>🔵 EUR/USD</span><b>1.08956</b><em class="green">+0.00123 (+0.11%)</em><button>Analiză săptămânală</button></article>
-        <article class="market-card"><span>🇬🇧 GBP/USD</span><b>1.27034</b><em class="green">+0.00215 (+0.17%)</em><button>Analiză săptămânală</button></article>
-        <article class="market-card"><span>₿ BTC/USD</span><b>67,842.15</b><em class="red">−1,234.50 (−1.79%)</em><button>Analiză săptămânală</button></article>
+    <section id="reports" class="section page-bg reports-bg">
+      <div class="content-wrap reveal">
+        <div class="section-head"><span class="pill orange">▣ rapoarte</span><h2>Rapoarte săptămânale</h2><p>Analize săptămânale pentru piețele financiare, cu perspective clare pentru următoarea perioadă.</p></div>
+        <div class="reports-layout"><article class="glass featured"><h3>Analiză săptămânală</h3><p>O imagine completă asupra piețelor financiare pentru săptămâna curentă: tehnic, fundamental și factori cheie.</p><a class="outline" href="#">Vezi analiza săptămânală</a></article><div class="market-grid" id="reportsGrid"></div></div>
       </div>
-      <div class="benefits reveal"><div>🎯<b>Analize detaliate</b><span>Perspective tehnice și fundamentale.</span></div><div>📊<b>50+ surse verificate</b><span>Date agregate din surse de încredere.</span></div><div>🕒<b>Actualizare săptămânală</b><span>Rapoarte noi pentru săptămâna următoare.</span></div><div>🛡️<b>Decizii inteligente</b><span>Informații clare pentru tranzacții mai sigure.</span></div></div>
     </section>
 
-    <section class="section education" id="education">
-      <div class="section-head reveal"><h2>Educație de bază</h2><p>Învață structura pieței, riscul și logica din spatele mișcărilor de preț.</p></div>
-      <div class="cards reveal"><article><h3>Cine formează piața</h3><p>Bănci, fonduri, instituții, market makeri și traderi retail. Fiecare influențează lichiditatea.</p></article><article><h3>Risk management</h3><p>Lot corect, stop loss, raport risc/recompensă și protejarea capitalului.</p></article><article><h3>Calendar economic</h3><p>Evenimentele mari pot crea volatilitate. Planificarea contează.</p></article></div>
+    <section id="education" class="section page-bg hero-bg">
+      <div class="content-wrap reveal"><div class="section-head"><span class="pill">◈ educație</span><h2>Educație de bază</h2><p>Totul este pe fundal transparent ca imaginea site-ului să rămână vizibilă.</p></div><div class="cards education"><article class="glass"><h3>Cine formează piața?</h3><p>Bănci, fonduri, retail traders, instituții și market makers. Înțelegerea lor te ajută să citești lichiditatea.</p></article><article class="glass"><h3>Risk Management</h3><p>Fără risc controlat, o strategie bună poate deveni periculoasă. Începe cu lot mic și reguli clare.</p></article><article class="glass"><h3>Gold & Forex</h3><p>XAU/USD se mișcă puternic la știri, dolar, randamente și sentimentul pieței.</p></article></div></div>
     </section>
 
-    <section class="section calendar" id="calendar">
-      <div class="section-head reveal"><h2>Calendar economic</h2><p>Pregătește-te înainte de știri importante.</p></div>
-      <div class="table-card reveal"><table><thead><tr><th>Ora UK</th><th>Eveniment</th><th>Impact</th><th>Perechi urmărite</th></tr></thead><tbody><tr><td>09:30</td><td>UK CPI / Inflație</td><td><span class="impact high">Mare</span></td><td>GBP/USD, XAU/USD</td></tr><tr><td>13:30</td><td>US Jobless Claims</td><td><span class="impact med">Mediu</span></td><td>XAU/USD, EUR/USD</td></tr><tr><td>15:00</td><td>US Consumer Confidence</td><td><span class="impact high">Mare</span></td><td>XAU/USD, NAS100</td></tr></tbody></table></div>
-    </section>
-
-    <section class="section contact" id="contact"><div class="contact-card reveal"><h2>Contact TreidingSB</h2><p>Pentru acces membru, rapoarte sau colaborări, trimite un mesaj.</p><form><input placeholder="Numele tău"><input type="email" placeholder="Email"><textarea placeholder="Mesajul tău"></textarea><button class="btn primary">Trimite mesaj</button></form></div></section>
+    <section id="calendar" class="section compact"><div class="content-wrap reveal"><div class="section-head"><span class="pill orange">📅 calendar</span><h2>Calendar economic</h2><p>Aici putem integra widgetul tău live sau lista evenimentelor importante UK/US.</p></div><div class="glass"><p><b>Următorul pas:</b> păstrăm calendarul tău existent din site-ul original și îl stilizăm în acest design.</p></div></div></section>
+    <section id="contact" class="section compact"><div class="content-wrap reveal"><div class="section-head"><span class="pill">✉ contact</span><h2>Contact</h2><p>Pentru acces, rapoarte și abonare.</p></div><div class="glass"><p>TikTok / Email / Telegram — le conectăm după ce stabilim varianta finală.</p></div></div></section>
   </main>
-  <a class="telegram" href="#contact">✈</a>
+  <a class="float" href="#contact">➤</a>
   <script src="script.js"></script>
 </body>
 </html>
