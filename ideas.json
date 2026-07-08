@@ -1,5 +1,38 @@
 [
-  {"pair":"XAU/USD","type":"SELL","entry":"4040–4050","sl":"4097","tp":"4000 / 3975","risk":"Mediu","note":"Idee exemplu. Schimbă zilnic aceste date în data/ideas.json."},
-  {"pair":"EUR/USD","type":"BUY","entry":"1.0870","sl":"1.0820","tp":"1.0950","risk":"Scăzut","note":"Confirmare după știri importante."},
-  {"pair":"GBP/USD","type":"WATCH","entry":"1.2700","sl":"-","tp":"-","risk":"Observare","note":"Așteptăm break clar peste rezistență."}
+  {
+    "date": "08.07.2026",
+    "pair": "XAU/USD",
+    "type": "SELL",
+    "timeframe": "M15",
+    "entry": "4040-4050",
+    "sl": "4097",
+    "tp": "4000 / 3975",
+    "risk": "Mediu (1%)",
+    "status": "Activ",
+    "note": "Liquidity sweep peste maximul asiatic + CHoCH pe M15. Asteapta confirmare inainte de intrare."
+  },
+  {
+    "date": "08.07.2026",
+    "pair": "EUR/USD",
+    "type": "BUY",
+    "timeframe": "H1",
+    "entry": "1.0870",
+    "sl": "1.0820",
+    "tp": "1.0950",
+    "risk": "Scazut (0.5%)",
+    "status": "Activ",
+    "note": "Order block H1 + FVG neumplut. Valabil doar daca USD slabeste dupa stiri."
+  },
+  {
+    "date": "07.07.2026",
+    "pair": "GBP/USD",
+    "type": "WATCH",
+    "timeframe": "H4",
+    "entry": "1.2700",
+    "sl": "-",
+    "tp": "-",
+    "risk": "Observare",
+    "status": "Activ",
+    "note": "Asteptam break clar peste rezistenta H4 inainte de orice pozitie."
+  }
 ]
