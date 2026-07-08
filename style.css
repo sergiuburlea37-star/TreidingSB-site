@@ -186,3 +186,44 @@ background:rgba(5,13,28,.18);
 box-shadow:0 25px 90px rgba(0,0,0,.28);
 text-align:center
 }
+.market-ticker{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:38px;
+  overflow:hidden;
+  background:rgba(255,255,255,.94);
+  color:#111;
+  z-index:9999;
+  border-bottom:1px solid rgba(0,0,0,.12);
+}
+
+.ticker-track{
+  display:flex;
+  align-items:center;
+  gap:38px;
+  height:38px;
+  width:max-content;
+  white-space:nowrap;
+  animation:tickerMove 35s linear infinite;
+  font-weight:800;
+}
+
+.ticker-track span{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.green{color:#00b871}
+.red{color:#ff3448}
+
+@keyframes tickerMove{
+  from{transform:translateX(100vw)}
+  to{transform:translateX(-100%)}
+}
+
+.topbar{
+  top:54px;
+}
