@@ -1,0 +1,5 @@
+[
+  {"pair":"XAU/USD","type":"SELL","entry":"4040–4050","sl":"4097","tp":"4000 / 3975","risk":"Mediu","note":"Idee exemplu. Schimbă zilnic aceste date în data/ideas.json."},
+  {"pair":"EUR/USD","type":"BUY","entry":"1.0870","sl":"1.0820","tp":"1.0950","risk":"Scăzut","note":"Confirmare după știri importante."},
+  {"pair":"GBP/USD","type":"WATCH","entry":"1.2700","sl":"-","tp":"-","risk":"Observare","note":"Așteptăm break clar peste rezistență."}
+]
