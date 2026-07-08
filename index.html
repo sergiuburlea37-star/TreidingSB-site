@@ -6,50 +6,43 @@
   <title>TreidingSB — Trading Intelligence</title>
   <meta name="description" content="TreidingSB: idei de tranzacționare, rapoarte săptămânale, educație și calendar economic pentru Forex, Gold și piețe financiare." />
   <link rel="stylesheet" href="style.css" />
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7H17JSNZ5"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-T7H17JSNZ5');</script>
 </head>
 <body>
-  <div class="market-ticker" aria-label="Cotatii live">
-    <div class="tradingview-widget-container">
-      <div class="tradingview-widget-container__widget"></div>
-      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-      {
-      "symbols": [
-        {"proName": "FX:EURUSD", "title": "EUR/USD"},
-        {"proName": "FX:GBPUSD", "title": "GBP/USD"},
-        {"proName": "CAPITALCOM:XAUUSD", "title": "XAU/USD"},
-        {"proName": "CAPITALCOM:XAGUSD", "title": "XAG/USD"},
-        {"proName": "NASDAQ:SPCX", "title": "SpaceX"}
-      ],
-      "showSymbolLogo": true,
-      "isTransparent": true,
-      "displayMode": "adaptive",
-      "colorTheme": "dark",
-      "locale": "en"
-      }
-      </script>
+  <div class="market-ticker" aria-label="Active urmărite">
+    <div class="ticker-track">
+      <span>🟡 XAU/USD <b>4040.52</b> <em class="red">−1.59%</em></span>
+      <span>⚪ XAG/USD <b>57.76</b> <em class="red">−3.66%</em></span>
+      <span>💶 EUR/USD <b>1.0895</b> <em class="green">+0.11%</em></span>
+      <span>🇬🇧 GBP/USD <b>1.2703</b> <em class="green">+0.17%</em></span>
+      <span>₿ BTC/USD <b>67842</b> <em class="red">−1.79%</em></span>
+      <span>🇺🇸 US100 <b>22150</b> <em class="green">+0.42%</em></span>
+      <span>🇺🇸 US30 <b>39210</b> <em class="red">−0.18%</em></span>
+      <span>🟡 XAU/USD <b>4040.52</b> <em class="red">−1.59%</em></span>
+      <span>⚪ XAG/USD <b>57.76</b> <em class="red">−3.66%</em></span>
+      <span>💶 EUR/USD <b>1.0895</b> <em class="green">+0.11%</em></span>
     </div>
   </div>
   <div class="boot-bg"></div>
   <header class="topbar reveal">
-    <a class="brand" href="#home"><img class="brand-logo" src="logo.png" alt="TreidingSB"><span><strong>TREIDING<span>SB</span></strong><small>Smarter decisions. Better results.</small></span></a>
+    <a class="brand" href="#home" aria-label="TreidingSB Home">
+      <img class="brand-logo" src="logo.png" alt="TreidingSB" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+      <span class="brand-fallback" aria-hidden="true">SB</span>
+      <span class="brand-text"><strong>TREIDING<span>SB</span></strong><small>Smarter decisions. Better results.</small></span>
+    </a>
     <button class="menu-btn" id="menuBtn" aria-label="Meniu">☰</button>
-    <nav id="nav">
-      <a href="#home"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/></svg>Home</a>
-      <a href="#ideas"><svg viewBox="0 0 24 24"><path d="M4 19 10 13l3 3 7-8"/><path d="M15 8h5v5"/></svg>Idei de tranzacționare</a>
-      <a href="#reports"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Rapoarte</a>
-      <a href="#education"><svg viewBox="0 0 24 24"><path d="m12 4 10 5-10 5L2 9z"/><path d="M6.5 11.5V16c0 1.4 2.5 2.8 5.5 2.8s5.5-1.4 5.5-2.8v-4.5"/></svg>Educație</a>
-      <a href="#calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="15" rx="2"/><path d="M4 10.5h16M8.5 3.5v4M15.5 3.5v4"/></svg>Calendar economic</a>
-      <a href="#contact"><svg viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4.5 7 7.5 6 7.5-6"/></svg>Contact</a>
+    <nav id="nav" aria-label="Navigare principală">
+      <a class="nav-link active" href="#home"><span>⌂</span>Home</a>
+      <a class="nav-link" href="#ideas"><span>♙</span>Idei de tranzacționare</a>
+      <a class="nav-link" href="#reports"><span>▣</span>Rapoarte</a>
+      <a class="nav-link" href="#education"><span>◈</span>Educație</a>
+      <a class="nav-link" href="#calendar"><span>▦</span>Calendar economic</a>
+      <a class="nav-link" href="#contact"><span>✉</span>Contact</a>
     </nav>
-    <a class="member-btn" href="#ideas"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg>Cont membru</a>
+    <a class="member-btn" href="#ideas"><span>♙</span> Cont membru</a>
   </header>
 
   <main>
     <section id="home" class="section hero page-bg hero-bg">
-      <div class="risk-bar reveal">⚠ <b>Risc:</b> Tranzactionarea CFD implica risc ridicat de pierdere. Site informativ independent — nu constituie sfat de investitii.</div>
       <div class="hero-card reveal center-expand">
         <div class="pill">● Trading intelligence activ</div>
         <h1>Tranzacționează mai bine cu <span>TreidingSB</span></h1>
@@ -63,7 +56,7 @@
       <div class="access-panel reveal">
         <div class="lock">🔐</div><h2>Acces Idei de Tranzacționare — Membri</h2>
         <p>Ideile de tranzacționare sunt actualizate zilnic. Introdu parola pentru acces.</p>
-        <label>Parola acces</label><input id="memberPass" type="password" placeholder="••••••••"><button id="unlockIdeas">Intră în cont</button><small id="loginMsg"></small>
+        <label>Parola acces</label><input id="memberPass" type="password" placeholder="••••••••"><button id="unlockIdeas">Intră în cont</button><small id="loginMsg">Parola demo: <b>treidingsb</b></small>
       </div>
       <div class="content-wrap hidden" id="ideasContent">
         <div class="section-head"><span class="pill">● idei active</span><h2>Idei de tranzacționare</h2><p>Semnale bazate pe analiza tehnică, urmărite zilnic și actualizate rapid din <b>data/ideas.json</b>.</p></div>
