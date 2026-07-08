@@ -6,18 +6,32 @@
   <title>TreidingSB — Trading Intelligence</title>
   <meta name="description" content="TreidingSB: idei de tranzacționare, rapoarte săptămânale, educație și calendar economic pentru Forex, Gold și piețe financiare." />
   <link rel="stylesheet" href="style.css" />
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7H17JSNZ5"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-T7H17JSNZ5');</script>
 </head>
-<body><div class="market-ticker">
-  <div class="ticker-track">
-    <span>🟡 XAU/USD 4040.52 <b class="red">−1.59%</b></span>
-    <span>⚪ XAG/USD 57.76 <b class="red">−3.66%</b></span>
-    <span>💶 EUR/USD 1.0895 <b class="green">+0.11%</b></span>
-    <span>🇬🇧 GBP/USD 1.2703 <b class="green">+0.17%</b></span>
-    <span>₿ BTC/USD 67842 <b class="red">−1.79%</b></span>
-    <span>🇺🇸 US100 22150 <b class="green">+0.42%</b></span>
-    <span>🇺🇸 US30 39210 <b class="red">−0.18%</b></span>
+<body>
+  <div class="market-ticker" aria-label="Cotatii live">
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+      "symbols": [
+        {"proName": "FX:EURUSD", "title": "EUR/USD"},
+        {"proName": "FX:GBPUSD", "title": "GBP/USD"},
+        {"proName": "CAPITALCOM:XAUUSD", "title": "XAU/USD"},
+        {"proName": "CAPITALCOM:XAGUSD", "title": "XAG/USD"},
+        {"proName": "NASDAQ:SPCX", "title": "SpaceX"}
+      ],
+      "showSymbolLogo": true,
+      "isTransparent": true,
+      "displayMode": "adaptive",
+      "colorTheme": "dark",
+      "locale": "en"
+      }
+      </script>
+    </div>
   </div>
-</div>
   <div class="boot-bg"></div>
   <header class="topbar reveal">
     <a class="brand" href="#home"><span class="brand-mark">SB</span><span><strong>TREIDING<span>SB</span></strong><small>Smarter decisions. Better results.</small></span></a>
@@ -30,6 +44,7 @@
 
   <main>
     <section id="home" class="section hero page-bg hero-bg">
+      <div class="risk-bar reveal">⚠ <b>Risc:</b> Tranzactionarea CFD implica risc ridicat de pierdere. Site informativ independent — nu constituie sfat de investitii.</div>
       <div class="hero-card reveal center-expand">
         <div class="pill">● Trading intelligence activ</div>
         <h1>Tranzacționează mai bine cu <span>TreidingSB</span></h1>
@@ -43,10 +58,10 @@
       <div class="access-panel reveal">
         <div class="lock">🔐</div><h2>Acces Idei de Tranzacționare — Membri</h2>
         <p>Ideile de tranzacționare sunt actualizate zilnic. Introdu parola pentru acces.</p>
-        <label>Parola acces</label><input id="memberPass" type="password" placeholder="••••••••"><button id="unlockIdeas">Intră în cont</button><small id="loginMsg">Parola demo: <b>treidingsb</b></small>
+        <label>Parola acces</label><input id="memberPass" type="password" placeholder="••••••••"><button id="unlockIdeas">Intră în cont</button><small id="loginMsg"></small>
       </div>
       <div class="content-wrap hidden" id="ideasContent">
-        <div class="section-head"><span class="pill">● idei active</span><h2>Idei de tranzacționare</h2><p>Datele se modifică din fișierul <b>data/ideas.json</b>, fără să rescrii tot site-ul.</p></div>
+        <div class="section-head"><span class="pill">● idei active</span><h2>Idei de tranzacționare</h2><p>Semnale bazate pe analiza tehnică, urmărite zilnic și actualizate rapid din <b>data/ideas.json</b>.</p></div>
         <div class="cards" id="ideasGrid"></div>
       </div>
     </section>
