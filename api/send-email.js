@@ -57,23 +57,64 @@ const i18n = {
 
 // ---------- Constructor HTML comun (logo + buton + disclaimer) ----------
 function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer) {
-  const paras = paragraphs.map(p => `<p>${p}</p>`).join('');
+  const paras = paragraphs.map(p => `
+    <p style="margin:0 0 18px 0;font-size:18px;line-height:1.6;color:#E6E6E6;">
+      ${p}
+    </p>
+  `).join('');
+
   return `
-    <div style="background:#0D1117; padding:24px; text-align:center; border-radius:8px 8px 0 0;">
-      <img src="https://treidingsb.com/logo.png" alt="TreidingSB" width="140">
-    </div>
-    <div style="padding:24px; font-family:Arial,sans-serif; color:#222;">
-      <h2 style="color:#D4AF37; margin-top:0;">${title}</h2>
-      ${paras}
-      <p style="margin-top:20px;">
-        <a href="${btnUrl}" style="background:#D4AF37; color:#0D1117;
-        padding:12px 24px; text-decoration:none; border-radius:6px; font-weight:bold;">
-        ${btnText}</a>
-      </p>
-      <p style="color:#888; font-size:12px; border-top:1px solid #eee; padding-top:12px; margin-top:24px;">
-        ${disclaimer}
-      </p>
-    </div>`;
+  <div style="background:#111111;padding:30px 0;font-family:Arial,sans-serif;">
+    <table align="center" cellpadding="0" cellspacing="0" width="700"
+      style="max-width:700px;width:100%;background:#1A1A1A;border-radius:18px;overflow:hidden;">
+
+      <tr>
+        <td>
+          <img
+            src="https://treidingsb.com/email-banner.jpg"
+            alt="TreidingSB AI"
+            width="700"
+            style="display:block;width:100%;height:auto;border:0;">
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:35px;">
+          <h2 style="color:#D4AF37;font-size:32px;margin:0 0 20px 0;">
+            ${title}
+          </h2>
+
+          ${paras}
+
+          <div style="margin-top:30px;">
+            <a href="${btnUrl}"
+              style="background:#D4AF37;
+              color:#111111;
+              text-decoration:none;
+              padding:15px 28px;
+              border-radius:8px;
+              font-size:18px;
+              font-weight:bold;
+              display:inline-block;">
+              ${btnText}
+            </a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:22px 35px;
+        border-top:1px solid #2B2B2B;
+        color:#8C8C8C;
+        font-size:13px;
+        line-height:1.6;">
+          ${disclaimer}<br>
+          <strong>TreidingSB AI</strong> · AI Trading Intelligence
+        </td>
+      </tr>
+
+    </table>
+  </div>`;
 }
 
 export default async function handler(req, res) {
