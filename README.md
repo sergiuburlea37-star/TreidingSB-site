@@ -1,11 +1,11 @@
-# TreidingSB Pro V1
+# TreidingSB - versiune header premium
 
-Structura pentru Vercel/GitHub:
-- index.html
-- style.css
-- script.js
-- assets/
-- data/ideas.json — modifici zilnic ideile de tranzacționare
-- data/reports.json — modifici rapoartele/simbolurile
+Am curatat fisierul principal si am mutat stilurile in `style.css`.
 
-Parola demo pentru rubrica idei: treidingsb
+Structura:
+- `index.html` - pagina site-ului
+- `style.css` - toate stilurile CSS + header premium
+- `assets/` - logo-ul extras si imaginile inlocuite din Base64
+- `hero-bg.jpg`, `ideas-bg.png`, `reports-bg.png` - pastrate si in root pentru compatibilitate
+
+In GitHub incarca tot continutul din acest folder. Nu incarca doar `index.html`.
