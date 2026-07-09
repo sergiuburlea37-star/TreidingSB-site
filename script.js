@@ -19,6 +19,7 @@ if (menuButton && mainNav) {
 const FLAGS = { ro: "ro", en: "gb", ru: "ru", uk: "ua", pl: "pl" };
 const CODES = { ro: "RO", en: "EN", ru: "RU", uk: "UA", pl: "PL" };
 const SUPPORTED_LANGS = Object.keys(FLAGS);
+let currentLang = "ro";
 
 const translations = {
   ro: {
@@ -33,7 +34,7 @@ const translations = {
       btnPrimary: "Vezi ideile de tranzacționare",
       btnSecondary: "Calendar economic"
     },
-    subscribe: { label: "Abonează-te la rapoarte", desc: "Primești pe email notificări când publicăm rapoarte și analize noi pentru XAU/USD, XAG/USD, EUR/USD și GBP/USD.", placeholder: "Adresa ta de email", button: "Abonează-te" },
+    subscribe: { label: "Abonează-te la rapoarte", desc: "Primești pe email notificări când publicăm rapoarte și analize noi pentru XAU/USD, XAG/USD, EUR/USD și GBP/USD.", placeholder: "Adresa ta de email", button: "Abonează-te", sending: "Se trimite...", success: "Te-ai abonat cu succes! Verifică-ți emailul.", error: "A apărut o eroare. Te rugăm încearcă din nou puțin mai târziu.", invalid: "Te rugăm introdu o adresă de email validă." },
     ideas: {
       eyebrow: "Membri", title: "Idei de tranzacționare",
       desc: "Cardurile sunt pregătite pentru semnalele tale zilnice: activ, direcție, intrare, SL, TP și motiv tehnic.",
@@ -58,7 +59,7 @@ const translations = {
       btnPrimary: "View trade ideas",
       btnSecondary: "Economic calendar"
     },
-    subscribe: { label: "Subscribe to reports", desc: "Get email notifications when we publish new reports and analysis for XAU/USD, XAG/USD, EUR/USD and GBP/USD.", placeholder: "Your email address", button: "Subscribe" },
+    subscribe: { label: "Subscribe to reports", desc: "Get email notifications when we publish new reports and analysis for XAU/USD, XAG/USD, EUR/USD and GBP/USD.", placeholder: "Your email address", button: "Subscribe", sending: "Sending...", success: "You're subscribed! Check your inbox.", error: "Something went wrong. Please try again shortly.", invalid: "Please enter a valid email address." },
     ideas: {
       eyebrow: "Members", title: "Trade Ideas",
       desc: "Cards are ready for your daily signals: asset, direction, entry, SL, TP and technical reasoning.",
@@ -83,7 +84,7 @@ const translations = {
       btnPrimary: "Смотреть торговые идеи",
       btnSecondary: "Экономический календарь"
     },
-    subscribe: { label: "Подписаться на отчёты", desc: "Получайте уведомления на почту о новых отчётах и аналитике по XAU/USD, XAG/USD, EUR/USD и GBP/USD.", placeholder: "Ваш email", button: "Подписаться" },
+    subscribe: { label: "Подписаться на отчёты", desc: "Получайте уведомления на почту о новых отчётах и аналитике по XAU/USD, XAG/USD, EUR/USD и GBP/USD.", placeholder: "Ваш email", button: "Подписаться", sending: "Отправка...", success: "Вы подписались! Проверьте почту.", error: "Произошла ошибка. Попробуйте ещё раз чуть позже.", invalid: "Пожалуйста, введите корректный email." },
     ideas: {
       eyebrow: "Участники", title: "Торговые идеи",
       desc: "Карточки готовы для ваших ежедневных сигналов: актив, направление, вход, SL, TP и техническое обоснование.",
@@ -108,7 +109,7 @@ const translations = {
       btnPrimary: "Переглянути торгові ідеї",
       btnSecondary: "Економічний календар"
     },
-    subscribe: { label: "Підписатися на звіти", desc: "Отримуйте на пошту сповіщення про нові звіти та аналітику по XAU/USD, XAG/USD, EUR/USD і GBP/USD.", placeholder: "Ваша електронна адреса", button: "Підписатися" },
+    subscribe: { label: "Підписатися на звіти", desc: "Отримуйте на пошту сповіщення про нові звіти та аналітику по XAU/USD, XAG/USD, EUR/USD і GBP/USD.", placeholder: "Ваша електронна адреса", button: "Підписатися", sending: "Надсилання...", success: "Ви підписалися! Перевірте пошту.", error: "Сталася помилка. Спробуйте ще раз трохи пізніше.", invalid: "Будь ласка, введіть коректну електронну адресу." },
     ideas: {
       eyebrow: "Учасники", title: "Торгові ідеї",
       desc: "Картки готові для ваших щоденних сигналів: актив, напрямок, вхід, SL, TP і технічне обґрунтування.",
@@ -133,7 +134,7 @@ const translations = {
       btnPrimary: "Zobacz pomysły transakcyjne",
       btnSecondary: "Kalendarz ekonomiczny"
     },
-    subscribe: { label: "Zapisz się na raporty", desc: "Otrzymuj powiadomienia e-mail, gdy publikujemy nowe raporty i analizy dla XAU/USD, XAG/USD, EUR/USD i GBP/USD.", placeholder: "Twój adres e-mail", button: "Zapisz się" },
+    subscribe: { label: "Zapisz się na raporty", desc: "Otrzymuj powiadomienia e-mail, gdy publikujemy nowe raporty i analizy dla XAU/USD, XAG/USD, EUR/USD i GBP/USD.", placeholder: "Twój adres e-mail", button: "Zapisz się", sending: "Wysyłanie...", success: "Zapisano! Sprawdź swoją skrzynkę e-mail.", error: "Wystąpił błąd. Spróbuj ponownie za chwilę.", invalid: "Podaj prawidłowy adres e-mail." },
     ideas: {
       eyebrow: "Członkowie", title: "Pomysły transakcyjne",
       desc: "Karty są gotowe na Twoje codzienne sygnały: aktywo, kierunek, wejście, SL, TP i uzasadnienie techniczne.",
@@ -155,6 +156,7 @@ function getNested(obj, path) {
 function applyLanguage(lang) {
   if (!SUPPORTED_LANGS.includes(lang)) lang = "ro";
   const dict = translations[lang];
+  currentLang = lang;
 
   document.documentElement.setAttribute("lang", lang);
 
@@ -230,6 +232,59 @@ if (langSwitcher && langCurrentBtn && langMenu) {
     if (e.key === "Escape") {
       langSwitcher.classList.remove("is-open");
       langCurrentBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+
+/* ===================== Subscribe form ===================== */
+const subscribeForm = document.getElementById("subscribeForm");
+if (subscribeForm) {
+  const emailInput = document.getElementById("subscribeEmail");
+  const submitButton = document.getElementById("subscribeButton");
+  const messageEl = document.getElementById("subscribeMessage");
+  const buttonDefaultText = submitButton.textContent;
+
+  subscribeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const dict = translations[currentLang] || translations.ro;
+    const email = (emailInput.value || "").trim();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    messageEl.classList.remove("is-error", "is-success");
+
+    if (!emailPattern.test(email)) {
+      messageEl.textContent = getNested(dict, "subscribe.invalid") || "Invalid email.";
+      messageEl.classList.add("is-error");
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = getNested(dict, "subscribe.sending") || "...";
+    messageEl.textContent = "";
+
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: email, type: "welcome", lang: currentLang })
+      });
+
+      let data = {};
+      try { data = await response.json(); } catch (parseErr) { /* non-JSON response */ }
+
+      if (!response.ok || !data.success) {
+        throw new Error((data && data.error) || "Request failed");
+      }
+
+      messageEl.textContent = getNested(dict, "subscribe.success") || "Subscribed!";
+      messageEl.classList.add("is-success");
+      subscribeForm.reset();
+    } catch (err) {
+      messageEl.textContent = getNested(dict, "subscribe.error") || "Something went wrong.";
+      messageEl.classList.add("is-error");
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = getNested(dict, "subscribe.button") || buttonDefaultText;
     }
   });
 }
