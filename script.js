@@ -25,7 +25,7 @@ const translations = {
   ro: {
     riskStrip: "⚠️ Risc: Tranzacționarea CFD implică risc ridicat de pierdere. Site informativ independent.",
     mobileToggle: "Deschide meniul",
-    nav: { home: "⌂ Home", ideas: "⌁ Idei de tranzacționare", portfolioUs: "$ Portofoliu US", portfolioEu: "€ Portofoliu EU", reports: "▤ Rapoarte", education: "◈ Educație", calendar: "▦ Calendar economic", contact: "✉ Contact" },
+    nav: { home: "⌂ Home", about: "◎ Despre noi", ideas: "⌁ Idei de tranzacționare", portfolioUs: "$ Portofoliu US", portfolioEu: "€ Portofoliu EU", reports: "▤ Rapoarte", education: "◈ Educație", calendar: "▦ Calendar economic", contact: "✉ Contact" },
     memberButton: "♙ Cont membru",
     hero: {
       pill: "Idei de tranzacționare active · Membri",
@@ -35,6 +35,20 @@ const translations = {
       btnSecondary: "Calendar economic"
     },
     subscribe: { label: "Abonează-te la rapoarte", desc: "Primești pe email notificări când publicăm rapoarte și analize noi pentru XAU/USD, XAG/USD, EUR/USD și GBP/USD.", placeholder: "Adresa ta de email", button: "Abonează-te", sending: "Se trimite...", success: "Te-ai abonat cu succes! Verifică-ți emailul.", error: "A apărut o eroare. Te rugăm încearcă din nou puțin mai târziu.", invalid: "Te rugăm introdu o adresă de email validă." },
+    about: {
+      eyebrow: "Despre noi", title: "Despre Treiding Satellite Broadcast",
+      p1: "Treiding Satellite Broadcast este o platformă internațională de analiză financiară, construită în jurul unei echipe de specialiști din diferite țări. Echipa colaborează permanent într-un spațiu online, monitorizând piețele financiare globale și evaluând factorii economici, monetari și geopolitici care influențează fluxurile de capital și lichiditatea activelor.",
+      p2: "Scopul nostru este să transformăm informațiile complexe în analize clare și valoroase, oferind membrilor noștri o perspectivă bine fundamentată asupra evoluției piețelor financiare. Fiecare analiză este realizată prin combinarea factorilor macroeconomici, politicilor monetare ale băncilor centrale, indicatorilor economici, fluxurilor de lichiditate, sentimentului investitorilor și evenimentelor geopolitice care pot influența prețul activelor financiare.",
+      p3: "Echipa Treiding Satellite Broadcast acordă o atenție deosebită identificării surselor de lichiditate și zonelor cu probabilitate ridicată de reacție a pieței. Aceste informații sunt sintetizate în rapoarte și analize periodice, concepute pentru a ajuta traderii și investitorii să înțeleagă mai bine contextul pieței și să ia decizii informate.",
+      assetsTitle: "Principalele active monitorizate",
+      asset1: "Aur (XAU/USD)", asset2: "Argint (XAG/USD)", asset3: "Dolarul American (USD)", asset4: "Lira Sterlină (GBP)",
+      p4: "Misiunea Treiding Satellite Broadcast nu este doar să urmărească graficele, ci să înțeleagă motivele reale din spatele mișcărilor pieței. Prin cercetare continuă, colaborare internațională și analiză obiectivă, oferim o imagine de ansamblu asupra tendințelor financiare globale și a oportunităților cu cel mai mare potențial.",
+      p5: "Credem că succesul pe termen lung în piețele financiare se bazează pe disciplină, cunoaștere și gestionarea riscului. Din acest motiv, toate materialele publicate de Treiding Satellite Broadcast sunt dezvoltate cu profesionalism, transparență și responsabilitate, având ca obiectiv principal furnizarea unor informații de înaltă calitate și construirea unei comunități de traderi bine informați.",
+      missionTitle: "Misiunea noastră", missionText: "Să transformăm informația financiară complexă în decizii mai bine fundamentate pentru fiecare membru al comunității noastre.",
+      visionTitle: "Viziunea noastră", visionText: "Să devenim una dintre cele mai respectate platforme independente de analiză financiară la nivel internațional, recunoscută pentru profesionalism, transparență și calitatea informațiilor oferite.",
+      satelliteTitle: "Ce înseamnă „Satellite Broadcast”?", satelliteText: "Conceptul Satellite Broadcast simbolizează transmiterea rapidă, continuă și globală a analizelor financiare către membrii platformei. Așa cum un satelit distribuie informații către întreaga lume, Treiding Satellite Broadcast conectează piețele financiare globale cu investitorii și traderii, oferindu-le acces la analize profesioniste, perspective strategice și informații relevante în timp util.",
+      tagline: "Treiding Satellite Broadcast – Global Analysis. Intelligent Decisions. Worldwide Connection."
+    },
     ideas: {
       eyebrow: "Membri", title: "Idei de tranzacționare",
       desc: "Cardurile sunt pregătite pentru semnalele tale zilnice: activ, direcție, intrare, SL, TP și motiv tehnic.",
@@ -54,7 +68,7 @@ const translations = {
   en: {
     riskStrip: "⚠️ Risk: CFD trading carries a high risk of loss. Independent informational site.",
     mobileToggle: "Open menu",
-    nav: { home: "⌂ Home", ideas: "⌁ Trade Ideas", portfolioUs: "$ US Portfolio", portfolioEu: "€ EU Portfolio", reports: "▤ Reports", education: "◈ Education", calendar: "▦ Economic Calendar", contact: "✉ Contact" },
+    nav: { home: "⌂ Home", about: "◎ About Us", ideas: "⌁ Trade Ideas", portfolioUs: "$ US Portfolio", portfolioEu: "€ EU Portfolio", reports: "▤ Reports", education: "◈ Education", calendar: "▦ Economic Calendar", contact: "✉ Contact" },
     memberButton: "♙ Member Area",
     hero: {
       pill: "Active trade ideas · Members",
@@ -64,6 +78,20 @@ const translations = {
       btnSecondary: "Economic calendar"
     },
     subscribe: { label: "Subscribe to reports", desc: "Get email notifications when we publish new reports and analysis for XAU/USD, XAG/USD, EUR/USD and GBP/USD.", placeholder: "Your email address", button: "Subscribe", sending: "Sending...", success: "You're subscribed! Check your inbox.", error: "Something went wrong. Please try again shortly.", invalid: "Please enter a valid email address." },
+    about: {
+      eyebrow: "About Us", title: "About Treiding Satellite Broadcast",
+      p1: "Treiding Satellite Broadcast is an international financial analysis platform built around a team of specialists from different countries. The team collaborates continuously in an online space, monitoring global financial markets and assessing the economic, monetary and geopolitical factors that influence capital flows and asset liquidity.",
+      p2: "Our goal is to turn complex information into clear, valuable analysis, giving our members a well-grounded perspective on how financial markets are evolving. Each analysis combines macroeconomic factors, central bank monetary policy, economic indicators, liquidity flows, investor sentiment and geopolitical events that can influence asset prices.",
+      p3: "The Treiding Satellite Broadcast team pays close attention to identifying liquidity sources and zones with a high probability of market reaction. This information is synthesized into periodic reports and analyses, designed to help traders and investors better understand market context and make informed decisions.",
+      assetsTitle: "Main assets we monitor",
+      asset1: "Gold (XAU/USD)", asset2: "Silver (XAG/USD)", asset3: "US Dollar (USD)", asset4: "British Pound (GBP)",
+      p4: "The mission of Treiding Satellite Broadcast is not just to watch charts, but to understand the real reasons behind market moves. Through continuous research, international collaboration and objective analysis, we offer an overview of global financial trends and the opportunities with the greatest potential.",
+      p5: "We believe long-term success in the financial markets is built on discipline, knowledge and risk management. That's why every piece of content published by Treiding Satellite Broadcast is developed with professionalism, transparency and responsibility, with the main goal of providing high-quality information and building a well-informed community of traders.",
+      missionTitle: "Our Mission", missionText: "To turn complex financial information into better-grounded decisions for every member of our community.",
+      visionTitle: "Our Vision", visionText: "To become one of the most respected independent financial analysis platforms internationally, recognized for professionalism, transparency and the quality of the information we provide.",
+      satelliteTitle: "What does \"Satellite Broadcast\" mean?", satelliteText: "The concept of Satellite Broadcast symbolizes the fast, continuous and global transmission of financial analysis to platform members. Just as a satellite distributes information across the entire world, Treiding Satellite Broadcast connects global financial markets with investors and traders, giving them access to professional analysis, strategic perspectives and timely, relevant information.",
+      tagline: "Treiding Satellite Broadcast – Global Analysis. Intelligent Decisions. Worldwide Connection."
+    },
     ideas: {
       eyebrow: "Members", title: "Trade Ideas",
       desc: "Cards are ready for your daily signals: asset, direction, entry, SL, TP and technical reasoning.",
@@ -83,7 +111,7 @@ const translations = {
   ru: {
     riskStrip: "⚠️ Риск: Торговля CFD сопряжена с высоким риском потерь. Независимый информационный сайт.",
     mobileToggle: "Открыть меню",
-    nav: { home: "⌂ Главная", ideas: "⌁ Торговые идеи", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Отчёты", education: "◈ Обучение", calendar: "▦ Экономический календарь", contact: "✉ Контакты" },
+    nav: { home: "⌂ Главная", about: "◎ О нас", ideas: "⌁ Торговые идеи", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Отчёты", education: "◈ Обучение", calendar: "▦ Экономический календарь", contact: "✉ Контакты" },
     memberButton: "♙ Личный кабинет",
     hero: {
       pill: "Активные торговые идеи · Участники",
@@ -93,6 +121,20 @@ const translations = {
       btnSecondary: "Экономический календарь"
     },
     subscribe: { label: "Подписаться на отчёты", desc: "Получайте уведомления на почту о новых отчётах и аналитике по XAU/USD, XAG/USD, EUR/USD и GBP/USD.", placeholder: "Ваш email", button: "Подписаться", sending: "Отправка...", success: "Вы подписались! Проверьте почту.", error: "Произошла ошибка. Попробуйте ещё раз чуть позже.", invalid: "Пожалуйста, введите корректный email." },
+    about: {
+      eyebrow: "О нас", title: "О Treiding Satellite Broadcast",
+      p1: "Treiding Satellite Broadcast — международная платформа финансовой аналитики, созданная командой специалистов из разных стран. Команда постоянно работает в едином онлайн-пространстве, отслеживая мировые финансовые рынки и оценивая экономические, монетарные и геополитические факторы, влияющие на потоки капитала и ликвидность активов.",
+      p2: "Наша цель — превращать сложную информацию в понятную и ценную аналитику, давая участникам обоснованное представление о развитии финансовых рынков. Каждый анализ строится на сочетании макроэкономических факторов, денежно-кредитной политики центральных банков, экономических показателей, потоков ликвидности, настроений инвесторов и геополитических событий, способных повлиять на цену активов.",
+      p3: "Команда Treiding Satellite Broadcast уделяет особое внимание выявлению источников ликвидности и зон с высокой вероятностью реакции рынка. Эта информация обобщается в периодических отчётах и аналитике, призванных помочь трейдерам и инвесторам лучше понимать контекст рынка и принимать взвешенные решения.",
+      assetsTitle: "Основные отслеживаемые активы",
+      asset1: "Золото (XAU/USD)", asset2: "Серебро (XAG/USD)", asset3: "Доллар США (USD)", asset4: "Фунт стерлингов (GBP)",
+      p4: "Миссия Treiding Satellite Broadcast — не просто следить за графиками, а понимать реальные причины движений рынка. Благодаря постоянным исследованиям, международному сотрудничеству и объективному анализу мы даём общую картину глобальных финансовых тенденций и возможностей с наибольшим потенциалом.",
+      p5: "Мы верим, что долгосрочный успех на финансовых рынках строится на дисциплине, знаниях и управлении рисками. Поэтому все материалы, публикуемые Treiding Satellite Broadcast, создаются профессионально, прозрачно и ответственно, с главной целью — предоставлять качественную информацию и формировать сообщество хорошо информированных трейдеров.",
+      missionTitle: "Наша миссия", missionText: "Превращать сложную финансовую информацию в более обоснованные решения для каждого участника нашего сообщества.",
+      visionTitle: "Наше видение", visionText: "Стать одной из самых уважаемых независимых платформ финансовой аналитики на международном уровне, признанной за профессионализм, прозрачность и качество предоставляемой информации.",
+      satelliteTitle: "Что означает «Satellite Broadcast»?", satelliteText: "Концепция Satellite Broadcast символизирует быструю, непрерывную и глобальную передачу финансовой аналитики участникам платформы. Подобно тому как спутник передаёт информацию по всему миру, Treiding Satellite Broadcast связывает мировые финансовые рынки с инвесторами и трейдерами, давая им доступ к профессиональной аналитике, стратегическим перспективам и своевременной, актуальной информации.",
+      tagline: "Treiding Satellite Broadcast – Global Analysis. Intelligent Decisions. Worldwide Connection."
+    },
     ideas: {
       eyebrow: "Участники", title: "Торговые идеи",
       desc: "Карточки готовы для ваших ежедневных сигналов: актив, направление, вход, SL, TP и техническое обоснование.",
@@ -112,7 +154,7 @@ const translations = {
   uk: {
     riskStrip: "⚠️ Ризик: Торгівля CFD пов'язана з високим ризиком втрат. Незалежний інформаційний сайт.",
     mobileToggle: "Відкрити меню",
-    nav: { home: "⌂ Головна", ideas: "⌁ Торгові ідеї", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Звіти", education: "◈ Навчання", calendar: "▦ Економічний календар", contact: "✉ Контакти" },
+    nav: { home: "⌂ Головна", about: "◎ Про нас", ideas: "⌁ Торгові ідеї", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Звіти", education: "◈ Навчання", calendar: "▦ Економічний календар", contact: "✉ Контакти" },
     memberButton: "♙ Особистий кабінет",
     hero: {
       pill: "Активні торгові ідеї · Учасники",
@@ -122,6 +164,20 @@ const translations = {
       btnSecondary: "Економічний календар"
     },
     subscribe: { label: "Підписатися на звіти", desc: "Отримуйте на пошту сповіщення про нові звіти та аналітику по XAU/USD, XAG/USD, EUR/USD і GBP/USD.", placeholder: "Ваша електронна адреса", button: "Підписатися", sending: "Надсилання...", success: "Ви підписалися! Перевірте пошту.", error: "Сталася помилка. Спробуйте ще раз трохи пізніше.", invalid: "Будь ласка, введіть коректну електронну адресу." },
+    about: {
+      eyebrow: "Про нас", title: "Про Treiding Satellite Broadcast",
+      p1: "Treiding Satellite Broadcast — це міжнародна платформа фінансової аналітики, створена командою фахівців з різних країн. Команда постійно працює в єдиному онлайн-просторі, відстежуючи світові фінансові ринки та оцінюючи економічні, монетарні й геополітичні чинники, що впливають на потоки капіталу та ліквідність активів.",
+      p2: "Наша мета — перетворювати складну інформацію на зрозумілу та цінну аналітику, надаючи учасникам обґрунтоване уявлення про розвиток фінансових ринків. Кожен аналіз поєднує макроекономічні чинники, монетарну політику центральних банків, економічні показники, потоки ліквідності, настрої інвесторів та геополітичні події, здатні вплинути на ціну активів.",
+      p3: "Команда Treiding Satellite Broadcast приділяє особливу увагу виявленню джерел ліквідності та зон із високою ймовірністю реакції ринку. Ця інформація узагальнюється в періодичних звітах і аналітиці, покликаних допомогти трейдерам та інвесторам краще розуміти контекст ринку та ухвалювати зважені рішення.",
+      assetsTitle: "Основні активи, які ми відстежуємо",
+      asset1: "Золото (XAU/USD)", asset2: "Срібло (XAG/USD)", asset3: "Долар США (USD)", asset4: "Фунт стерлінгів (GBP)",
+      p4: "Місія Treiding Satellite Broadcast — не просто стежити за графіками, а розуміти реальні причини руху ринку. Завдяки постійним дослідженням, міжнародній співпраці та об'єктивному аналізу ми даємо загальну картину глобальних фінансових тенденцій та можливостей із найбільшим потенціалом.",
+      p5: "Ми віримо, що довгостроковий успіх на фінансових ринках базується на дисципліні, знаннях та управлінні ризиками. Тому всі матеріали, які публікує Treiding Satellite Broadcast, створюються професійно, прозоро та відповідально, з головною метою — надавати якісну інформацію та формувати спільноту добре поінформованих трейдерів.",
+      missionTitle: "Наша місія", missionText: "Перетворювати складну фінансову інформацію на більш обґрунтовані рішення для кожного учасника нашої спільноти.",
+      visionTitle: "Наше бачення", visionText: "Стати однією з найповажніших незалежних платформ фінансової аналітики на міжнародному рівні, визнаною за професіоналізм, прозорість та якість наданої інформації.",
+      satelliteTitle: "Що означає «Satellite Broadcast»?", satelliteText: "Концепція Satellite Broadcast символізує швидку, безперервну та глобальну передачу фінансової аналітики учасникам платформи. Подібно до того, як супутник передає інформацію по всьому світу, Treiding Satellite Broadcast з'єднує світові фінансові ринки з інвесторами та трейдерами, надаючи їм доступ до професійної аналітики, стратегічних перспектив та своєчасної, актуальної інформації.",
+      tagline: "Treiding Satellite Broadcast – Global Analysis. Intelligent Decisions. Worldwide Connection."
+    },
     ideas: {
       eyebrow: "Учасники", title: "Торгові ідеї",
       desc: "Картки готові для ваших щоденних сигналів: актив, напрямок, вхід, SL, TP і технічне обґрунтування.",
@@ -141,7 +197,7 @@ const translations = {
   pl: {
     riskStrip: "⚠️ Ryzyko: Handel CFD wiąże się z wysokim ryzykiem straty. Niezależna strona informacyjna.",
     mobileToggle: "Otwórz menu",
-    nav: { home: "⌂ Start", ideas: "⌁ Pomysły transakcyjne", portfolioUs: "$ Portfel US", portfolioEu: "€ Portfel EU", reports: "▤ Raporty", education: "◈ Edukacja", calendar: "▦ Kalendarz ekonomiczny", contact: "✉ Kontakt" },
+    nav: { home: "⌂ Start", about: "◎ O nas", ideas: "⌁ Pomysły transakcyjne", portfolioUs: "$ Portfel US", portfolioEu: "€ Portfel EU", reports: "▤ Raporty", education: "◈ Edukacja", calendar: "▦ Kalendarz ekonomiczny", contact: "✉ Kontakt" },
     memberButton: "♙ Strefa członka",
     hero: {
       pill: "Aktywne pomysły transakcyjne · Członkowie",
@@ -151,6 +207,20 @@ const translations = {
       btnSecondary: "Kalendarz ekonomiczny"
     },
     subscribe: { label: "Zapisz się na raporty", desc: "Otrzymuj powiadomienia e-mail, gdy publikujemy nowe raporty i analizy dla XAU/USD, XAG/USD, EUR/USD i GBP/USD.", placeholder: "Twój adres e-mail", button: "Zapisz się", sending: "Wysyłanie...", success: "Zapisano! Sprawdź swoją skrzynkę e-mail.", error: "Wystąpił błąd. Spróbuj ponownie za chwilę.", invalid: "Podaj prawidłowy adres e-mail." },
+    about: {
+      eyebrow: "O nas", title: "O Treiding Satellite Broadcast",
+      p1: "Treiding Satellite Broadcast to międzynarodowa platforma analiz finansowych, zbudowana wokół zespołu specjalistów z różnych krajów. Zespół stale współpracuje w jednej przestrzeni online, monitorując globalne rynki finansowe i oceniając czynniki ekonomiczne, monetarne i geopolityczne wpływające na przepływy kapitału i płynność aktywów.",
+      p2: "Naszym celem jest przekształcanie złożonych informacji w jasne i wartościowe analizy, dające naszym członkom dobrze uzasadnioną perspektywę rozwoju rynków finansowych. Każda analiza łączy czynniki makroekonomiczne, politykę monetarną banków centralnych, wskaźniki ekonomiczne, przepływy płynności, nastroje inwestorów oraz wydarzenia geopolityczne, które mogą wpływać na ceny aktywów.",
+      p3: "Zespół Treiding Satellite Broadcast zwraca szczególną uwagę na identyfikację źródeł płynności oraz stref o wysokim prawdopodobieństwie reakcji rynku. Informacje te są syntetyzowane w okresowych raportach i analizach, mających pomóc traderom i inwestorom lepiej zrozumieć kontekst rynkowy i podejmować świadome decyzje.",
+      assetsTitle: "Główne monitorowane aktywa",
+      asset1: "Złoto (XAU/USD)", asset2: "Srebro (XAG/USD)", asset3: "Dolar amerykański (USD)", asset4: "Funt szterling (GBP)",
+      p4: "Misją Treiding Satellite Broadcast nie jest jedynie obserwowanie wykresów, lecz zrozumienie prawdziwych przyczyn ruchów rynkowych. Dzięki ciągłym badaniom, międzynarodowej współpracy i obiektywnej analizie oferujemy pełny obraz globalnych trendów finansowych oraz możliwości o największym potencjale.",
+      p5: "Wierzymy, że długoterminowy sukces na rynkach finansowych opiera się na dyscyplinie, wiedzy i zarządzaniu ryzykiem. Dlatego wszystkie materiały publikowane przez Treiding Satellite Broadcast są tworzone profesjonalnie, transparentnie i odpowiedzialnie, a ich głównym celem jest dostarczanie informacji wysokiej jakości i budowanie dobrze poinformowanej społeczności traderów.",
+      missionTitle: "Nasza misja", missionText: "Przekształcanie złożonych informacji finansowych w lepiej uzasadnione decyzje dla każdego członka naszej społeczności.",
+      visionTitle: "Nasza wizja", visionText: "Stać się jedną z najbardziej szanowanych niezależnych platform analiz finansowych na poziomie międzynarodowym, rozpoznawaną za profesjonalizm, transparentność i jakość dostarczanych informacji.",
+      satelliteTitle: "Co oznacza „Satellite Broadcast”?", satelliteText: "Koncepcja Satellite Broadcast symbolizuje szybkie, ciągłe i globalne przekazywanie analiz finansowych członkom platformy. Tak jak satelita przekazuje informacje na cały świat, Treiding Satellite Broadcast łączy globalne rynki finansowe z inwestorami i traderami, dając im dostęp do profesjonalnych analiz, perspektyw strategicznych oraz aktualnych, istotnych informacji.",
+      tagline: "Treiding Satellite Broadcast – Global Analysis. Intelligent Decisions. Worldwide Connection."
+    },
     ideas: {
       eyebrow: "Członkowie", title: "Pomysły transakcyjne",
       desc: "Karty są gotowe na Twoje codzienne sygnały: aktywo, kierunek, wejście, SL, TP i uzasadnienie techniczne.",
