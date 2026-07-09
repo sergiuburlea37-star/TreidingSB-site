@@ -1277,4 +1277,93 @@ body.sb-intro #page-home>*,body.sb-intro nav,body.sb-intro .warn{animation-delay
   .tsb-header.mobile-open .tsb-nav-links{display:flex !important;}
   .tsb-header .nav-a{width:100% !important;justify-content:flex-start !important;padding:12px 14px !important;font-size:13px !important;border-radius:10px !important;background:rgba(255,255,255,.04) !important;}
   .tsb-header .nav-a.active:after{left:14px !important;right:auto !important;width:80px !important;}
-}
+
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .tsb-header,
+  .topbar,
+  header {
+    width: calc(100% - 20px);
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    height: auto;
+    padding: 10px 12px;
+    border-radius: 16px;
+  }
+
+  .tsb-logo-img,
+  .logo img,
+  .brand img {
+    max-width: 150px;
+    height: auto;
+  }
+
+  nav,
+  .nav,
+  .menu {
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  nav a,
+  .nav a,
+  .menu a {
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+
+  .member-btn,
+  .cont-membru,
+  .btn-member {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+
+  .hero,
+  section {
+    padding-left: 16px;
+    padding-right: 16px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 34px !important;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: 28px !important;
+  }
+
+  p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .hero-card,
+  .glass,
+  .card,
+  .content-box {
+    width: 100%;
+    padding: 22px;
+    border-radius: 18px;
+  }
+
+  .actions,
+  .buttons,
+  .subscribe div {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  input,
+  button {
+    width: 100%;
+  }
+}}
