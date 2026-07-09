@@ -538,3 +538,51 @@ input{
 
   h1{font-size:38px!important}
 }
+@media (max-width: 900px) {
+  .tsb-nav,
+  .nav,
+  header nav,
+  .topbar nav {
+    display: none !important;
+  }
+
+  .tsb-header,
+  .header,
+  .topbar {
+    height: 64px !important;
+    padding: 8px 14px !important;
+  }
+
+  .tsb-logo-img {
+    width: 70px !important;
+    max-width: 70px !important;
+  }
+
+  .brand-text {
+    display: block !important;
+  }
+
+  .brand-name {
+    display: block !important;
+    font-size: 20px !important;
+    color: #fff !important;
+  }
+
+  .brand-name span {
+    color: #1f6fff !important;
+  }
+
+  .brand-text small {
+    display: none !important;
+  }
+
+  .menu-btn,
+  .mobile-menu-btn {
+    display: block !important;
+    margin-left: auto !important;
+  }
+
+  .hero-card {
+    margin-top: 70px !important;
+  }
+}
