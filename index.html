@@ -84,7 +84,23 @@
       </div>
     </section>
 
-    <section id="ideas" class="section ideas-section"><div class="content-shell"><div class="section-head"><span class="eyebrow" data-i18n="ideas.eyebrow">Membri</span><h2 data-i18n="ideas.title">Idei de tranzacționare</h2><p data-i18n="ideas.desc">Cardurile sunt pregătite pentru semnalele tale zilnice: activ, direcție, intrare, SL, TP și motiv tehnic.</p></div><div class="ideas-grid"><article class="idea-card"><div class="idea-top"><strong>XAU/USD</strong><span class="sell">SELL</span></div><ul><li><b data-i18n="ideas.card.entryLabel">Intrare:</b> 4040–4050</li><li><b data-i18n="ideas.card.slLabel">SL:</b> 4097</li><li><b data-i18n="ideas.card.tpLabel">TP:</b> 4000 / 3975</li><li><b data-i18n="ideas.card.riskLabel">Risc:</b> <span data-i18n="ideas.card1.riskValue">Mediu</span></li></ul><p data-i18n="ideas.card1.note">Așteaptă confirmare M5/M15 înainte de intrare.</p></article><article class="idea-card"><div class="idea-top"><strong>EUR/USD</strong><span class="buy">BUY</span></div><ul><li><b data-i18n="ideas.card.entryLabel">Intrare:</b> 1.0870</li><li><b data-i18n="ideas.card.slLabel">SL:</b> 1.0820</li><li><b data-i18n="ideas.card.tpLabel">TP:</b> 1.0950</li><li><b data-i18n="ideas.card.riskLabel">Risc:</b> <span data-i18n="ideas.card2.riskValue">Scăzut</span></li></ul><p data-i18n="ideas.card2.note">Valid doar dacă USD slăbește după știri.</p></article></div></div></section>
+    <section id="ideas" class="section ideas-section"><div class="content-shell"><div class="section-head"><span class="eyebrow" data-i18n="ideas.eyebrow">Membri</span><h2 data-i18n="ideas.title">Idei de tranzacționare</h2><p data-i18n="ideas.desc">Cardurile sunt pregătite pentru semnalele tale zilnice: activ, direcție, intrare, SL, TP și motiv tehnic.</p></div>
+
+      <div class="ideas-gate" id="ideasGate">
+        <div class="ideas-gate-icon">🔒</div>
+        <h3 data-i18n="ideas.gate.title">Acces Idei de Tranzacționare — Membri</h3>
+        <p data-i18n="ideas.gate.desc">Ideile de tranzacționare sunt disponibile exclusiv membrilor TreidingSB. Introdu parola pentru acces.</p>
+        <form class="ideas-gate-form" id="ideasGateForm" novalidate>
+          <label class="sr-only" for="ideasGatePassword" data-i18n="ideas.gate.label">Parolă acces</label>
+          <input type="password" id="ideasGatePassword" data-i18n-placeholder="ideas.gate.placeholder" placeholder="PAROLA ACCES" autocomplete="current-password" required>
+          <button type="submit" id="ideasGateButton" data-i18n="ideas.gate.button">Intră în cont</button>
+        </form>
+        <p class="form-message" id="ideasGateMessage" role="status" aria-live="polite"></p>
+        <p class="ideas-gate-contact"><span data-i18n="ideas.gate.noAccess">Nu ai acces?</span> <a href="https://t.me/serghei35" target="_blank" rel="noopener noreferrer" data-i18n="ideas.gate.contact">Contactează-ne pe Telegram</a></p>
+      </div>
+
+      <div class="ideas-grid" id="ideasGrid" hidden></div>
+    </div></section>
 
     <section id="portfolio-us" class="section compact-section"><div class="content-shell wide"><div class="section-head"><span class="eyebrow orange" data-i18n="portfolioUs.eyebrow">Portofoliu</span><h2 data-i18n="portfolioUs.title">Portofoliu US</h2><p data-i18n="portfolioUs.desc">Portofoliu diversificat demonstrativ, risc moderat, orizont 3–5 ani · Fondat 17.06.2026</p></div>
       <div class="stat-mini-row">

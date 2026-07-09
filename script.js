@@ -40,7 +40,8 @@ const translations = {
       desc: "Cardurile sunt pregătite pentru semnalele tale zilnice: activ, direcție, intrare, SL, TP și motiv tehnic.",
       card: { entryLabel: "Intrare:", slLabel: "SL:", tpLabel: "TP:", riskLabel: "Risc:" },
       card1: { riskValue: "Mediu", note: "Așteaptă confirmare M5/M15 înainte de intrare." },
-      card2: { riskValue: "Scăzut", note: "Valid doar dacă USD slăbește după știri." }
+      card2: { riskValue: "Scăzut", note: "Valid doar dacă USD slăbește după știri." },
+      gate: { title: "Acces Idei de Tranzacționare — Membri", desc: "Ideile de tranzacționare sunt disponibile exclusiv membrilor TreidingSB. Introdu parola pentru acces.", label: "Parolă acces", placeholder: "PAROLA ACCES", button: "Intră în cont", sending: "Se verifică...", noAccess: "Nu ai acces?", contact: "Contactează-ne pe Telegram", invalid: "Parolă incorectă. Încearcă din nou.", error: "A apărut o eroare. Te rugăm încearcă din nou." }
     },
     reports: { eyebrow: "Rapoarte", title: "Rapoarte săptămânale", desc: "Analize tehnice, context de piață și perspective pentru săptămâna următoare.", panelTitle: "Analiză săptămânală", panelDesc: "O imagine completă asupra piețelor financiare pentru săptămâna curentă.", btn: "Vezi analiza săptămânală" },
     education: { eyebrow: "Educație", title: "Educație de bază", desc: "Învață cum funcționează piața, cine formează lichiditatea și cum gestionezi riscul." },
@@ -68,7 +69,8 @@ const translations = {
       desc: "Cards are ready for your daily signals: asset, direction, entry, SL, TP and technical reasoning.",
       card: { entryLabel: "Entry:", slLabel: "SL:", tpLabel: "TP:", riskLabel: "Risk:" },
       card1: { riskValue: "Medium", note: "Wait for M5/M15 confirmation before entering." },
-      card2: { riskValue: "Low", note: "Valid only if USD weakens after the news." }
+      card2: { riskValue: "Low", note: "Valid only if USD weakens after the news." },
+      gate: { title: "Trade Ideas Access — Members Only", desc: "Trade ideas are available exclusively to TreidingSB members. Enter the password to access.", label: "Access password", placeholder: "ACCESS PASSWORD", button: "Sign in", sending: "Checking...", noAccess: "No access?", contact: "Contact us on Telegram", invalid: "Incorrect password. Try again.", error: "Something went wrong. Please try again." }
     },
     reports: { eyebrow: "Reports", title: "Weekly Reports", desc: "Technical analysis, market context and outlook for the coming week.", panelTitle: "Weekly Analysis", panelDesc: "A complete overview of financial markets for the current week.", btn: "View weekly analysis" },
     education: { eyebrow: "Education", title: "Trading Basics", desc: "Learn how the market works, who forms liquidity and how to manage risk." },
@@ -96,7 +98,8 @@ const translations = {
       desc: "Карточки готовы для ваших ежедневных сигналов: актив, направление, вход, SL, TP и техническое обоснование.",
       card: { entryLabel: "Вход:", slLabel: "SL:", tpLabel: "TP:", riskLabel: "Риск:" },
       card1: { riskValue: "Средний", note: "Дождитесь подтверждения на M5/M15 перед входом." },
-      card2: { riskValue: "Низкий", note: "Актуально только при ослаблении USD после новостей." }
+      card2: { riskValue: "Низкий", note: "Актуально только при ослаблении USD после новостей." },
+      gate: { title: "Доступ к торговым идеям — только для участников", desc: "Торговые идеи доступны исключительно участникам TreidingSB. Введите пароль для доступа.", label: "Пароль доступа", placeholder: "ПАРОЛЬ ДОСТУПА", button: "Войти", sending: "Проверка...", noAccess: "Нет доступа?", contact: "Свяжитесь с нами в Telegram", invalid: "Неверный пароль. Попробуйте ещё раз.", error: "Произошла ошибка. Попробуйте ещё раз." }
     },
     reports: { eyebrow: "Отчёты", title: "Еженедельные отчёты", desc: "Технический анализ, рыночный контекст и прогноз на следующую неделю.", panelTitle: "Еженедельный анализ", panelDesc: "Полный обзор финансовых рынков за текущую неделю.", btn: "Смотреть еженедельный анализ" },
     education: { eyebrow: "Обучение", title: "Основы трейдинга", desc: "Узнайте, как работает рынок, кто формирует ликвидность и как управлять риском." },
@@ -124,7 +127,8 @@ const translations = {
       desc: "Картки готові для ваших щоденних сигналів: актив, напрямок, вхід, SL, TP і технічне обґрунтування.",
       card: { entryLabel: "Вхід:", slLabel: "SL:", tpLabel: "TP:", riskLabel: "Ризик:" },
       card1: { riskValue: "Середній", note: "Зачекайте на підтвердження M5/M15 перед входом." },
-      card2: { riskValue: "Низький", note: "Актуально лише якщо USD слабшає після новин." }
+      card2: { riskValue: "Низький", note: "Актуально лише якщо USD слабшає після новин." },
+      gate: { title: "Доступ до торгових ідей — лише для учасників", desc: "Торгові ідеї доступні виключно учасникам TreidingSB. Введіть пароль для доступу.", label: "Пароль доступу", placeholder: "ПАРОЛЬ ДОСТУПУ", button: "Увійти", sending: "Перевірка...", noAccess: "Немає доступу?", contact: "Зв'яжіться з нами в Telegram", invalid: "Невірний пароль. Спробуйте ще раз.", error: "Сталася помилка. Спробуйте ще раз." }
     },
     reports: { eyebrow: "Звіти", title: "Щотижневі звіти", desc: "Технічний аналіз, ринковий контекст та прогноз на наступний тиждень.", panelTitle: "Щотижневий аналіз", panelDesc: "Повний огляд фінансових ринків за поточний тиждень.", btn: "Переглянути щотижневий аналіз" },
     education: { eyebrow: "Навчання", title: "Основи трейдингу", desc: "Дізнайтеся, як працює ринок, хто формує ліквідність і як керувати ризиком." },
@@ -152,7 +156,8 @@ const translations = {
       desc: "Karty są gotowe na Twoje codzienne sygnały: aktywo, kierunek, wejście, SL, TP i uzasadnienie techniczne.",
       card: { entryLabel: "Wejście:", slLabel: "SL:", tpLabel: "TP:", riskLabel: "Ryzyko:" },
       card1: { riskValue: "Średnie", note: "Poczekaj na potwierdzenie M5/M15 przed wejściem." },
-      card2: { riskValue: "Niskie", note: "Ważne tylko jeśli USD osłabnie po newsach." }
+      card2: { riskValue: "Niskie", note: "Ważne tylko jeśli USD osłabnie po newsach." },
+      gate: { title: "Dostęp do pomysłów transakcyjnych — tylko dla członków", desc: "Pomysły transakcyjne są dostępne wyłącznie dla członków TreidingSB. Wprowadź hasło, aby uzyskać dostęp.", label: "Hasło dostępu", placeholder: "HASŁO DOSTĘPU", button: "Zaloguj się", sending: "Sprawdzanie...", noAccess: "Brak dostępu?", contact: "Skontaktuj się z nami na Telegramie", invalid: "Nieprawidłowe hasło. Spróbuj ponownie.", error: "Wystąpił błąd. Spróbuj ponownie." }
     },
     reports: { eyebrow: "Raporty", title: "Raporty tygodniowe", desc: "Analiza techniczna, kontekst rynkowy i perspektywy na nadchodzący tydzień.", panelTitle: "Analiza tygodniowa", panelDesc: "Pełny przegląd rynków finansowych w bieżącym tygodniu.", btn: "Zobacz analizę tygodniową" },
     education: { eyebrow: "Edukacja", title: "Podstawy tradingu", desc: "Dowiedz się, jak działa rynek, kto tworzy płynność i jak zarządzać ryzykiem." },
@@ -203,6 +208,8 @@ function applyLanguage(lang) {
   });
 
   try { localStorage.setItem("tsb_lang", lang); } catch (e) { /* ignore storage errors */ }
+
+  if (typeof unlockedIdeas !== "undefined" && unlockedIdeas) renderIdeaCards(unlockedIdeas);
 }
 
 function detectInitialLang() {
@@ -300,6 +307,111 @@ if (subscribeForm) {
     } finally {
       submitButton.disabled = false;
       submitButton.textContent = getNested(dict, "subscribe.button") || buttonDefaultText;
+    }
+  });
+}
+
+/* ===================== Trade ideas access gate ===================== */
+const IDEAS_TOKEN_KEY = "tsb_member_token";
+let unlockedIdeas = null;
+
+function renderIdeaCards(ideas) {
+  const grid = document.getElementById("ideasGrid");
+  if (!grid || !Array.isArray(ideas)) return;
+  const dict = translations[currentLang] || translations.ro;
+  const entryLabel = getNested(dict, "ideas.card.entryLabel") || "Entry:";
+  const slLabel = getNested(dict, "ideas.card.slLabel") || "SL:";
+  const tpLabel = getNested(dict, "ideas.card.tpLabel") || "TP:";
+  const riskLabel = getNested(dict, "ideas.card.riskLabel") || "Risk:";
+
+  grid.innerHTML = ideas.map((idea) => {
+    const sideClass = idea.side === "BUY" ? "buy" : "sell";
+    const riskValue = getNested(dict, idea.riskKey) || "";
+    const note = getNested(dict, idea.noteKey) || "";
+    return "<article class=\"idea-card\"><div class=\"idea-top\"><strong>" + idea.ticker + "</strong><span class=\"" + sideClass + "\">" + idea.side + "</span></div><ul><li><b>" + entryLabel + "</b> " + idea.entry + "</li><li><b>" + slLabel + "</b> " + idea.sl + "</li><li><b>" + tpLabel + "</b> " + idea.tp + "</li><li><b>" + riskLabel + "</b> <span>" + riskValue + "</span></li></ul><p>" + note + "</p></article>";
+  }).join("");
+}
+
+function unlockIdeas(ideas) {
+  unlockedIdeas = ideas;
+  renderIdeaCards(ideas);
+  const gate = document.getElementById("ideasGate");
+  const grid = document.getElementById("ideasGrid");
+  if (gate) gate.setAttribute("hidden", "");
+  if (grid) grid.removeAttribute("hidden");
+}
+
+async function fetchIdeasWithToken(token) {
+  const response = await fetch("/api/ideas", {
+    headers: { Authorization: "Bearer " + token }
+  });
+  if (!response.ok) throw new Error("unauthorized");
+  const data = await response.json();
+  if (!data.success || !Array.isArray(data.ideas)) throw new Error("bad response");
+  return data.ideas;
+}
+
+// Deblocare automată dacă există deja un token valid, stocat la o vizită anterioară.
+(function tryStoredAccess() {
+  let token = null;
+  try { token = localStorage.getItem(IDEAS_TOKEN_KEY); } catch (e) { /* ignore storage errors */ }
+  if (!token) return;
+  fetchIdeasWithToken(token)
+    .then((ideas) => unlockIdeas(ideas))
+    .catch(() => {
+      try { localStorage.removeItem(IDEAS_TOKEN_KEY); } catch (e) { /* ignore storage errors */ }
+    });
+})();
+
+const ideasGateForm = document.getElementById("ideasGateForm");
+if (ideasGateForm) {
+  const passwordInput = document.getElementById("ideasGatePassword");
+  const gateButton = document.getElementById("ideasGateButton");
+  const gateMessage = document.getElementById("ideasGateMessage");
+  const gateButtonDefaultText = gateButton.textContent;
+
+  ideasGateForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const dict = translations[currentLang] || translations.ro;
+    const password = (passwordInput.value || "").trim();
+
+    gateMessage.classList.remove("is-error", "is-success");
+
+    if (!password) {
+      gateMessage.textContent = getNested(dict, "ideas.gate.invalid") || "Incorrect password.";
+      gateMessage.classList.add("is-error");
+      return;
+    }
+
+    gateButton.disabled = true;
+    gateButton.textContent = getNested(dict, "ideas.gate.sending") || "...";
+    gateMessage.textContent = "";
+
+    try {
+      const response = await fetch("/api/verify-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+
+      let data = {};
+      try { data = await response.json(); } catch (parseErr) { /* non-JSON response */ }
+
+      if (!response.ok || !data.success || !data.token) {
+        throw new Error((data && data.error) || "Request failed");
+      }
+
+      try { localStorage.setItem(IDEAS_TOKEN_KEY, data.token); } catch (storageErr) { /* ignore storage errors */ }
+
+      const ideas = await fetchIdeasWithToken(data.token);
+      unlockIdeas(ideas);
+      passwordInput.value = "";
+    } catch (err) {
+      gateMessage.textContent = getNested(dict, "ideas.gate.invalid") || "Incorrect password.";
+      gateMessage.classList.add("is-error");
+    } finally {
+      gateButton.disabled = false;
+      gateButton.textContent = getNested(dict, "ideas.gate.button") || gateButtonDefaultText;
     }
   });
 }
