@@ -1,11 +1,15 @@
-# TreidingSB - versiune header premium
+# TreidingSB Clean Rebuild v1
 
-Am curatat fisierul principal si am mutat stilurile in `style.css`.
+Probleme rezolvate:
+- header desktop mai jos, mai subțire, cu logo + text TreidingSB;
+- SB este colorat albastru;
+- meniu mobil reparat: nu mai stă deschis peste ecran;
+- design responsive pentru telefon;
+- fișiere separate: index.html, style.css, script.js;
+- imaginile sunt citite din folderul assets.
 
-Structura:
-- `index.html` - pagina site-ului
-- `style.css` - toate stilurile CSS + header premium
-- `assets/` - logo-ul extras si imaginile inlocuite din Base64
-- `hero-bg.jpg`, `ideas-bg.png`, `reports-bg.png` - pastrate si in root pentru compatibilitate
-
-In GitHub incarca tot continutul din acest folder. Nu incarca doar `index.html`.
+Important pentru email:
+În email NU folosi `assets/logo.png`. Folosește adresă absolută:
+`https://treidingsb.com/assets/logo.png`
+sau
+`https://treidingsb.com/assets/email-banner.jpg`
