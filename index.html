@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="risk-strip">⚠️ Risc: Tranzacționarea CFD implică risc ridicat de pierdere. Site informativ independent.</div>
+  <div class="risk-strip" data-i18n="riskStrip">⚠️ Risc: Tranzacționarea CFD implică risc ridicat de pierdere. Site informativ independent.</div>
 
   <div class="market-ticker" aria-label="Market ticker">
     <div class="ticker-track">
@@ -36,43 +36,56 @@
       </div>
     </a>
 
-    <button class="mobile-toggle" type="button" aria-label="Deschide meniul" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="lang-switcher" id="langSwitcher">
+      <button class="lang-current" id="langCurrentBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Alege limba">
+        <img class="flag" id="langCurrentFlag" src="https://flagcdn.com/ro.svg" alt="" width="20" height="15"><span class="lang-code" id="langCurrentCode">RO</span><span class="lang-caret">▾</span>
+      </button>
+      <ul class="lang-menu" id="langMenu" role="menu">
+        <li role="none"><button type="button" role="menuitem" data-lang="ro"><img class="flag" src="https://flagcdn.com/ro.svg" alt="" width="20" height="15"><span>RO</span></button></li>
+        <li role="none"><button type="button" role="menuitem" data-lang="en"><img class="flag" src="https://flagcdn.com/gb.svg" alt="" width="20" height="15"><span>EN</span></button></li>
+        <li role="none"><button type="button" role="menuitem" data-lang="ru"><img class="flag" src="https://flagcdn.com/ru.svg" alt="" width="20" height="15"><span>RU</span></button></li>
+        <li role="none"><button type="button" role="menuitem" data-lang="uk"><img class="flag" src="https://flagcdn.com/ua.svg" alt="" width="20" height="15"><span>UA</span></button></li>
+        <li role="none"><button type="button" role="menuitem" data-lang="pl"><img class="flag" src="https://flagcdn.com/pl.svg" alt="" width="20" height="15"><span>PL</span></button></li>
+      </ul>
+    </div>
+
+    <button class="mobile-toggle" type="button" data-i18n-aria="mobileToggle" aria-label="Deschide meniul" aria-expanded="false"><span></span><span></span><span></span></button>
 
     <nav class="main-nav" aria-label="Navigație principală">
-      <a href="#home" class="active">⌂ Home</a>
-      <a href="#ideas">⌁ Idei de tranzacționare</a>
-      <a href="#reports">▤ Rapoarte</a>
-      <a href="#education">◈ Educație</a>
-      <a href="#calendar">▦ Calendar economic</a>
-      <a href="#contact">✉ Contact</a>
+      <a href="#home" class="active" data-i18n="nav.home">⌂ Home</a>
+      <a href="#ideas" data-i18n="nav.ideas">⌁ Idei de tranzacționare</a>
+      <a href="#reports" data-i18n="nav.reports">▤ Rapoarte</a>
+      <a href="#education" data-i18n="nav.education">◈ Educație</a>
+      <a href="#calendar" data-i18n="nav.calendar">▦ Calendar economic</a>
+      <a href="#contact" data-i18n="nav.contact">✉ Contact</a>
     </nav>
 
-    <a href="#member" class="member-button">♙ Cont membru</a>
+    <a href="#member" class="member-button" data-i18n="memberButton">♙ Cont membru</a>
   </header>
 
   <main>
     <section id="home" class="section hero-section">
       <div class="hero-card">
-        <div class="pill"><span></span> Idei de tranzacționare active · Membri</div>
-        <h1>Tranzacționează mai bine cu <span>TreidingSB</span></h1>
-        <p>Strategii reale pe Forex și Gold, calendar economic live, idei de tranzacționare verificate și rapoarte săptămânale agregate din surse importante — totul într-un singur loc.</p>
+        <div class="pill"><span></span> <span data-i18n="hero.pill">Idei de tranzacționare active · Membri</span></div>
+        <h1><span class="hero-title-pre" data-i18n="hero.titlePre">Tranzacționează mai bine cu</span> <span class="brand-name">TreidingSB</span></h1>
+        <p data-i18n="hero.desc">Strategii reale pe Forex și Gold, calendar economic live, idei de tranzacționare verificate și rapoarte săptămânale agregate din surse importante — totul într-un singur loc.</p>
         <div class="hero-actions">
-          <a href="#ideas" class="btn primary">Vezi ideile de tranzacționare</a>
-          <a href="#calendar" class="btn secondary">Calendar economic</a>
+          <a href="#ideas" class="btn primary" data-i18n="hero.btnPrimary">Vezi ideile de tranzacționare</a>
+          <a href="#calendar" class="btn secondary" data-i18n="hero.btnSecondary">Calendar economic</a>
         </div>
         <form class="subscribe-form" action="#" method="post">
-          <label>Abonează-te la rapoarte</label>
-          <p>Primești pe email notificări când publicăm rapoarte și analize noi pentru XAU/USD, XAG/USD, EUR/USD și GBP/USD.</p>
-          <div><input type="email" placeholder="Adresa ta de email" required><button type="submit">Abonează-te</button></div>
+          <label data-i18n="subscribe.label">Abonează-te la rapoarte</label>
+          <p data-i18n="subscribe.desc">Primești pe email notificări când publicăm rapoarte și analize noi pentru XAU/USD, XAG/USD, EUR/USD și GBP/USD.</p>
+          <div><input type="email" data-i18n-placeholder="subscribe.placeholder" placeholder="Adresa ta de email" required><button type="submit" data-i18n="subscribe.button">Abonează-te</button></div>
         </form>
       </div>
     </section>
 
-    <section id="ideas" class="section ideas-section"><div class="content-shell"><div class="section-head"><span class="eyebrow">Membri</span><h2>Idei de tranzacționare</h2><p>Cardurile sunt pregătite pentru semnalele tale zilnice: activ, direcție, intrare, SL, TP și motiv tehnic.</p></div><div class="ideas-grid"><article class="idea-card"><div class="idea-top"><strong>XAU/USD</strong><span class="sell">SELL</span></div><ul><li><b>Intrare:</b> 4040–4050</li><li><b>SL:</b> 4097</li><li><b>TP:</b> 4000 / 3975</li><li><b>Risc:</b> Mediu</li></ul><p>Așteaptă confirmare M5/M15 înainte de intrare.</p></article><article class="idea-card"><div class="idea-top"><strong>EUR/USD</strong><span class="buy">BUY</span></div><ul><li><b>Intrare:</b> 1.0870</li><li><b>SL:</b> 1.0820</li><li><b>TP:</b> 1.0950</li><li><b>Risc:</b> Scăzut</li></ul><p>Valid doar dacă USD slăbește după știri.</p></article></div></div></section>
-    <section id="reports" class="section reports-section"><div class="content-shell"><div class="section-head"><span class="eyebrow orange">Rapoarte</span><h2>Rapoarte săptămânale</h2><p>Analize tehnice, context de piață și perspective pentru săptămâna următoare.</p></div><div class="report-panel"><div><h3>Analiză săptămânală</h3><p>O imagine completă asupra piețelor financiare pentru săptămâna curentă.</p></div><a href="#member" class="btn outline">Vezi analiza săptămânală</a></div></div></section>
-    <section id="education" class="section education-section"><div class="content-shell"><div class="section-head"><span class="eyebrow">Educație</span><h2>Educație de bază</h2><p>Învață cum funcționează piața, cine formează lichiditatea și cum gestionezi riscul.</p></div></div></section>
-    <section id="calendar" class="section compact-section"><div class="content-shell"><div class="section-head"><span class="eyebrow orange">Calendar</span><h2>Calendar economic</h2><p>Aici vom integra calendarul economic pentru evenimente importante.</p></div></div></section>
-    <section id="contact" class="section compact-section"><div class="content-shell"><div class="section-head"><span class="eyebrow">Contact</span><h2>Contact TreidingSB</h2><p>Contact pentru membri, rapoarte și idei de tranzacționare.</p></div></div></section>
+    <section id="ideas" class="section ideas-section"><div class="content-shell"><div class="section-head"><span class="eyebrow" data-i18n="ideas.eyebrow">Membri</span><h2 data-i18n="ideas.title">Idei de tranzacționare</h2><p data-i18n="ideas.desc">Cardurile sunt pregătite pentru semnalele tale zilnice: activ, direcție, intrare, SL, TP și motiv tehnic.</p></div><div class="ideas-grid"><article class="idea-card"><div class="idea-top"><strong>XAU/USD</strong><span class="sell">SELL</span></div><ul><li><b data-i18n="ideas.card.entryLabel">Intrare:</b> 4040–4050</li><li><b data-i18n="ideas.card.slLabel">SL:</b> 4097</li><li><b data-i18n="ideas.card.tpLabel">TP:</b> 4000 / 3975</li><li><b data-i18n="ideas.card.riskLabel">Risc:</b> <span data-i18n="ideas.card1.riskValue">Mediu</span></li></ul><p data-i18n="ideas.card1.note">Așteaptă confirmare M5/M15 înainte de intrare.</p></article><article class="idea-card"><div class="idea-top"><strong>EUR/USD</strong><span class="buy">BUY</span></div><ul><li><b data-i18n="ideas.card.entryLabel">Intrare:</b> 1.0870</li><li><b data-i18n="ideas.card.slLabel">SL:</b> 1.0820</li><li><b data-i18n="ideas.card.tpLabel">TP:</b> 1.0950</li><li><b data-i18n="ideas.card.riskLabel">Risc:</b> <span data-i18n="ideas.card2.riskValue">Scăzut</span></li></ul><p data-i18n="ideas.card2.note">Valid doar dacă USD slăbește după știri.</p></article></div></div></section>
+    <section id="reports" class="section reports-section"><div class="content-shell"><div class="section-head"><span class="eyebrow orange" data-i18n="reports.eyebrow">Rapoarte</span><h2 data-i18n="reports.title">Rapoarte săptămânale</h2><p data-i18n="reports.desc">Analize tehnice, context de piață și perspective pentru săptămâna următoare.</p></div><div class="report-panel"><div><h3 data-i18n="reports.panelTitle">Analiză săptămânală</h3><p data-i18n="reports.panelDesc">O imagine completă asupra piețelor financiare pentru săptămâna curentă.</p></div><a href="#member" class="btn outline" data-i18n="reports.btn">Vezi analiza săptămânală</a></div></div></section>
+    <section id="education" class="section education-section"><div class="content-shell"><div class="section-head"><span class="eyebrow" data-i18n="education.eyebrow">Educație</span><h2 data-i18n="education.title">Educație de bază</h2><p data-i18n="education.desc">Învață cum funcționează piața, cine formează lichiditatea și cum gestionezi riscul.</p></div></div></section>
+    <section id="calendar" class="section compact-section"><div class="content-shell"><div class="section-head"><span class="eyebrow orange" data-i18n="calendar.eyebrow">Calendar</span><h2 data-i18n="calendar.title">Calendar economic</h2><p data-i18n="calendar.desc">Aici vom integra calendarul economic pentru evenimente importante.</p></div></div></section>
+    <section id="contact" class="section compact-section"><div class="content-shell"><div class="section-head"><span class="eyebrow" data-i18n="contact.eyebrow">Contact</span><h2 data-i18n="contact.title">Contact TreidingSB</h2><p data-i18n="contact.desc">Contact pentru membri, rapoarte și idei de tranzacționare.</p></div></div></section>
   </main>
   <a class="telegram-float" href="#" aria-label="Telegram">➤</a>
   <script src="script.js"></script>
