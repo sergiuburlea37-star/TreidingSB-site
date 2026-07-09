@@ -13,6 +13,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TreidingSB — Forex & Gold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 
@@ -291,36 +295,32 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <nav class="tsb-header" aria-label="Meniu principal">
   <div class="tsb-logo" onclick="showPage('home')" role="button" tabindex="0" aria-label="TreidingSB Home">
-    <img src="assets/logo.jpg" class="tsb-logo-img" alt="TreidingSB" onerror="this.src='assets/logo.png'">
-    <div class="tsb-logo-text">
-      <strong>TREIDING<span>SB</span></strong>
-      <small>SMARTER DECISIONS. BETTER RESULTS.</small>
-    </div>
+    <img src="assets/logo.png" class="tsb-logo-img" alt="TreidingSB">
   </div>
 
   <div class="nav-links tsb-nav-links">
     <button class="nav-a active" onclick="showPage('home')" data-page="home" aria-label="Home">
-      <span class="nav-icon">⌂</span><span>Home</span>
+      <i class="fa-solid fa-house nav-icon"></i><span>Home</span>
     </button>
     <button class="nav-a" onclick="showPage('semnale')" data-page="semnale" aria-label="Idei de tranzacționare">
-      <span class="nav-icon">♙</span><span>Idei de tranzacționare</span>
+      <i class="fa-solid fa-chart-line nav-icon"></i><span>Idei de tranzacționare</span>
     </button>
     <button class="nav-a" onclick="showPage('rapoarte')" data-page="rapoarte" aria-label="Rapoarte">
-      <span class="nav-icon">▣</span><span>Rapoarte</span>
+      <i class="fa-regular fa-file-lines nav-icon"></i><span>Rapoarte</span>
     </button>
     <button class="nav-a" onclick="showPage('despre')" data-page="despre" aria-label="Educație">
-      <span class="nav-icon">◈</span><span>Educație</span>
+      <i class="fa-solid fa-graduation-cap nav-icon"></i><span>Educație</span>
     </button>
     <button class="nav-a" onclick="showPage('calendar')" data-page="calendar" aria-label="Calendar economic">
-      <span class="nav-icon">▦</span><span>Calendar economic</span>
+      <i class="fa-regular fa-calendar-days nav-icon"></i><span>Calendar economic</span>
     </button>
     <a class="nav-a tsb-contact" href="https://www.tiktok.com/@the_shopin?lang=ru-RU" target="_blank" rel="noopener" aria-label="Contact TikTok">
-      <span class="nav-icon">✉</span><span>Contact</span>
+      <i class="fa-regular fa-envelope nav-icon"></i><span>Contact</span>
     </a>
   </div>
 
   <button class="member-btn tsb-member-btn" onclick="showPage('semnale')">
-    <span class="nav-icon">♙</span><span>Cont membru</span>
+    <i class="fa-regular fa-user nav-icon"></i><span>Cont membru</span>
   </button>
 
   <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Meniu">
