@@ -1367,16 +1367,3 @@ body.sb-intro #page-home>*,body.sb-intro nav,body.sb-intro .warn{animation-delay
     width: 100%;
   }
 }}
-@media (max-width: 768px) {
-  .tsb-logo-img {
-    width: 190px !important;
-    max-width: 190px !important;
-    height: auto !important;
-    object-fit: contain !important;
-  }
-
-  .tsb-header {
-    min-height: 72px !important;
-    padding: 10px 14px !important;
-  }
-}
