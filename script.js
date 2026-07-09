@@ -44,7 +44,7 @@ const translations = {
     reports: { eyebrow: "Rapoarte", title: "Rapoarte săptămânale", desc: "Analize tehnice, context de piață și perspective pentru săptămâna următoare.", panelTitle: "Analiză săptămânală", panelDesc: "O imagine completă asupra piețelor financiare pentru săptămâna curentă.", btn: "Vezi analiza săptămânală" },
     education: { eyebrow: "Educație", title: "Educație de bază", desc: "Învață cum funcționează piața, cine formează lichiditatea și cum gestionezi riscul." },
     calendar: { eyebrow: "Calendar", title: "Calendar economic", desc: "Aici vom integra calendarul economic pentru evenimente importante." },
-    contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact pentru membri, rapoarte și idei de tranzacționare." }
+    contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact pentru membri, rapoarte și idei de tranzacționare.", emailLabel: "Email:", telegramLabel: "Telegram:" }
   },
   en: {
     riskStrip: "⚠️ Risk: CFD trading carries a high risk of loss. Independent informational site.",
@@ -69,7 +69,7 @@ const translations = {
     reports: { eyebrow: "Reports", title: "Weekly Reports", desc: "Technical analysis, market context and outlook for the coming week.", panelTitle: "Weekly Analysis", panelDesc: "A complete overview of financial markets for the current week.", btn: "View weekly analysis" },
     education: { eyebrow: "Education", title: "Trading Basics", desc: "Learn how the market works, who forms liquidity and how to manage risk." },
     calendar: { eyebrow: "Calendar", title: "Economic Calendar", desc: "We'll integrate the economic calendar for major events here." },
-    contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact for members, reports and trade ideas." }
+    contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact for members, reports and trade ideas.", emailLabel: "Email:", telegramLabel: "Telegram:" }
   },
   ru: {
     riskStrip: "⚠️ Риск: Торговля CFD сопряжена с высоким риском потерь. Независимый информационный сайт.",
@@ -94,7 +94,7 @@ const translations = {
     reports: { eyebrow: "Отчёты", title: "Еженедельные отчёты", desc: "Технический анализ, рыночный контекст и прогноз на следующую неделю.", panelTitle: "Еженедельный анализ", panelDesc: "Полный обзор финансовых рынков за текущую неделю.", btn: "Смотреть еженедельный анализ" },
     education: { eyebrow: "Обучение", title: "Основы трейдинга", desc: "Узнайте, как работает рынок, кто формирует ликвидность и как управлять риском." },
     calendar: { eyebrow: "Календарь", title: "Экономический календарь", desc: "Здесь будет интегрирован экономический календарь важных событий." },
-    contact: { eyebrow: "Контакты", title: "Контакты TreidingSB", desc: "Контакты для участников, отчётов и торговых идей." }
+    contact: { eyebrow: "Контакты", title: "Контакты TreidingSB", desc: "Контакты для участников, отчётов и торговых идей.", emailLabel: "Email:", telegramLabel: "Telegram:" }
   },
   uk: {
     riskStrip: "⚠️ Ризик: Торгівля CFD пов'язана з високим ризиком втрат. Незалежний інформаційний сайт.",
@@ -119,7 +119,7 @@ const translations = {
     reports: { eyebrow: "Звіти", title: "Щотижневі звіти", desc: "Технічний аналіз, ринковий контекст та прогноз на наступний тиждень.", panelTitle: "Щотижневий аналіз", panelDesc: "Повний огляд фінансових ринків за поточний тиждень.", btn: "Переглянути щотижневий аналіз" },
     education: { eyebrow: "Навчання", title: "Основи трейдингу", desc: "Дізнайтеся, як працює ринок, хто формує ліквідність і як керувати ризиком." },
     calendar: { eyebrow: "Календар", title: "Економічний календар", desc: "Тут буде інтегровано економічний календар важливих подій." },
-    contact: { eyebrow: "Контакти", title: "Контакти TreidingSB", desc: "Контакти для учасників, звітів і торгових ідей." }
+    contact: { eyebrow: "Контакти", title: "Контакти TreidingSB", desc: "Контакти для учасників, звітів і торгових ідей.", emailLabel: "Email:", telegramLabel: "Telegram:" }
   },
   pl: {
     riskStrip: "⚠️ Ryzyko: Handel CFD wiąże się z wysokim ryzykiem straty. Niezależna strona informacyjna.",
@@ -144,7 +144,7 @@ const translations = {
     reports: { eyebrow: "Raporty", title: "Raporty tygodniowe", desc: "Analiza techniczna, kontekst rynkowy i perspektywy na nadchodzący tydzień.", panelTitle: "Analiza tygodniowa", panelDesc: "Pełny przegląd rynków finansowych w bieżącym tygodniu.", btn: "Zobacz analizę tygodniową" },
     education: { eyebrow: "Edukacja", title: "Podstawy tradingu", desc: "Dowiedz się, jak działa rynek, kto tworzy płynność i jak zarządzać ryzykiem." },
     calendar: { eyebrow: "Kalendarz", title: "Kalendarz ekonomiczny", desc: "Tutaj zintegrujemy kalendarz ekonomiczny ważnych wydarzeń." },
-    contact: { eyebrow: "Kontakt", title: "Kontakt TreidingSB", desc: "Kontakt dla członków, raportów i pomysłów transakcyjnych." }
+    contact: { eyebrow: "Kontakt", title: "Kontakt TreidingSB", desc: "Kontakt dla członków, raportów i pomysłów transakcyjnych.", emailLabel: "Email:", telegramLabel: "Telegram:" }
   }
 };
 
