@@ -57,7 +57,7 @@ const translations = {
       card2: { riskValue: "Scăzut", note: "Valid doar dacă USD slăbește după știri." },
       gate: { title: "Acces Idei de Tranzacționare — Membri", desc: "Ideile de tranzacționare sunt disponibile exclusiv membrilor TreidingSB. Introdu parola pentru acces.", label: "Parolă acces", placeholder: "PAROLA ACCES", button: "Intră în cont", sending: "Se verifică...", noAccess: "Nu ai acces?", contact: "Contactează-ne pe Telegram", invalid: "Parolă incorectă. Încearcă din nou.", error: "A apărut o eroare. Te rugăm încearcă din nou." }
     },
-    reports: { eyebrow: "Rapoarte", title: "Rapoarte săptămânale", desc: "Analize tehnice, context de piață și perspective pentru săptămâna următoare.", panelTitle: "Analiză săptămânală", panelDesc: "O imagine completă asupra piețelor financiare pentru săptămâna curentă.", btn: "Vezi analiza săptămânală" },
+    reports: { eyebrow: "Rapoarte", title: "Rapoarte săptămânale", desc: "Analize tehnice, context de piață și perspective pentru săptămâna următoare.", panelTitle: "Analiză săptămânală", panelDesc: "O imagine completă asupra piețelor financiare pentru săptămâna curentă.", btn: "Descarcă raportul PDF", loading: "Se caută cel mai recent raport...", latestLabel: "Ultimul raport:", unavailable: "Niciun raport disponibil momentan." },
     education: { eyebrow: "Educație", title: "Educație de bază", desc: "Învață cum funcționează piața, cine formează lichiditatea și cum gestionezi riscul." },
     calendar: { eyebrow: "Calendar", title: "Calendar economic", desc: "Aici vom integra calendarul economic pentru evenimente importante." },
     contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact pentru membri, rapoarte și idei de tranzacționare.", emailLabel: "Email:", telegramLabel: "Telegram:" },
@@ -100,7 +100,7 @@ const translations = {
       card2: { riskValue: "Low", note: "Valid only if USD weakens after the news." },
       gate: { title: "Trade Ideas Access — Members Only", desc: "Trade ideas are available exclusively to TreidingSB members. Enter the password to access.", label: "Access password", placeholder: "ACCESS PASSWORD", button: "Sign in", sending: "Checking...", noAccess: "No access?", contact: "Contact us on Telegram", invalid: "Incorrect password. Try again.", error: "Something went wrong. Please try again." }
     },
-    reports: { eyebrow: "Reports", title: "Weekly Reports", desc: "Technical analysis, market context and outlook for the coming week.", panelTitle: "Weekly Analysis", panelDesc: "A complete overview of financial markets for the current week.", btn: "View weekly analysis" },
+    reports: { eyebrow: "Reports", title: "Weekly Reports", desc: "Technical analysis, market context and outlook for the coming week.", panelTitle: "Weekly Analysis", panelDesc: "A complete overview of financial markets for the current week.", btn: "Download PDF report", loading: "Looking for the latest report...", latestLabel: "Latest report:", unavailable: "No report available yet." },
     education: { eyebrow: "Education", title: "Trading Basics", desc: "Learn how the market works, who forms liquidity and how to manage risk." },
     calendar: { eyebrow: "Calendar", title: "Economic Calendar", desc: "We'll integrate the economic calendar for major events here." },
     contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact for members, reports and trade ideas.", emailLabel: "Email:", telegramLabel: "Telegram:" },
@@ -143,7 +143,7 @@ const translations = {
       card2: { riskValue: "Низкий", note: "Актуально только при ослаблении USD после новостей." },
       gate: { title: "Доступ к торговым идеям — только для участников", desc: "Торговые идеи доступны исключительно участникам TreidingSB. Введите пароль для доступа.", label: "Пароль доступа", placeholder: "ПАРОЛЬ ДОСТУПА", button: "Войти", sending: "Проверка...", noAccess: "Нет доступа?", contact: "Свяжитесь с нами в Telegram", invalid: "Неверный пароль. Попробуйте ещё раз.", error: "Произошла ошибка. Попробуйте ещё раз." }
     },
-    reports: { eyebrow: "Отчёты", title: "Еженедельные отчёты", desc: "Технический анализ, рыночный контекст и прогноз на следующую неделю.", panelTitle: "Еженедельный анализ", panelDesc: "Полный обзор финансовых рынков за текущую неделю.", btn: "Смотреть еженедельный анализ" },
+    reports: { eyebrow: "Отчёты", title: "Еженедельные отчёты", desc: "Технический анализ, рыночный контекст и прогноз на следующую неделю.", panelTitle: "Еженедельный анализ", panelDesc: "Полный обзор финансовых рынков за текущую неделю.", btn: "Скачать PDF-отчёт", loading: "Поиск последнего отчёта...", latestLabel: "Последний отчёт:", unavailable: "Пока нет доступных отчётов." },
     education: { eyebrow: "Обучение", title: "Основы трейдинга", desc: "Узнайте, как работает рынок, кто формирует ликвидность и как управлять риском." },
     calendar: { eyebrow: "Календарь", title: "Экономический календарь", desc: "Здесь будет интегрирован экономический календарь важных событий." },
     contact: { eyebrow: "Контакты", title: "Контакты TreidingSB", desc: "Контакты для участников, отчётов и торговых идей.", emailLabel: "Email:", telegramLabel: "Telegram:" },
@@ -186,7 +186,7 @@ const translations = {
       card2: { riskValue: "Низький", note: "Актуально лише якщо USD слабшає після новин." },
       gate: { title: "Доступ до торгових ідей — лише для учасників", desc: "Торгові ідеї доступні виключно учасникам TreidingSB. Введіть пароль для доступу.", label: "Пароль доступу", placeholder: "ПАРОЛЬ ДОСТУПУ", button: "Увійти", sending: "Перевірка...", noAccess: "Немає доступу?", contact: "Зв'яжіться з нами в Telegram", invalid: "Невірний пароль. Спробуйте ще раз.", error: "Сталася помилка. Спробуйте ще раз." }
     },
-    reports: { eyebrow: "Звіти", title: "Щотижневі звіти", desc: "Технічний аналіз, ринковий контекст та прогноз на наступний тиждень.", panelTitle: "Щотижневий аналіз", panelDesc: "Повний огляд фінансових ринків за поточний тиждень.", btn: "Переглянути щотижневий аналіз" },
+    reports: { eyebrow: "Звіти", title: "Щотижневі звіти", desc: "Технічний аналіз, ринковий контекст та прогноз на наступний тиждень.", panelTitle: "Щотижневий аналіз", panelDesc: "Повний огляд фінансових ринків за поточний тиждень.", btn: "Завантажити PDF-звіт", loading: "Пошук останнього звіту...", latestLabel: "Останній звіт:", unavailable: "Поки що немає доступних звітів." },
     education: { eyebrow: "Навчання", title: "Основи трейдингу", desc: "Дізнайтеся, як працює ринок, хто формує ліквідність і як керувати ризиком." },
     calendar: { eyebrow: "Календар", title: "Економічний календар", desc: "Тут буде інтегровано економічний календар важливих подій." },
     contact: { eyebrow: "Контакти", title: "Контакти TreidingSB", desc: "Контакти для учасників, звітів і торгових ідей.", emailLabel: "Email:", telegramLabel: "Telegram:" },
@@ -229,7 +229,7 @@ const translations = {
       card2: { riskValue: "Niskie", note: "Ważne tylko jeśli USD osłabnie po newsach." },
       gate: { title: "Dostęp do pomysłów transakcyjnych — tylko dla członków", desc: "Pomysły transakcyjne są dostępne wyłącznie dla członków TreidingSB. Wprowadź hasło, aby uzyskać dostęp.", label: "Hasło dostępu", placeholder: "HASŁO DOSTĘPU", button: "Zaloguj się", sending: "Sprawdzanie...", noAccess: "Brak dostępu?", contact: "Skontaktuj się z nami na Telegramie", invalid: "Nieprawidłowe hasło. Spróbuj ponownie.", error: "Wystąpił błąd. Spróbuj ponownie." }
     },
-    reports: { eyebrow: "Raporty", title: "Raporty tygodniowe", desc: "Analiza techniczna, kontekst rynkowy i perspektywy na nadchodzący tydzień.", panelTitle: "Analiza tygodniowa", panelDesc: "Pełny przegląd rynków finansowych w bieżącym tygodniu.", btn: "Zobacz analizę tygodniową" },
+    reports: { eyebrow: "Raporty", title: "Raporty tygodniowe", desc: "Analiza techniczna, kontekst rynkowy i perspektywy na nadchodzący tydzień.", panelTitle: "Analiza tygodniowa", panelDesc: "Pełny przegląd rynków finansowych w bieżącym tygodniu.", btn: "Pobierz raport PDF", loading: "Szukanie najnowszego raportu...", latestLabel: "Najnowszy raport:", unavailable: "Brak dostępnych raportów." },
     education: { eyebrow: "Edukacja", title: "Podstawy tradingu", desc: "Dowiedz się, jak działa rynek, kto tworzy płynność i jak zarządzać ryzykiem." },
     calendar: { eyebrow: "Kalendarz", title: "Kalendarz ekonomiczny", desc: "Tutaj zintegrujemy kalendarz ekonomiczny ważnych wydarzeń." },
     contact: { eyebrow: "Kontakt", title: "Kontakt TreidingSB", desc: "Kontakt dla członków, raportów i pomysłów transakcyjnych.", emailLabel: "Email:", telegramLabel: "Telegram:" },
@@ -280,6 +280,7 @@ function applyLanguage(lang) {
   try { localStorage.setItem("tsb_lang", lang); } catch (e) { /* ignore storage errors */ }
 
   if (typeof unlockedIdeas !== "undefined" && unlockedIdeas) renderIdeaCards(unlockedIdeas);
+  if (typeof latestReportInfo !== "undefined" && latestReportInfo) renderReportStatus();
 }
 
 function detectInitialLang() {
@@ -465,25 +466,4 @@ if (ideasGateForm) {
       });
 
       let data = {};
-      try { data = await response.json(); } catch (parseErr) { /* non-JSON response */ }
-
-      if (!response.ok || !data.success || !data.token) {
-        throw new Error((data && data.error) || "Request failed");
-      }
-
-      try { localStorage.setItem(IDEAS_TOKEN_KEY, data.token); } catch (storageErr) { /* ignore storage errors */ }
-
-      const ideas = await fetchIdeasWithToken(data.token);
-      unlockIdeas(ideas);
-      passwordInput.value = "";
-    } catch (err) {
-      gateMessage.textContent = getNested(dict, "ideas.gate.invalid") || "Incorrect password.";
-      gateMessage.classList.add("is-error");
-    } finally {
-      gateButton.disabled = false;
-      gateButton.textContent = getNested(dict, "ideas.gate.button") || gateButtonDefaultText;
-    }
-  });
-}
-
-applyLanguage(detectInitialLang());
+      try { data = await response.json(); } catch (parseErr) { /* non-
