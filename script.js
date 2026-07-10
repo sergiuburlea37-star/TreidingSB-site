@@ -438,4 +438,126 @@ async function fetchIdeasWithToken(token) {
   if (!token) return;
   fetchIdeasWithToken(token)
     .then((ideas) => unlockIdeas(ideas))
-    .catch(() 
+    .catch(() => {
+      try { localStorage.removeItem(IDEAS_TOKEN_KEY); } catch (e) { /* ignore storage errors */ }
+    });
+})();
+
+const ideasGateForm = document.getElementById("ideasGateForm");
+if (ideasGateForm) {
+  const passwordInput = document.getElementById("ideasGatePassword");
+  const gateButton = document.getElementById("ideasGateButton");
+  const gateMessage = document.getElementById("ideasGateMessage");
+  const gateButtonDefaultText = gateButton.textContent;
+
+  ideasGateForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const dict = translations[currentLang] || translations.ro;
+    const password = (passwordInput.value || "").trim();
+
+    gateMessage.classList.remove("is-error", "is-success");
+
+    if (!password) {
+      gateMessage.textContent = getNested(dict, "ideas.gate.invalid") || "Incorrect password.";
+      gateMessage.classList.add("is-error");
+      return;
+    }
+
+    gateButton.disabled = true;
+    gateButton.textContent = getNested(dict, "ideas.gate.sending") || "...";
+    gateMessage.textContent = "";
+
+    try {
+      const response = await fetch("/api/verify-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+
+      let data = {};
+      try { data = await response.json(); } catch (parseErr) { /* non-JSON response */ }
+
+      if (!response.ok || !data.success || !data.token) {
+        throw new Error((data && data.error) || "Request failed");
+      }
+
+      try { localStorage.setItem(IDEAS_TOKEN_KEY, data.token); } catch (storageErr) { /* ignore storage errors */ }
+
+      const ideas = await fetchIdeasWithToken(data.token);
+      unlockIdeas(ideas);
+      passwordInput.value = "";
+    } catch (err) {
+      gateMessage.textContent = getNested(dict, "ideas.gate.invalid") || "Incorrect password.";
+      gateMessage.classList.add("is-error");
+    } finally {
+      gateButton.disabled = false;
+      gateButton.textContent = getNested(dict, "ideas.gate.button") || gateButtonDefaultText;
+    }
+  });
+}
+
+/* ===================== Ultimul raport PDF (din treidingsb-reports) ===================== */
+const REPORTS_REPO_API = "https://api.github.com/repos/sergiuburlea37-star/treidingsb-reports/contents/reports";
+let latestReportInfo = null;
+
+function renderReportStatus() {
+  const statusEl = document.getElementById("reportStatus");
+  const linkEl = document.getElementById("reportDownloadLink");
+  if (!statusEl || !latestReportInfo) return;
+  const dict = translations[currentLang] || translations.ro;
+  statusEl.textContent = (getNested(dict, "reports.latestLabel") || "Latest report:") + " " + latestReportInfo.dateStr;
+  statusEl.classList.remove("is-error");
+  statusEl.classList.add("is-ready");
+  if (linkEl) {
+    linkEl.href = latestReportInfo.url;
+    linkEl.classList.remove("is-loading");
+  }
+}
+
+async function loadLatestReport() {
+  const statusEl = document.getElementById("reportStatus");
+  try {
+    const quarterRes = await fetch(REPORTS_REPO_API);
+    if (!quarterRes.ok) throw new Error("quarters fetch failed");
+    const quarters = await quarterRes.json();
+    const quarterDirs = (Array.isArray(quarters) ? quarters : []).filter(
+      (it) => it.type === "dir" && /^Q[1-4]_\d{4}$/.test(it.name)
+    );
+    if (!quarterDirs.length) throw new Error("no quarters");
+
+    quarterDirs.sort((a, b) => {
+      const ma = a.name.match(/^Q([1-4])_(\d{4})$/);
+      const mb = b.name.match(/^Q([1-4])_(\d{4})$/);
+      if (mb[2] !== ma[2]) return Number(mb[2]) - Number(ma[2]);
+      return Number(mb[1]) - Number(ma[1]);
+    });
+    const latestQuarter = quarterDirs[0].name;
+
+    const filesRes = await fetch(`${REPORTS_REPO_API}/${latestQuarter}`);
+    if (!filesRes.ok) throw new Error("files fetch failed");
+    const files = await filesRes.json();
+    const reportFiles = (Array.isArray(files) ? files : []).filter(
+      (it) => it.type === "file" && /^raport-\d{4}-\d{2}-\d{2}\.pdf$/.test(it.name)
+    );
+    if (!reportFiles.length) throw new Error("no report files");
+
+    reportFiles.sort((a, b) => (a.name < b.name ? 1 : a.name > b.name ? -1 : 0));
+    const latestFile = reportFiles[0];
+    const dateMatch = latestFile.name.match(/^raport-(\d{4})-(\d{2})-(\d{2})\.pdf$/);
+    const dateStr = dateMatch ? `${dateMatch[3]}.${dateMatch[2]}.${dateMatch[1]}` : latestFile.name;
+
+    latestReportInfo = { url: latestFile.download_url, dateStr };
+    renderReportStatus();
+  } catch (err) {
+    if (statusEl) {
+      const dict = translations[currentLang] || translations.ro;
+      statusEl.textContent = getNested(dict, "reports.unavailable") || "No report available yet.";
+      statusEl.classList.remove("is-ready");
+      statusEl.classList.add("is-error");
+    }
+    const linkEl = document.getElementById("reportDownloadLink");
+    if (linkEl) linkEl.classList.remove("is-loading");
+  }
+}
+
+applyLanguage(detectInitialLang());
