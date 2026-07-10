@@ -410,6 +410,8 @@ function unlockIdeas(ideas) {
   const grid = document.getElementById("ideasGrid");
   if (gate) gate.setAttribute("hidden", "");
   if (grid) grid.removeAttribute("hidden");
+  const memberBtn = document.getElementById("memberButton");
+  if (memberBtn) memberBtn.classList.add("is-member");
   unlockReports();
 }
 
@@ -500,16 +502,29 @@ if (ideasGateForm) {
 const REPORTS_REPO_API = "https://api.github.com/repos/sergiuburlea37-star/treidingsb-reports/contents/reports";
 let latestReportInfo = null;
 
+// Limbile in care se pot genera rapoartele PDF (trebuie sa corespunda cu
+// sufixele de fisier produse de treidingsb-reports/scripts/generate_report.py)
+const REPORT_LANGS = ["ro", "en", "ru", "uk", "pl"];
+
+function pickReportUrl(urls) {
+  if (!urls) return null;
+  if (urls[currentLang]) return urls[currentLang];
+  if (urls.ro) return urls.ro;
+  const firstKey = Object.keys(urls)[0];
+  return firstKey ? urls[firstKey] : null;
+}
+
 function renderReportStatus() {
   const statusEl = document.getElementById("reportStatus");
   const linkEl = document.getElementById("reportDownloadLink");
   if (!statusEl || !latestReportInfo) return;
   const dict = translations[currentLang] || translations.ro;
+  const url = pickReportUrl(latestReportInfo.urls);
   statusEl.textContent = (getNested(dict, "reports.latestLabel") || "Latest report:") + " " + latestReportInfo.dateStr;
   statusEl.classList.remove("is-error");
   statusEl.classList.add("is-ready");
-  if (linkEl) {
-    linkEl.href = latestReportInfo.url;
+  if (linkEl && url) {
+    linkEl.href = url;
     linkEl.classList.remove("is-loading");
   }
 }
@@ -536,17 +551,40 @@ async function loadLatestReport() {
     const filesRes = await fetch(`${REPORTS_REPO_API}/${latestQuarter}`);
     if (!filesRes.ok) throw new Error("files fetch failed");
     const files = await filesRes.json();
-    const reportFiles = (Array.isArray(files) ? files : []).filter(
-      (it) => it.type === "file" && /^raport-\d{4}-\d{2}-\d{2}\.pdf$/.test(it.name)
-    );
-    if (!reportFiles.length) throw new Error("no report files");
 
-    reportFiles.sort((a, b) => (a.name < b.name ? 1 : a.name > b.name ? -1 : 0));
-    const latestFile = reportFiles[0];
-    const dateMatch = latestFile.name.match(/^raport-(\d{4})-(\d{2})-(\d{2})\.pdf$/);
-    const dateStr = dateMatch ? `${dateMatch[3]}.${dateMatch[2]}.${dateMatch[1]}` : latestFile.name;
+    // Fisiere noi, cu limba in nume: raport-2026-07-13-en.pdf
+    // Fisiere vechi, fara limba (dinainte de suport multilingv): raport-2026-07-13.pdf -> tratate ca "ro"
+    const langPattern = /^raport-(\d{4}-\d{2}-\d{2})-(ro|en|ru|uk|pl)\.pdf$/;
+    const legacyPattern = /^raport-(\d{4}-\d{2}-\d{2})\.pdf$/;
 
-    latestReportInfo = { url: latestFile.download_url, dateStr };
+    const byDate = {};
+    (Array.isArray(files) ? files : []).forEach((it) => {
+      if (it.type !== "file") return;
+      let date = null;
+      let lang = null;
+      const langMatch = it.name.match(langPattern);
+      if (langMatch) {
+        date = langMatch[1];
+        lang = langMatch[2];
+      } else {
+        const legacyMatch = it.name.match(legacyPattern);
+        if (legacyMatch) {
+          date = legacyMatch[1];
+          lang = "ro";
+        }
+      }
+      if (!date || !lang) return;
+      if (!byDate[date]) byDate[date] = {};
+      byDate[date][lang] = it.download_url;
+    });
+
+    const dates = Object.keys(byDate).sort().reverse();
+    if (!dates.length) throw new Error("no report files");
+    const latestDate = dates[0];
+    const [y, m, d] = latestDate.split("-");
+    const dateStr = `${d}.${m}.${y}`;
+
+    latestReportInfo = { urls: byDate[latestDate], dateStr };
     renderReportStatus();
   } catch (err) {
     if (statusEl) {
