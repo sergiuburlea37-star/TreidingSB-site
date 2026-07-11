@@ -77,7 +77,22 @@ const translations = {
         disclaimer: "Trading implică risc. Performanțele anterioare nu garantează rezultatele viitoare. Informațiile de pe acest site au scop educativ și nu reprezintă sfat financiar."
       }
     },
-    calendar: { eyebrow: "Calendar", title: "Calendar economic", desc: "Evenimente economice live, actualizate în timp real — sursă TradingView." },
+    calendar: { eyebrow: "Calendar", title: "Calendar economic", desc: "Evenimente economice live, actualizate în timp real — sursă TradingView.",
+      lesson: {
+        head: "Eroii Calendarului Economic", subhead: "Cei mai importanți indicatori care mișcă piețele",
+        item1: { title: "NFP", subtitle: "Non-Farm Payrolls", desc: "Numărul de locuri de muncă noi create în SUA, în afara sectorului agricol. Unul dintre cei mai așteptați indicatori lunari — poate mișca puternic USD și piețele bursiere.", nickname: "Regele locurilor de muncă" },
+        item2: { title: "CPI", subtitle: "Consumer Price Index", desc: "Măsoară variația prețurilor de consum și indică nivelul inflației. Un CPI mai mare decât așteptările poate determina băncile centrale să majoreze dobânzile.", nickname: "Regele Inflației" },
+        item3: { title: "Interest Rate", subtitle: "Decizia Dobânzii", desc: "Decizia oficială privind rata dobânzii de referință. Are impact direct asupra valorii monedei, costului creditelor și apetitului investitorilor pentru risc.", nickname: "Șeful Băncilor Centrale" },
+        item4: { title: "Powell Speech", subtitle: "Discursul Președintelui FED", desc: "Declarațiile președintelui Rezervei Federale americane pot confirma sau schimba așteptările pieței privind politica monetară — și pot provoca mișcări bruște.", nickname: "Vocea care mișcă piețele" },
+        item5: { title: "GDP", subtitle: "Gross Domestic Product", desc: "Valoarea totală a bunurilor și serviciilor produse într-o economie. Arată dacă economia crește sau încetinește, influențând încrederea investitorilor.", nickname: "Puterea Economiei" },
+        item6: { title: "PMI", subtitle: "Purchasing Managers' Index", desc: "Sondaj lunar în rândul managerilor de achiziții, care arată dacă activitatea din industrie și servicii se extinde sau se contractă.", nickname: "Sănătatea Industriei" },
+        item7: { title: "Retail Sales", subtitle: "Vânzările cu Amănuntul", desc: "Măsoară cheltuielile consumatorilor în magazine. Un consum puternic susține creșterea economică; o scădere poate semnala încetinire.", nickname: "Puterea Consumatorului" },
+        item8: { title: "Unemployment Rate", subtitle: "Rata Șomajului", desc: "Procentul persoanelor apte de muncă aflate în căutarea unui loc de muncă. Un șomaj scăzut indică o economie sănătoasă, dar poate alimenta și inflația.", nickname: "Barometrul Locurilor de Muncă" },
+        item9: { title: "PPI", subtitle: "Producer Price Index", desc: "Măsoară variația prețurilor la nivel de producători, adesea un semnal timpuriu pentru inflația care va ajunge la consumatori (CPI).", nickname: "Inflația din Producție" },
+        item10: { title: "FOMC Minutes", subtitle: "Procesul Verbal FOMC", desc: "Procesul-verbal detaliat al ședinței Comitetului Federal pentru Piața Deschisă, cu explicații despre motivele deciziilor de politică monetară.", nickname: "Citește între rânduri" },
+        cta: "Fiecare erou are puterea de a mișca piața. Urmărește-i. Înțelege-i. Profită de ei."
+      }
+    },
     contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact pentru membri, rapoarte și idei de tranzacționare.", emailLabel: "Email:", telegramLabel: "Telegram:" },
     portfolio: { statCapital: "Capital Total", statStocksEtf: "Acțiuni / ETF", statInstruments: "Instrumente", statReturn: "Randament anual", statVolatility: "Volatilitate", statHorizon: "Orizont", statBuffer: "Buffer Defensiv", tableHead: "Detalii complete — toate pozițiile", colTicker: "Ticker", colInstrument: "Instrument", colType: "Tip", colSector: "Sector", colRisk: "Risc", disclaimerLabel: "Disclaimer:", swipeHint: "← Glisează pentru mai multe →" },
     portfolioUs: { eyebrow: "Portofoliu", title: "Portofoliu US", desc: "Portofoliu diversificat demonstrativ, risc moderat, orizont 3–5 ani · Fondat 17.06.2026", disclaimer: "Portofoliu demonstrativ cu scop educativ. Nu constituie consiliere de investiții. Consultă un advisor financiar autorizat FCA înainte de a investi. Performanțele trecute nu garantează rezultate viitoare." },
@@ -138,7 +153,22 @@ const translations = {
         disclaimer: "Trading involves risk. Past performance does not guarantee future results. Information on this site is for educational purposes only and does not constitute financial advice."
       }
     },
-    calendar: { eyebrow: "Calendar", title: "Economic Calendar", desc: "Live economic events, updated in real time — powered by TradingView." },
+    calendar: { eyebrow: "Calendar", title: "Economic Calendar", desc: "Live economic events, updated in real time — powered by TradingView.",
+      lesson: {
+        head: "Heroes of the Economic Calendar", subhead: "The most important indicators that move the markets",
+        item1: { title: "NFP", subtitle: "Non-Farm Payrolls", desc: "The number of new jobs created in the US, outside the agricultural sector. One of the most anticipated monthly indicators — it can strongly move the USD and stock markets.", nickname: "The King of Jobs" },
+        item2: { title: "CPI", subtitle: "Consumer Price Index", desc: "Measures the change in consumer prices and indicates the level of inflation. A CPI higher than expected can push central banks to raise interest rates.", nickname: "The King of Inflation" },
+        item3: { title: "Interest Rate", subtitle: "Interest Rate Decision", desc: "The official decision on the benchmark interest rate. It has a direct impact on currency value, borrowing costs and investors' appetite for risk.", nickname: "The Head of Central Banks" },
+        item4: { title: "Powell Speech", subtitle: "The Fed Chair's Speech", desc: "Statements from the Federal Reserve chair can confirm or shift the market's expectations about monetary policy — and trigger sudden moves.", nickname: "The Voice That Moves Markets" },
+        item5: { title: "GDP", subtitle: "Gross Domestic Product", desc: "The total value of goods and services produced in an economy. It shows whether the economy is growing or slowing, influencing investor confidence.", nickname: "The Power of the Economy" },
+        item6: { title: "PMI", subtitle: "Purchasing Managers' Index", desc: "A monthly survey of purchasing managers, showing whether activity in industry and services is expanding or contracting.", nickname: "The Health of Industry" },
+        item7: { title: "Retail Sales", subtitle: "Retail Sales", desc: "Measures consumer spending in stores. Strong spending supports economic growth; a decline can signal a slowdown.", nickname: "The Power of the Consumer" },
+        item8: { title: "Unemployment Rate", subtitle: "Unemployment Rate", desc: "The percentage of the workforce actively looking for a job. Low unemployment signals a healthy economy, but can also fuel inflation.", nickname: "The Barometer of Jobs" },
+        item9: { title: "PPI", subtitle: "Producer Price Index", desc: "Measures the change in prices at the producer level, often an early signal for the inflation that will later reach consumers (CPI).", nickname: "Inflation at the Source" },
+        item10: { title: "FOMC Minutes", subtitle: "FOMC Meeting Minutes", desc: "The detailed minutes of the Federal Open Market Committee meeting, explaining the reasoning behind monetary policy decisions.", nickname: "Reading Between the Lines" },
+        cta: "Every hero has the power to move the market. Follow them. Understand them. Profit from them."
+      }
+    },
     contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact for members, reports and trade ideas.", emailLabel: "Email:", telegramLabel: "Telegram:" },
     portfolio: { statCapital: "Total Capital", statStocksEtf: "Stocks / ETF", statInstruments: "Instruments", statReturn: "Annual Return", statVolatility: "Volatility", statHorizon: "Horizon", statBuffer: "Defensive Buffer", tableHead: "Full details — all positions", colTicker: "Ticker", colInstrument: "Instrument", colType: "Type", colSector: "Sector", colRisk: "Risk", disclaimerLabel: "Disclaimer:", swipeHint: "← Swipe for more →" },
     portfolioUs: { eyebrow: "Portfolio", title: "US Portfolio", desc: "Demonstration diversified portfolio, moderate risk, 3–5 year horizon · Founded 17.06.2026", disclaimer: "Demonstration portfolio for educational purposes. Not investment advice. Consult an FCA-authorised financial advisor before investing. Past performance does not guarantee future results." },
@@ -199,7 +229,22 @@ const translations = {
         disclaimer: "Торговля связана с риском. Прошлые результаты не гарантируют будущих. Информация на этом сайте носит образовательный характер и не является финансовой рекомендацией."
       }
     },
-    calendar: { eyebrow: "Календарь", title: "Экономический календарь", desc: "Живые экономические события, обновляются в реальном времени — данные TradingView." },
+    calendar: { eyebrow: "Календарь", title: "Экономический календарь", desc: "Живые экономические события, обновляются в реальном времени — данные TradingView.",
+      lesson: {
+        head: "Герои экономического календаря", subhead: "Самые важные индикаторы, двигающие рынки",
+        item1: { title: "NFP", subtitle: "Non-Farm Payrolls", desc: "Число новых рабочих мест, созданных в США вне сельского хозяйства. Один из самых ожидаемых ежемесячных показателей — способен сильно двигать USD и фондовые рынки.", nickname: "Король рабочих мест" },
+        item2: { title: "CPI", subtitle: "Индекс потребительских цен", desc: "Измеряет изменение потребительских цен и указывает уровень инфляции. CPI выше ожиданий может подтолкнуть центральные банки к повышению ставок.", nickname: "Король инфляции" },
+        item3: { title: "Interest Rate", subtitle: "Решение по ставке", desc: "Официальное решение по базовой процентной ставке. Напрямую влияет на стоимость валюты, стоимость кредитов и аппетит инвесторов к риску.", nickname: "Глава центральных банков" },
+        item4: { title: "Powell Speech", subtitle: "Речь главы ФРС", desc: "Заявления главы ФРС США могут подтвердить или изменить ожидания рынка относительно денежно-кредитной политики — и вызвать резкие движения.", nickname: "Голос, двигающий рынки" },
+        item5: { title: "GDP", subtitle: "Валовой внутренний продукт", desc: "Общая стоимость товаров и услуг, произведённых в экономике. Показывает, растёт экономика или замедляется, влияя на доверие инвесторов.", nickname: "Сила экономики" },
+        item6: { title: "PMI", subtitle: "Индекс деловой активности", desc: "Ежемесячный опрос менеджеров по закупкам, показывающий, расширяется или сокращается активность в промышленности и услугах.", nickname: "Здоровье промышленности" },
+        item7: { title: "Retail Sales", subtitle: "Розничные продажи", desc: "Измеряет расходы потребителей в магазинах. Сильные расходы поддерживают экономический рост; снижение может сигнализировать о замедлении.", nickname: "Сила потребителя" },
+        item8: { title: "Unemployment Rate", subtitle: "Уровень безработицы", desc: "Процент трудоспособного населения, ищущего работу. Низкая безработица говорит о здоровой экономике, но может также разгонять инфляцию.", nickname: "Барометр рабочих мест" },
+        item9: { title: "PPI", subtitle: "Индекс цен производителей", desc: "Измеряет изменение цен на уровне производителей — часто ранний сигнал инфляции, которая позже дойдёт до потребителей (CPI).", nickname: "Инфляция у источника" },
+        item10: { title: "FOMC Minutes", subtitle: "Протокол заседания FOMC", desc: "Подробный протокол заседания Федерального комитета по открытым рынкам с объяснением причин решений по денежно-кредитной политике.", nickname: "Читать между строк" },
+        cta: "Каждый герой способен двигать рынок. Следите за ними. Понимайте их. Извлекайте выгоду."
+      }
+    },
     contact: { eyebrow: "Контакты", title: "Контакты TreidingSB", desc: "Контакты для участников, отчётов и торговых идей.", emailLabel: "Email:", telegramLabel: "Telegram:" },
     portfolio: { statCapital: "Общий капитал", statStocksEtf: "Акции / ETF", statInstruments: "Инструменты", statReturn: "Годовая доходность", statVolatility: "Волатильность", statHorizon: "Горизонт", statBuffer: "Защитный буфер", tableHead: "Полная информация — все позиции", colTicker: "Тикер", colInstrument: "Инструмент", colType: "Тип", colSector: "Сектор", colRisk: "Риск", disclaimerLabel: "Дисклеймер:", swipeHint: "← Проведите пальцем, чтобы увидеть больше →" },
     portfolioUs: { eyebrow: "Портфель", title: "Портфель US", desc: "Демонстрационный диверсифицированный портфель, умеренный риск, горизонт 3–5 лет · Основан 17.06.2026", disclaimer: "Демонстрационный портфель в образовательных целях. Не является инвестиционной рекомендацией. Проконсультируйтесь с финансовым советником, авторизованным FCA, перед инвестированием. Прошлые результаты не гарантируют будущих." },
@@ -260,7 +305,22 @@ const translations = {
         disclaimer: "Торгівля пов'язана з ризиком. Минулі результати не гарантують майбутніх. Інформація на цьому сайті має освітній характер і не є фінансовою рекомендацією."
       }
     },
-    calendar: { eyebrow: "Календар", title: "Економічний календар", desc: "Живі економічні події, оновлюються в реальному часі — дані TradingView." },
+    calendar: { eyebrow: "Календар", title: "Економічний календар", desc: "Живі економічні події, оновлюються в реальному часі — дані TradingView.",
+      lesson: {
+        head: "Герої економічного календаря", subhead: "Найважливіші індикатори, що рухають ринки",
+        item1: { title: "NFP", subtitle: "Non-Farm Payrolls", desc: "Кількість нових робочих місць, створених у США поза сільським господарством. Один із найочікуваніших щомісячних показників — здатний сильно рухати USD і фондові ринки.", nickname: "Король робочих місць" },
+        item2: { title: "CPI", subtitle: "Індекс споживчих цін", desc: "Вимірює зміну споживчих цін і вказує рівень інфляції. CPI вищий за очікування може підштовхнути центральні банки до підвищення ставок.", nickname: "Король інфляції" },
+        item3: { title: "Interest Rate", subtitle: "Рішення щодо ставки", desc: "Офіційне рішення щодо базової процентної ставки. Безпосередньо впливає на вартість валюти, вартість кредитів і апетит інвесторів до ризику.", nickname: "Голова центральних банків" },
+        item4: { title: "Powell Speech", subtitle: "Промова голови ФРС", desc: "Заяви голови ФРС США можуть підтвердити або змінити очікування ринку щодо монетарної політики — і викликати різкі рухи.", nickname: "Голос, що рухає ринки" },
+        item5: { title: "GDP", subtitle: "Валовий внутрішній продукт", desc: "Загальна вартість товарів і послуг, вироблених в економіці. Показує, чи зростає економіка, чи сповільнюється, впливаючи на довіру інвесторів.", nickname: "Сила економіки" },
+        item6: { title: "PMI", subtitle: "Індекс ділової активності", desc: "Щомісячне опитування менеджерів із закупівель, яке показує, чи розширюється, чи скорочується активність у промисловості та послугах.", nickname: "Здоров'я промисловості" },
+        item7: { title: "Retail Sales", subtitle: "Роздрібні продажі", desc: "Вимірює витрати споживачів у магазинах. Сильні витрати підтримують економічне зростання; зниження може сигналізувати про уповільнення.", nickname: "Сила споживача" },
+        item8: { title: "Unemployment Rate", subtitle: "Рівень безробіття", desc: "Відсоток працездатного населення, яке шукає роботу. Низьке безробіття свідчить про здорову економіку, але може також розганяти інфляцію.", nickname: "Барометр робочих місць" },
+        item9: { title: "PPI", subtitle: "Індекс цін виробників", desc: "Вимірює зміну цін на рівні виробників — часто ранній сигнал інфляції, яка згодом дійде до споживачів (CPI).", nickname: "Інфляція у джерела" },
+        item10: { title: "FOMC Minutes", subtitle: "Протокол засідання FOMC", desc: "Детальний протокол засідання Федерального комітету з відкритого ринку з поясненням причин рішень щодо монетарної політики.", nickname: "Читати між рядків" },
+        cta: "Кожен герой здатен рухати ринок. Слідкуйте за ними. Розумійте їх. Отримуйте вигоду."
+      }
+    },
     contact: { eyebrow: "Контакти", title: "Контакти TreidingSB", desc: "Контакти для учасників, звітів і торгових ідей.", emailLabel: "Email:", telegramLabel: "Telegram:" },
     portfolio: { statCapital: "Загальний капітал", statStocksEtf: "Акції / ETF", statInstruments: "Інструменти", statReturn: "Річна дохідність", statVolatility: "Волатильність", statHorizon: "Горизонт", statBuffer: "Захисний буфер", tableHead: "Повна інформація — всі позиції", colTicker: "Тікер", colInstrument: "Інструмент", colType: "Тип", colSector: "Сектор", colRisk: "Ризик", disclaimerLabel: "Застереження:", swipeHint: "← Проведіть пальцем, щоб побачити більше →" },
     portfolioUs: { eyebrow: "Портфель", title: "Портфель US", desc: "Демонстраційний диверсифікований портфель, помірний ризик, горизонт 3–5 років · Засновано 17.06.2026", disclaimer: "Демонстраційний портфель з освітньою метою. Не є інвестиційною рекомендацією. Проконсультуйтеся з фінансовим радником, авторизованим FCA, перед інвестуванням. Минулі результати не гарантують майбутніх." },
@@ -321,7 +381,22 @@ const translations = {
         disclaimer: "Trading wiąże się z ryzykiem. Wyniki historyczne nie gwarantują przyszłych rezultatów. Informacje na tej stronie mają charakter edukacyjny i nie stanowią porady finansowej."
       }
     },
-    calendar: { eyebrow: "Kalendarz", title: "Kalendarz ekonomiczny", desc: "Wydarzenia gospodarcze na żywo, aktualizowane w czasie rzeczywistym — dane TradingView." },
+    calendar: { eyebrow: "Kalendarz", title: "Kalendarz ekonomiczny", desc: "Wydarzenia gospodarcze na żywo, aktualizowane w czasie rzeczywistym — dane TradingView.",
+      lesson: {
+        head: "Bohaterowie Kalendarza Ekonomicznego", subhead: "Najważniejsze wskaźniki poruszające rynkami",
+        item1: { title: "NFP", subtitle: "Non-Farm Payrolls", desc: "Liczba nowych miejsc pracy utworzonych w USA poza sektorem rolniczym. Jeden z najbardziej oczekiwanych wskaźników miesięcznych — może mocno poruszyć USD i rynki akcji.", nickname: "Król miejsc pracy" },
+        item2: { title: "CPI", subtitle: "Consumer Price Index", desc: "Mierzy zmianę cen konsumpcyjnych i wskazuje poziom inflacji. CPI wyższy od oczekiwań może skłonić banki centralne do podwyżki stóp procentowych.", nickname: "Król inflacji" },
+        item3: { title: "Interest Rate", subtitle: "Decyzja o stopach procentowych", desc: "Oficjalna decyzja w sprawie referencyjnej stopy procentowej. Ma bezpośredni wpływ na wartość waluty, koszt kredytów i apetyt inwestorów na ryzyko.", nickname: "Szef banków centralnych" },
+        item4: { title: "Powell Speech", subtitle: "Przemówienie szefa Fed", desc: "Wypowiedzi szefa Rezerwy Federalnej USA mogą potwierdzić lub zmienić oczekiwania rynku dotyczące polityki monetarnej — i wywołać gwałtowne ruchy.", nickname: "Głos, który porusza rynkami" },
+        item5: { title: "GDP", subtitle: "Produkt Krajowy Brutto", desc: "Całkowita wartość dóbr i usług wytworzonych w gospodarce. Pokazuje, czy gospodarka rośnie, czy zwalnia, wpływając na zaufanie inwestorów.", nickname: "Siła gospodarki" },
+        item6: { title: "PMI", subtitle: "Purchasing Managers' Index", desc: "Comiesięczna ankieta wśród menedżerów ds. zakupów, pokazująca, czy aktywność w przemyśle i usługach się rozszerza, czy kurczy.", nickname: "Zdrowie przemysłu" },
+        item7: { title: "Retail Sales", subtitle: "Sprzedaż detaliczna", desc: "Mierzy wydatki konsumentów w sklepach. Silne wydatki wspierają wzrost gospodarczy; spadek może sygnalizować spowolnienie.", nickname: "Siła konsumenta" },
+        item8: { title: "Unemployment Rate", subtitle: "Stopa bezrobocia", desc: "Odsetek osób zdolnych do pracy poszukujących zatrudnienia. Niskie bezrobocie wskazuje na zdrową gospodarkę, ale może też napędzać inflację.", nickname: "Barometr miejsc pracy" },
+        item9: { title: "PPI", subtitle: "Producer Price Index", desc: "Mierzy zmianę cen na poziomie producentów — często wczesny sygnał inflacji, która później dotrze do konsumentów (CPI).", nickname: "Inflacja u źródła" },
+        item10: { title: "FOMC Minutes", subtitle: "Protokół posiedzenia FOMC", desc: "Szczegółowy protokół posiedzenia Federalnego Komitetu Otwartego Rynku, wyjaśniający przyczyny decyzji dotyczących polityki monetarnej.", nickname: "Czytanie między wierszami" },
+        cta: "Każdy bohater ma moc poruszania rynkiem. Obserwuj ich. Zrozum ich. Zyskaj na nich."
+      }
+    },
     contact: { eyebrow: "Kontakt", title: "Kontakt TreidingSB", desc: "Kontakt dla członków, raportów i pomysłów transakcyjnych.", emailLabel: "Email:", telegramLabel: "Telegram:" },
     portfolio: { statCapital: "Kapitał całkowity", statStocksEtf: "Akcje / ETF", statInstruments: "Instrumenty", statReturn: "Roczna stopa zwrotu", statVolatility: "Zmienność", statHorizon: "Horyzont", statBuffer: "Bufor Defensywny", tableHead: "Pełne szczegóły — wszystkie pozycje", colTicker: "Ticker", colInstrument: "Instrument", colType: "Typ", colSector: "Sektor", colRisk: "Ryzyko", disclaimerLabel: "Zastrzeżenie:", swipeHint: "← Przesuń, aby zobaczyć więcej →" },
     portfolioUs: { eyebrow: "Portfel", title: "Portfel US", desc: "Demonstracyjny zdywersyfikowany portfel, umiarkowane ryzyko, horyzont 3–5 lat · Założony 17.06.2026", disclaimer: "Portfel demonstracyjny w celach edukacyjnych. Nie stanowi porady inwestycyjnej. Skonsultuj się z doradcą finansowym autoryzowanym przez FCA przed inwestowaniem. Wyniki historyczne nie gwarantują przyszłych rezultatów." },
