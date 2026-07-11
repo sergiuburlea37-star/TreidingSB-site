@@ -75,6 +75,20 @@ const translations = {
         philosophyText: "Un trader de succes nu urmărește doar graficele. El înțelege de ce se mișcă piața. La Treiding Satellite Broadcast analizăm permanent cele 4 forțe care influențează piața Forex și distribuim informația către membrii noștri, astfel încât tu să iei decizii informate și să fii mereu cu un pas înainte.",
         badge1: "📈 Analiză profundă", badge2: "🕐 Informație în timp real", badge3: "🌐 Viziune globală", badge4: "🎯 Decizii inteligente",
         disclaimer: "Trading implică risc. Performanțele anterioare nu garantează rezultatele viitoare. Informațiile de pe acest site au scop educativ și nu reprezintă sfat financiar."
+      },
+      forces: {
+        head: "10 Forțe Reale pe Piața Forex", subhead: "Cine mișcă piața valutară și de ce contează",
+        item1: { title: "Băncile Centrale", desc: "Controlează dobânzile, lichiditatea și economia." },
+        item2: { title: "Băncile de Investiții", desc: "Execută ordine mari și oferă lichiditate pieței." },
+        item3: { title: "Fondurile de Investiții", desc: "Mută miliarde de dolari între valute, aur, acțiuni și obligațiuni." },
+        item4: { title: "Market Makerii", desc: "Asigură cumpărători și vânzători și mențin piața în mișcare." },
+        item5: { title: "Calendarul Economic", desc: "Știrile importante care pot mări volatilitatea." },
+        item6: { title: "Evenimentele Geopolitice", desc: "Războaie, alegeri, sancțiuni și crize care schimbă sentimentul pieței." },
+        item7: { title: "Lichiditatea", desc: "Combustibilul pieței. Fără lichiditate, piața nu se mișcă." },
+        item8: { title: "Fluxul Capitalului", desc: "Banii se mută mereu între active. Înțelegerea fluxului = avantaj." },
+        item9: { title: "Traderii Retail", desc: "Milioane de traderi individuali care contribuie la lichiditate." },
+        item10: { title: "Algoritmii (HFT & AI)", desc: "Execută tranzacții în milisecunde și procesează volume uriașe de date." },
+        cta: "Înțelege forțele. Urmărește piața. Trading inteligent."
       }
     },
     calendar: { eyebrow: "Calendar", title: "Calendar economic", desc: "Evenimente economice live, actualizate în timp real — sursă TradingView.",
@@ -151,6 +165,20 @@ const translations = {
         philosophyText: "A successful trader doesn't just watch the charts. They understand why the market moves. At Treiding Satellite Broadcast, we constantly analyze the 4 forces that influence the Forex market and share that information with our members, so you can make informed decisions and stay one step ahead.",
         badge1: "📈 In-depth analysis", badge2: "🕐 Real-time information", badge3: "🌐 Global vision", badge4: "🎯 Smart decisions",
         disclaimer: "Trading involves risk. Past performance does not guarantee future results. Information on this site is for educational purposes only and does not constitute financial advice."
+      },
+      forces: {
+        head: "10 Real Forces in the Forex Market", subhead: "Who moves the currency market and why it matters",
+        item1: { title: "Central Banks", desc: "Control interest rates, liquidity and the economy." },
+        item2: { title: "Investment Banks", desc: "Execute large orders and provide liquidity to the market." },
+        item3: { title: "Investment Funds", desc: "Move billions of dollars between currencies, gold, stocks and bonds." },
+        item4: { title: "Market Makers", desc: "Match buyers and sellers and keep the market moving." },
+        item5: { title: "The Economic Calendar", desc: "The key news that can increase volatility." },
+        item6: { title: "Geopolitical Events", desc: "Wars, elections, sanctions and crises that shift market sentiment." },
+        item7: { title: "Liquidity", desc: "The market's fuel. Without liquidity, the market doesn't move." },
+        item8: { title: "Capital Flow", desc: "Money constantly moves between assets. Understanding the flow = an edge." },
+        item9: { title: "Retail Traders", desc: "Millions of individual traders who contribute to liquidity." },
+        item10: { title: "Algorithms (HFT & AI)", desc: "Execute trades in milliseconds and process massive amounts of data." },
+        cta: "Understand the forces. Follow the market. Trade smart."
       }
     },
     calendar: { eyebrow: "Calendar", title: "Economic Calendar", desc: "Live economic events, updated in real time — powered by TradingView.",
@@ -227,6 +255,20 @@ const translations = {
         philosophyText: "Успешный трейдер не просто смотрит на графики. Он понимает, почему движется рынок. В Treiding Satellite Broadcast мы постоянно анализируем 4 силы, влияющие на рынок Форекс, и передаём эту информацию нашим участникам, чтобы вы принимали взвешенные решения и всегда были на шаг впереди.",
         badge1: "📈 Глубокий анализ", badge2: "🕐 Информация в реальном времени", badge3: "🌐 Глобальное видение", badge4: "🎯 Умные решения",
         disclaimer: "Торговля связана с риском. Прошлые результаты не гарантируют будущих. Информация на этом сайте носит образовательный характер и не является финансовой рекомендацией."
+      },
+      forces: {
+        head: "10 реальных сил на рынке Форекс", subhead: "Кто двигает валютный рынок и почему это важно",
+        item1: { title: "Центральные банки", desc: "Контролируют процентные ставки, ликвидность и экономику." },
+        item2: { title: "Инвестиционные банки", desc: "Исполняют крупные ордера и обеспечивают ликвидность рынка." },
+        item3: { title: "Инвестиционные фонды", desc: "Перемещают миллиарды долларов между валютами, золотом, акциями и облигациями." },
+        item4: { title: "Маркет-мейкеры", desc: "Сводят покупателей и продавцов и поддерживают движение рынка." },
+        item5: { title: "Экономический календарь", desc: "Важные новости, способные усилить волатильность." },
+        item6: { title: "Геополитические события", desc: "Войны, выборы, санкции и кризисы, меняющие настроение рынка." },
+        item7: { title: "Ликвидность", desc: "Топливо рынка. Без ликвидности рынок не двигается." },
+        item8: { title: "Поток капитала", desc: "Деньги постоянно перемещаются между активами. Понимание потока = преимущество." },
+        item9: { title: "Розничные трейдеры", desc: "Миллионы индивидуальных трейдеров, вносящих вклад в ликвидность." },
+        item10: { title: "Алгоритмы (HFT и ИИ)", desc: "Исполняют сделки за миллисекунды и обрабатывают огромные объёмы данных." },
+        cta: "Понимайте силы. Следите за рынком. Торгуйте разумно."
       }
     },
     calendar: { eyebrow: "Календарь", title: "Экономический календарь", desc: "Живые экономические события, обновляются в реальном времени — данные TradingView.",
@@ -303,6 +345,20 @@ const translations = {
         philosophyText: "Успішний трейдер не просто дивиться на графіки. Він розуміє, чому рухається ринок. У Treiding Satellite Broadcast ми постійно аналізуємо 4 сили, що впливають на ринок Форекс, і передаємо цю інформацію нашим учасникам, щоб ви ухвалювали зважені рішення і завжди були на крок попереду.",
         badge1: "📈 Глибокий аналіз", badge2: "🕐 Інформація в реальному часі", badge3: "🌐 Глобальне бачення", badge4: "🎯 Розумні рішення",
         disclaimer: "Торгівля пов'язана з ризиком. Минулі результати не гарантують майбутніх. Інформація на цьому сайті має освітній характер і не є фінансовою рекомендацією."
+      },
+      forces: {
+        head: "10 реальних сил на ринку Форекс", subhead: "Хто рухає валютний ринок і чому це важливо",
+        item1: { title: "Центральні банки", desc: "Контролюють процентні ставки, ліквідність та економіку." },
+        item2: { title: "Інвестиційні банки", desc: "Виконують великі ордери та забезпечують ліквідність ринку." },
+        item3: { title: "Інвестиційні фонди", desc: "Переміщують мільярди доларів між валютами, золотом, акціями та облігаціями." },
+        item4: { title: "Маркет-мейкери", desc: "Зводять покупців і продавців та підтримують рух ринку." },
+        item5: { title: "Економічний календар", desc: "Важливі новини, здатні посилити волатильність." },
+        item6: { title: "Геополітичні події", desc: "Війни, вибори, санкції та кризи, що змінюють настрій ринку." },
+        item7: { title: "Ліквідність", desc: "Паливо ринку. Без ліквідності ринок не рухається." },
+        item8: { title: "Потік капіталу", desc: "Гроші постійно переміщуються між активами. Розуміння потоку = перевага." },
+        item9: { title: "Роздрібні трейдери", desc: "Мільйони індивідуальних трейдерів, що вносять внесок у ліквідність." },
+        item10: { title: "Алгоритми (HFT та ШІ)", desc: "Виконують угоди за мілісекунди та обробляють величезні обсяги даних." },
+        cta: "Розумійте сили. Слідкуйте за ринком. Торгуйте розумно."
       }
     },
     calendar: { eyebrow: "Календар", title: "Економічний календар", desc: "Живі економічні події, оновлюються в реальному часі — дані TradingView.",
@@ -379,6 +435,20 @@ const translations = {
         philosophyText: "Skuteczny trader nie patrzy tylko na wykresy. Rozumie, dlaczego rynek się porusza. W Treiding Satellite Broadcast stale analizujemy 4 siły wpływające na rynek Forex i przekazujemy te informacje naszym członkom, abyś mógł podejmować świadome decyzje i zawsze być o krok do przodu.",
         badge1: "📈 Dogłębna analiza", badge2: "🕐 Informacje w czasie rzeczywistym", badge3: "🌐 Globalna wizja", badge4: "🎯 Inteligentne decyzje",
         disclaimer: "Trading wiąże się z ryzykiem. Wyniki historyczne nie gwarantują przyszłych rezultatów. Informacje na tej stronie mają charakter edukacyjny i nie stanowią porady finansowej."
+      },
+      forces: {
+        head: "10 Realnych Sił na Rynku Forex", subhead: "Kto porusza rynkiem walutowym i dlaczego to ważne",
+        item1: { title: "Banki Centralne", desc: "Kontrolują stopy procentowe, płynność i gospodarkę." },
+        item2: { title: "Banki Inwestycyjne", desc: "Realizują duże zlecenia i zapewniają płynność rynku." },
+        item3: { title: "Fundusze Inwestycyjne", desc: "Przenoszą miliardy dolarów między walutami, złotem, akcjami i obligacjami." },
+        item4: { title: "Market Makerzy", desc: "Łączą kupujących i sprzedających oraz utrzymują ruch na rynku." },
+        item5: { title: "Kalendarz Ekonomiczny", desc: "Ważne wiadomości, które mogą zwiększyć zmienność." },
+        item6: { title: "Wydarzenia Geopolityczne", desc: "Wojny, wybory, sankcje i kryzysy zmieniające nastroje rynkowe." },
+        item7: { title: "Płynność", desc: "Paliwo rynku. Bez płynności rynek się nie porusza." },
+        item8: { title: "Przepływ Kapitału", desc: "Pieniądze wciąż przemieszczają się między aktywami. Zrozumienie przepływu = przewaga." },
+        item9: { title: "Traderzy Detaliczni", desc: "Miliony indywidualnych traderów, którzy przyczyniają się do płynności." },
+        item10: { title: "Algorytmy (HFT i AI)", desc: "Realizują transakcje w milisekundach i przetwarzają ogromne ilości danych." },
+        cta: "Zrozum siły. Obserwuj rynek. Handluj mądrze."
       }
     },
     calendar: { eyebrow: "Kalendarz", title: "Kalendarz ekonomiczny", desc: "Wydarzenia gospodarcze na żywo, aktualizowane w czasie rzeczywistym — dane TradingView.",
