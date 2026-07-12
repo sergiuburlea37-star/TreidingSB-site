@@ -1,3 +1,12 @@
+/* ===================== Google Analytics (GA4) ===================== */
+/* Bootstrap-ul gtag e mutat aici (nu inline in HTML) ca sa respecte CSP-ul
+   strict din vercel.json (script-src nu are 'unsafe-inline'). Scriptul extern
+   gtag.js e incarcat din index.html <head> si e permis explicit in CSP. */
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push(arguments); }
+gtag("js", new Date());
+gtag("config", "G-T7H17JSNZ5");
+
 /* ===================== Mobile menu ===================== */
 const menuButton = document.querySelector(".mobile-toggle");
 const mainNav = document.querySelector(".main-nav");
