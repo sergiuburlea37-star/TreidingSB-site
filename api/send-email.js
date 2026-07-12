@@ -3,6 +3,49 @@
 // Suporta 4 limbi: ro (implicit), en, ru, pl — parametrul "lang"
 // Cheia API este citita din Environment Variable (RESEND_API_KEY), NU din cod.
 
+// ---------- Rate limiting simplu (in-memory, per instanta) ----------
+// Endpoint-ul e public (oricine poate trimite email catre orice adresa prin
+// formularul de abonare), deci fara limitare putea fi folosit ca releu de spam.
+// Nu e un rate-limiter distribuit — se reseteaza la fiecare cold start si nu e
+// partajat intre instante/regiuni Vercel — dar opreste rafalele simple de pe
+// aceeasi conexiune. Pentru protectie robusta pe termen lung, urmatorul pas ar
+// fi Vercel KV / Upstash Redis.
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minute
+const RATE_LIMIT_MAX = 5; // max 5 cereri / IP / fereastra
+const rateLimitStore = new Map();
+
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  return (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const entry = rateLimitStore.get(ip);
+
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitStore.set(ip, { windowStart: now, count: 1 });
+    return false;
+  }
+
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_MAX;
+}
+
+// Curata periodic intrarile vechi ca Map-ul sa nu creasca la nesfarsit intr-o
+// instanta warm de lunga durata.
+function cleanupRateLimitStore() {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitStore.entries()) {
+    if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+      rateLimitStore.delete(ip);
+    }
+  }
+}
+
 // ---------- Texte in cele 4 limbi ----------
 const i18n = {
   ro: {
@@ -64,57 +107,57 @@ function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer) {
   `).join('');
 
   return `
-  <div style="background:#111111;padding:30px 0;font-family:Arial,sans-serif;">
-    <table align="center" cellpadding="0" cellspacing="0" width="700"
-      style="max-width:700px;width:100%;background:#1A1A1A;border-radius:18px;overflow:hidden;">
+    <div style="background:#111111;padding:30px 0;font-family:Arial,sans-serif;">
+      <table align="center" cellpadding="0" cellspacing="0" width="700"
+        style="max-width:700px;width:100%;background:#1A1A1A;border-radius:18px;overflow:hidden;">
 
-      <tr>
-        <td>
-          <img
-            src="https://treidingsb.com/email-banner.jpg"
-            alt="TreidingSB AI"
-            width="700"
-            style="display:block;width:100%;height:auto;border:0;">
-        </td>
-      </tr>
+        <tr>
+          <td>
+            <img
+              src="https://treidingsb.com/email-banner.jpg"
+              alt="TreidingSB AI"
+              width="700"
+              style="display:block;width:100%;height:auto;border:0;">
+          </td>
+        </tr>
 
-      <tr>
-        <td style="padding:35px;">
-          <h2 style="color:#D4AF37;font-size:32px;margin:0 0 20px 0;">
-            ${title}
-          </h2>
+        <tr>
+          <td style="padding:35px;">
+            <h2 style="color:#D4AF37;font-size:32px;margin:0 0 20px 0;">
+              ${title}
+            </h2>
 
-          ${paras}
+            ${paras}
 
-          <div style="margin-top:30px;">
-            <a href="${btnUrl}"
-              style="background:#D4AF37;
-              color:#111111;
-              text-decoration:none;
-              padding:15px 28px;
-              border-radius:8px;
-              font-size:18px;
-              font-weight:bold;
-              display:inline-block;">
-              ${btnText}
-            </a>
-          </div>
-        </td>
-      </tr>
+            <div style="margin-top:30px;">
+              <a href="${btnUrl}"
+                style="background:#D4AF37;
+                color:#111111;
+                text-decoration:none;
+                padding:15px 28px;
+                border-radius:8px;
+                font-size:18px;
+                font-weight:bold;
+                display:inline-block;">
+                ${btnText}
+              </a>
+            </div>
+          </td>
+        </tr>
 
-      <tr>
-        <td style="padding:22px 35px;
-        border-top:1px solid #2B2B2B;
-        color:#8C8C8C;
-        font-size:13px;
-        line-height:1.6;">
-          ${disclaimer}<br>
-          <strong>TreidingSB AI</strong> · AI Trading Intelligence
-        </td>
-      </tr>
+        <tr>
+          <td style="padding:22px 35px;
+            border-top:1px solid #2B2B2B;
+            color:#8C8C8C;
+            font-size:13px;
+            line-height:1.6;">
+            ${disclaimer}<br>
+            <strong>TreidingSB AI</strong> · AI Trading Intelligence
+          </td>
+        </tr>
 
-    </table>
-  </div>`;
+      </table>
+    </div>`;
 }
 
 export default async function handler(req, res) {
@@ -122,6 +165,13 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
+
+  // Rate limiting: max RATE_LIMIT_MAX cereri per IP la fiecare RATE_LIMIT_WINDOW_MS
+  const clientIp = getClientIp(req);
+  if (isRateLimited(clientIp)) {
+    return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+  }
+  if (Math.random() < 0.02) cleanupRateLimitStore();
 
   const { to, type, name, lang } = req.body || {};
 
