@@ -98,6 +98,16 @@ const translations = {
         item9: { title: "Traderii Retail", desc: "Milioane de traderi individuali care contribuie la lichiditate." },
         item10: { title: "Algoritmii (HFT & AI)", desc: "Execută tranzacții în milisecunde și procesează volume uriașe de date." },
         cta: "Înțelege forțele. Urmărește piața. Trading inteligent."
+      },
+      sessions: {
+        head: "Sesiunile de Tranzacționare Forex", subhead: "Piața Forex este deschisă 24 de ore din 24, 5 zile pe săptămână — lichiditatea circulă neîntrerupt între patru mari centre financiare.",
+        session1: { title: "1. Sesiunea Sydney", subtitle: "Prima piață care se deschide", point1: "Deschide săptămâna de tranzacționare, duminică seara ora Europei.", point2: "Volum de tranzacționare redus comparativ cu celelalte sesiuni.", point3: "Se suprapune cu prima parte a sesiunii Tokyo.", examples: "Ore active: 22:00–07:00 UTC · AUD/USD · NZD/USD · AUD/JPY · AUD/NZD", impact: "Mișcările sunt de obicei line, dar pot anticipa tonul general al săptămânii pentru perechile cu AUD și NZD." },
+        session2: { title: "2. Sesiunea Tokyo", subtitle: "Piața asiatică", point1: "Lichiditate moderată, mișcări adesea în interval (range-bound).", point2: "Perechile cu JPY sunt cele mai active în această sesiune.", point3: "Se suprapune parțial cu Sydney și, spre final, cu Londra.", examples: "Ore active: 00:00–09:00 UTC · USD/JPY · EUR/JPY · GBP/JPY · AUD/JPY", impact: "Deciziile Băncii Japoniei (BoJ) și datele economice din China pot mișca puternic piața asiatică." },
+        session3: { title: "3. Sesiunea Londra", subtitle: "Cea mai lichidă sesiune", point1: "Cel mai mare volum zilnic de tranzacționare din toate cele patru sesiuni.", point2: "Stabilește direcția principală a zilei pentru majoritatea perechilor majore.", point3: "Se suprapune câteva ore cu sesiunea New York, spre finalul ei.", examples: "Ore active: 08:00–17:00 UTC · EUR/USD · GBP/USD · EUR/GBP · XAU/USD", impact: "Cele mai mari mișcări de preț ale zilei apar frecvent chiar la deschiderea sesiunii Londra." },
+        session4: { title: "4. Sesiunea New York", subtitle: "Suprapunerea cu volatilitate maximă", point1: "Se suprapune 4–5 ore cu sesiunea Londra — cea mai volatilă perioadă a zilei.", point2: "Datele economice americane majore (NFP, CPI, decizii Fed) sunt publicate în această sesiune.", point3: "Perechile cu USD domină activitatea de tranzacționare.", examples: "Ore active: 13:00–22:00 UTC · EUR/USD · GBP/USD · USD/CAD · XAU/USD", impact: "Suprapunerea Londra–New York (13:00–17:00 UTC) oferă de regulă cele mai bune oportunități de tranzacționare din întreaga zi." },
+        flowTitle: "Ciclul celor 24 de ore", flowText: "Cele patru sesiuni se succed non-stop, astfel încât piața Forex nu se închide niciodată în timpul săptămânii lucrătoare. Cunoașterea programului te ajută să alegi momentul potrivit pentru fiecare pereche valutară.",
+        flow1: "Sydney 22:00 UTC", flow2: "Tokyo 00:00 UTC", flow3: "Londra 08:00 UTC", flow4: "New York 13:00 UTC",
+        disclaimer: "Orele indicate sunt aproximative (UTC, fără ajustare pentru ora de vară) și pot varia ușor în funcție de broker. Trading implică risc. Informațiile au scop educativ și nu reprezintă sfat financiar."
       }
     },
     calendar: { eyebrow: "Calendar", title: "Calendar economic", desc: "Evenimente economice live, actualizate în timp real — sursă TradingView.",
@@ -188,6 +198,16 @@ const translations = {
         item9: { title: "Retail Traders", desc: "Millions of individual traders who contribute to liquidity." },
         item10: { title: "Algorithms (HFT & AI)", desc: "Execute trades in milliseconds and process massive amounts of data." },
         cta: "Understand the forces. Follow the market. Trade smart."
+      },
+      sessions: {
+        head: "Forex Trading Sessions", subhead: "The Forex market is open 24 hours a day, 5 days a week — liquidity flows non-stop between four major financial centers.",
+        session1: { title: "1. Sydney Session", subtitle: "The first market to open", point1: "Opens the trading week, Sunday evening European time.", point2: "Lower trading volume compared to the other sessions.", point3: "Overlaps with the first part of the Tokyo session.", examples: "Active hours: 22:00–07:00 UTC · AUD/USD · NZD/USD · AUD/JPY · AUD/NZD", impact: "Moves are usually calmer, but can set the early tone for AUD and NZD pairs." },
+        session2: { title: "2. Tokyo Session", subtitle: "The Asian market", point1: "Moderate liquidity, often range-bound price action.", point2: "JPY pairs are the most active during this session.", point3: "Partially overlaps with Sydney and, later, with London.", examples: "Active hours: 00:00–09:00 UTC · USD/JPY · EUR/JPY · GBP/JPY · AUD/JPY", impact: "Bank of Japan (BoJ) decisions and Chinese economic data can move the Asian market sharply." },
+        session3: { title: "3. London Session", subtitle: "The most liquid session", point1: "The highest daily trading volume of all four sessions.", point2: "Sets the main direction of the day for most major pairs.", point3: "Overlaps with the New York session for a few hours near its close.", examples: "Active hours: 08:00–17:00 UTC · EUR/USD · GBP/USD · EUR/GBP · XAU/USD", impact: "The biggest price moves of the day often happen right at the London open." },
+        session4: { title: "4. New York Session", subtitle: "Peak volatility overlap", point1: "Overlaps 4–5 hours with London — the most volatile period of the day.", point2: "Major US economic data (NFP, CPI, Fed decisions) is released during this session.", point3: "USD pairs dominate trading activity.", examples: "Active hours: 13:00–22:00 UTC · EUR/USD · GBP/USD · USD/CAD · XAU/USD", impact: "The London–New York overlap (13:00–17:00 UTC) usually offers the best trading opportunities of the day." },
+        flowTitle: "The 24-hour cycle", flowText: "The four sessions follow one another non-stop, so the Forex market never closes during the trading week. Knowing the schedule helps you pick the right time for each currency pair.",
+        flow1: "Sydney 22:00 UTC", flow2: "Tokyo 00:00 UTC", flow3: "London 08:00 UTC", flow4: "New York 13:00 UTC",
+        disclaimer: "Times shown are approximate (UTC, no daylight-saving adjustment) and may vary slightly by broker. Trading involves risk. This information is for educational purposes only and is not financial advice."
       }
     },
     calendar: { eyebrow: "Calendar", title: "Economic Calendar", desc: "Live economic events, updated in real time — powered by TradingView.",
@@ -278,6 +298,16 @@ const translations = {
         item9: { title: "Розничные трейдеры", desc: "Миллионы индивидуальных трейдеров, вносящих вклад в ликвидность." },
         item10: { title: "Алгоритмы (HFT и ИИ)", desc: "Исполняют сделки за миллисекунды и обрабатывают огромные объёмы данных." },
         cta: "Понимайте силы. Следите за рынком. Торгуйте разумно."
+      },
+      sessions: {
+        head: "Торговые сессии Forex", subhead: "Рынок Forex открыт 24 часа в сутки, 5 дней в неделю — ликвидность непрерывно перетекает между четырьмя крупными финансовыми центрами.",
+        session1: { title: "1. Сессия Сидней", subtitle: "Первый открывающийся рынок", point1: "Открывает торговую неделю, в воскресенье вечером по европейскому времени.", point2: "Более низкий объём торгов по сравнению с другими сессиями.", point3: "Пересекается с первой частью сессии Токио.", examples: "Активные часы: 22:00–07:00 UTC · AUD/USD · NZD/USD · AUD/JPY · AUD/NZD", impact: "Движения обычно спокойнее, но могут задать ранний тон для пар с AUD и NZD." },
+        session2: { title: "2. Сессия Токио", subtitle: "Азиатский рынок", point1: "Умеренная ликвидность, часто движение в диапазоне.", point2: "Пары с JPY наиболее активны в этой сессии.", point3: "Частично пересекается с Сиднеем, а позже — с Лондоном.", examples: "Активные часы: 00:00–09:00 UTC · USD/JPY · EUR/JPY · GBP/JPY · AUD/JPY", impact: "Решения Банка Японии (BoJ) и экономические данные из Китая могут сильно двигать азиатский рынок." },
+        session3: { title: "3. Сессия Лондон", subtitle: "Самая ликвидная сессия", point1: "Наибольший дневной объём торгов среди всех четырёх сессий.", point2: "Задаёт основное направление дня для большинства основных пар.", point3: "Пересекается с сессией Нью-Йорка на несколько часов ближе к своему закрытию.", examples: "Активные часы: 08:00–17:00 UTC · EUR/USD · GBP/USD · EUR/GBP · XAU/USD", impact: "Самые крупные движения цены за день часто происходят прямо на открытии Лондона." },
+        session4: { title: "4. Сессия Нью-Йорк", subtitle: "Пересечение с максимальной волатильностью", point1: "Пересекается 4–5 часов с Лондоном — самый волатильный период дня.", point2: "В эту сессию публикуются важные экономические данные США (NFP, CPI, решения ФРС).", point3: "Пары с USD доминируют в торговой активности.", examples: "Активные часы: 13:00–22:00 UTC · EUR/USD · GBP/USD · USD/CAD · XAU/USD", impact: "Пересечение Лондон–Нью-Йорк (13:00–17:00 UTC) обычно даёт лучшие торговые возможности дня." },
+        flowTitle: "Цикл 24 часов", flowText: "Четыре сессии сменяют друг друга без перерыва, поэтому рынок Forex никогда не закрывается в течение торговой недели. Знание расписания помогает выбрать подходящий момент для каждой валютной пары.",
+        flow1: "Сидней 22:00 UTC", flow2: "Токио 00:00 UTC", flow3: "Лондон 08:00 UTC", flow4: "Нью-Йорк 13:00 UTC",
+        disclaimer: "Указанное время приблизительное (UTC, без учёта перехода на летнее время) и может немного отличаться у брокера. Торговля сопряжена с риском. Информация носит образовательный характер и не является финансовой рекомендацией."
       }
     },
     calendar: { eyebrow: "Календарь", title: "Экономический календарь", desc: "Живые экономические события, обновляются в реальном времени — данные TradingView.",
@@ -368,6 +398,16 @@ const translations = {
         item9: { title: "Роздрібні трейдери", desc: "Мільйони індивідуальних трейдерів, що вносять внесок у ліквідність." },
         item10: { title: "Алгоритми (HFT та ШІ)", desc: "Виконують угоди за мілісекунди та обробляють величезні обсяги даних." },
         cta: "Розумійте сили. Слідкуйте за ринком. Торгуйте розумно."
+      },
+      sessions: {
+        head: "Торгові сесії Forex", subhead: "Ринок Forex відкритий 24 години на добу, 5 днів на тиждень — ліквідність безперервно перетікає між чотирма великими фінансовими центрами.",
+        session1: { title: "1. Сесія Сідней", subtitle: "Перший ринок, що відкривається", point1: "Відкриває торговий тиждень у неділю ввечері за європейським часом.", point2: "Нижчий обсяг торгів порівняно з іншими сесіями.", point3: "Перетинається з першою частиною сесії Токіо.", examples: "Активні години: 22:00–07:00 UTC · AUD/USD · NZD/USD · AUD/JPY · AUD/NZD", impact: "Рухи зазвичай спокійніші, але можуть задати ранній тон для пар з AUD і NZD." },
+        session2: { title: "2. Сесія Токіо", subtitle: "Азійський ринок", point1: "Помірна ліквідність, часто рух у діапазоні.", point2: "Пари з JPY найактивніші в цій сесії.", point3: "Частково перетинається з Сіднеєм, а пізніше — з Лондоном.", examples: "Активні години: 00:00–09:00 UTC · USD/JPY · EUR/JPY · GBP/JPY · AUD/JPY", impact: "Рішення Банку Японії (BoJ) та економічні дані з Китаю можуть сильно рухати азійський ринок." },
+        session3: { title: "3. Сесія Лондон", subtitle: "Найліквідніша сесія", point1: "Найбільший денний обсяг торгів серед усіх чотирьох сесій.", point2: "Задає основний напрямок дня для більшості основних пар.", point3: "Перетинається із сесією Нью-Йорка на кілька годин ближче до свого закриття.", examples: "Активні години: 08:00–17:00 UTC · EUR/USD · GBP/USD · EUR/GBP · XAU/USD", impact: "Найбільші рухи ціни за день часто відбуваються саме на відкритті Лондона." },
+        session4: { title: "4. Сесія Нью-Йорк", subtitle: "Перетин з максимальною волатильністю", point1: "Перетинається 4–5 годин з Лондоном — найволатильніший період дня.", point2: "У цю сесію публікуються важливі економічні дані США (NFP, CPI, рішення ФРС).", point3: "Пари з USD домінують у торговій активності.", examples: "Активні години: 13:00–22:00 UTC · EUR/USD · GBP/USD · USD/CAD · XAU/USD", impact: "Перетин Лондон–Нью-Йорк (13:00–17:00 UTC) зазвичай дає найкращі торгові можливості дня." },
+        flowTitle: "Цикл 24 годин", flowText: "Чотири сесії змінюють одна одну без перерви, тому ринок Forex ніколи не закривається протягом торгового тижня. Знання розкладу допомагає обрати відповідний момент для кожної валютної пари.",
+        flow1: "Сідней 22:00 UTC", flow2: "Токіо 00:00 UTC", flow3: "Лондон 08:00 UTC", flow4: "Нью-Йорк 13:00 UTC",
+        disclaimer: "Зазначений час є приблизним (UTC, без урахування переходу на літній час) і може дещо відрізнятися залежно від брокера. Торгівля пов'язана з ризиком. Інформація має освітній характер і не є фінансовою порадою."
       }
     },
     calendar: { eyebrow: "Календар", title: "Економічний календар", desc: "Живі економічні події, оновлюються в реальному часі — дані TradingView.",
@@ -458,6 +498,16 @@ const translations = {
         item9: { title: "Traderzy Detaliczni", desc: "Miliony indywidualnych traderów, którzy przyczyniają się do płynności." },
         item10: { title: "Algorytmy (HFT i AI)", desc: "Realizują transakcje w milisekundach i przetwarzają ogromne ilości danych." },
         cta: "Zrozum siły. Obserwuj rynek. Handluj mądrze."
+      },
+      sessions: {
+        head: "Sesje handlowe Forex", subhead: "Rynek Forex jest otwarty 24 godziny na dobę, 5 dni w tygodniu — płynność przepływa nieprzerwanie między czterema głównymi centrami finansowymi.",
+        session1: { title: "1. Sesja Sydney", subtitle: "Pierwszy otwierający się rynek", point1: "Otwiera tydzień handlowy w niedzielny wieczór czasu europejskiego.", point2: "Niższy wolumen obrotu w porównaniu z pozostałymi sesjami.", point3: "Nakłada się na pierwszą część sesji tokijskiej.", examples: "Aktywne godziny: 22:00–07:00 UTC · AUD/USD · NZD/USD · AUD/JPY · AUD/NZD", impact: "Ruchy są zwykle spokojniejsze, ale mogą nadać wczesny ton dla par z AUD i NZD." },
+        session2: { title: "2. Sesja Tokio", subtitle: "Rynek azjatycki", point1: "Umiarkowana płynność, ruch cen często w zakresie (range-bound).", point2: "Pary z JPY są najbardziej aktywne w tej sesji.", point3: "Częściowo nakłada się na Sydney, a później na Londyn.", examples: "Aktywne godziny: 00:00–09:00 UTC · USD/JPY · EUR/JPY · GBP/JPY · AUD/JPY", impact: "Decyzje Banku Japonii (BoJ) i dane gospodarcze z Chin mogą mocno poruszyć rynek azjatycki." },
+        session3: { title: "3. Sesja Londyn", subtitle: "Najbardziej płynna sesja", point1: "Największy dzienny wolumen obrotu spośród wszystkich czterech sesji.", point2: "Wyznacza główny kierunek dnia dla większości głównych par.", point3: "Nakłada się na sesję nowojorską przez kilka godzin bliżej jej zamknięcia.", examples: "Aktywne godziny: 08:00–17:00 UTC · EUR/USD · GBP/USD · EUR/GBP · XAU/USD", impact: "Największe ruchy cen w ciągu dnia często pojawiają się tuż po otwarciu sesji londyńskiej." },
+        session4: { title: "4. Sesja Nowy Jork", subtitle: "Nakładanie się z maksymalną zmiennością", point1: "Nakłada się na 4–5 godzin z Londynem — najbardziej zmienny okres dnia.", point2: "W tej sesji publikowane są najważniejsze dane gospodarcze USA (NFP, CPI, decyzje Fed).", point3: "Pary z USD dominują aktywność handlową.", examples: "Aktywne godziny: 13:00–22:00 UTC · EUR/USD · GBP/USD · USD/CAD · XAU/USD", impact: "Nakładanie się Londyn–Nowy Jork (13:00–17:00 UTC) zwykle oferuje najlepsze okazje handlowe dnia." },
+        flowTitle: "Cykl 24 godzin", flowText: "Cztery sesje następują po sobie nieprzerwanie, dzięki czemu rynek Forex nigdy nie zamyka się w trakcie tygodnia handlowego. Znajomość harmonogramu pomaga wybrać właściwy moment dla każdej pary walutowej.",
+        flow1: "Sydney 22:00 UTC", flow2: "Tokio 00:00 UTC", flow3: "Londyn 08:00 UTC", flow4: "Nowy Jork 13:00 UTC",
+        disclaimer: "Podane godziny są przybliżone (UTC, bez uwzględnienia czasu letniego) i mogą się nieznacznie różnić w zależności od brokera. Handel wiąże się z ryzykiem. Informacje mają charakter edukacyjny i nie stanowią porady finansowej."
       }
     },
     calendar: { eyebrow: "Kalendarz", title: "Kalendarz ekonomiczny", desc: "Wydarzenia gospodarcze na żywo, aktualizowane w czasie rzeczywistym — dane TradingView.",
