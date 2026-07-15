@@ -247,6 +247,109 @@
 
     <section id="reports" class="section reports-section"><div class="content-shell"><div class="section-head"><span class="eyebrow orange" data-i18n="reports.eyebrow">Rapoarte</span><h2 data-i18n="reports.title">Rapoarte săptămânale</h2><p data-i18n="reports.desc">Analize tehnice, context de piață și perspective pentru săptămâna următoare.</p></div><div class="report-locked" id="reportLocked"><div class="report-locked-icon">🔒</div><p data-i18n="reports.lockedText">Conținutul este disponibil exclusiv membrilor. Accesează secțiunea Idei de tranzacționare pentru a introduce parola.</p><a href="#ideas" class="btn secondary" data-i18n="reports.lockedLink">Mergi la acces membri</a></div><div class="report-panel" id="reportPanel" hidden><div><h3 data-i18n="reports.panelTitle">Analiză săptămânală</h3><p data-i18n="reports.panelDesc">O imagine completă asupra piețelor financiare pentru săptămâna curentă.</p><p class="report-status" id="reportStatus" data-i18n="reports.loading">Se caută cel mai recent raport...</p></div><a href="https://github.com/sergiuburlea37-star/treidingsb-reports/tree/main/reports" target="_blank" rel="noopener noreferrer" class="btn outline is-loading" id="reportDownloadLink" data-i18n="reports.btn">Descarcă raportul PDF</a></div></div></section>
     <section id="education" class="section education-section"><div class="content-shell wide"><div class="section-head"><span class="eyebrow" data-i18n="education.eyebrow">Educație</span><h2 data-i18n="education.title">Educație de bază</h2><p data-i18n="education.desc">Învață cum funcționează piața, cine formează lichiditatea și cum gestionezi riscul.</p></div>
+      <article class="lesson-card calendar-lesson">
+        <h4 class="lesson-actors-head" data-i18n="education.forexBasics.head">Bazele Pieței Forex — Lecția 1</h4>
+        <p class="calendar-lesson-subhead" data-i18n="education.forexBasics.subhead">Înainte de orice tranzacție, un trader trebuie să înțeleagă mecanismele de bază ale pieței Forex — de la perechi valutare până la efectul de levier și managementul volumului.</p>
+        <div class="lesson-actors-grid">
+          <article class="lesson-actor-card">
+            <img src="assets/forexbasics-1-forex.jpg" alt="" loading="lazy" />
+            <h5 data-i18n="education.forexBasics.item1.title">1. Ce este Forex?</h5>
+            <p class="lesson-actor-sub" data-i18n="education.forexBasics.item1.subtitle">Foreign Exchange — piața globală a valutelor</p>
+            <ul>
+              <li data-i18n="education.forexBasics.item1.point1">Forex reprezintă schimbul unei monede în alta — pe această piață se tranzacționează perechi precum EUR/USD, GBP/USD sau USD/JPY.</li>
+              <li data-i18n="education.forexBasics.item1.point2">Nu există o bursă centrală. Tranzacțiile circulă printr-o rețea globală: bănci, fonduri de investiții, companii, brokeri, bănci centrale și traderi individuali.</li>
+              <li data-i18n="education.forexBasics.item1.point3">Fiind descentralizată, piața Forex este deschisă aproape non-stop, 5 zile pe săptămână, cu lichiditate diferită în funcție de sesiune.</li>
+            </ul>
+            <div class="lesson-examples"><span data-i18n="education.lesson.examplesLabel">Exemple:</span> <span data-i18n="education.forexBasics.item1.examples">EUR/USD · GBP/USD · USD/JPY — cele mai tranzacționate perechi valutare</span></div>
+            <div class="lesson-impact"><strong data-i18n="education.lesson.impactLabel">Impact:</strong> <span data-i18n="education.forexBasics.item1.impact">Înțelegerea structurii pieței te ajută să știi cine mișcă prețul și de ce lichiditatea variază pe parcursul zilei.</span></div>
+          </article>
+          <article class="lesson-actor-card">
+            <img src="assets/forexbasics-2-pair.jpg" alt="" loading="lazy" />
+            <h5 data-i18n="education.forexBasics.item2.title">2. Perechea Valutară</h5>
+            <p class="lesson-actor-sub" data-i18n="education.forexBasics.item2.subtitle">O monedă comparată cu alta</p>
+            <ul>
+              <li data-i18n="education.forexBasics.item2.point1">La EUR/USD = 1,1500, un euro valorează 1,15 dolari americani. EUR este moneda de bază, USD este moneda cotată.</li>
+              <li data-i18n="education.forexBasics.item2.point2">Perechi majore (conțin USD, lichiditate ridicată): EUR/USD, GBP/USD, USD/JPY, USD/CHF, AUD/USD, USD/CAD, NZD/USD.</li>
+              <li data-i18n="education.forexBasics.item2.point3">Perechi minore (fără USD): EUR/GBP, EUR/JPY, GBP/JPY. Perechi exotice: combină o monedă majoră cu una a unei economii mai mici — spread și volatilitate de obicei mai mari.</li>
+            </ul>
+            <div class="lesson-examples"><span data-i18n="education.lesson.examplesLabel">Exemple:</span> <span data-i18n="education.forexBasics.item2.examples">Dacă EUR/USD crește, euro se întărește față de dolar; dacă scade, euro slăbește</span></div>
+            <div class="lesson-impact"><strong data-i18n="education.lesson.impactLabel">Impact:</strong> <span data-i18n="education.forexBasics.item2.impact">Tipul perechii (majoră, minoră, exotică) influențează direct spread-ul și costul fiecărei tranzacții.</span></div>
+          </article>
+          <article class="lesson-actor-card">
+            <img src="assets/forexbasics-3-buysell.jpg" alt="" loading="lazy" />
+            <h5 data-i18n="education.forexBasics.item3.title">3. BUY și SELL</h5>
+            <p class="lesson-actor-sub" data-i18n="education.forexBasics.item3.subtitle">Direcția tranzacției</p>
+            <ul>
+              <li data-i18n="education.forexBasics.item3.point1">Deschizi BUY când analiza indică faptul că moneda de bază se poate aprecia față de moneda cotată — la BUY EUR/USD anticipezi că EUR se va întări față de USD.</li>
+              <li data-i18n="education.forexBasics.item3.point2">Deschizi SELL când analiza indică o depreciere a monedei de bază — la SELL EUR/USD anticipezi că EUR va slăbi față de USD.</li>
+              <li data-i18n="education.forexBasics.item3.point3">Nu e suficient să presupui direcția. Înaintea intrării trebuie stabilite: motivul intrării, nivelul de invalidare, Stop Loss, Take Profit, volumul și riscul maxim acceptat.</li>
+            </ul>
+            <div class="lesson-examples"><span data-i18n="education.lesson.examplesLabel">Exemple:</span> <span data-i18n="education.forexBasics.item3.examples">BUY = anticipezi creștere · SELL = anticipezi scădere a monedei de bază</span></div>
+            <div class="lesson-impact"><strong data-i18n="education.lesson.impactLabel">Impact:</strong> <span data-i18n="education.forexBasics.item3.impact">Un plan clar de intrare/ieșire, stabilit înainte de tranzacție, elimină deciziile emoționale luate în timp real.</span></div>
+          </article>
+          <article class="lesson-actor-card">
+            <img src="assets/forexbasics-4-lot.jpg" alt="" loading="lazy" />
+            <h5 data-i18n="education.forexBasics.item4.title">4. Ce este Lotul?</h5>
+            <p class="lesson-actor-sub" data-i18n="education.forexBasics.item4.subtitle">Volumul poziției tale</p>
+            <ul>
+              <li data-i18n="education.forexBasics.item4.point1">Lot standard (1,00) = 100.000 unități din moneda de bază · Mini lot (0,10) = 10.000 · Micro lot (0,01) = 1.000.</li>
+              <li data-i18n="education.forexBasics.item4.point2">Un lot mai mare produce o variație mai mare a profitului sau pierderii pentru aceeași mișcare a prețului.</li>
+              <li data-i18n="education.forexBasics.item4.point3">Volumul nu se alege după profitul dorit — se calculează în funcție de soldul contului, riscul procentual, distanța până la Stop Loss, valoarea pipului și moneda contului.</li>
+            </ul>
+            <div class="lesson-examples"><span data-i18n="education.lesson.examplesLabel">Exemple:</span> <span data-i18n="education.forexBasics.item4.examples">1,00 lot standard = 100.000 · 0,10 mini lot = 10.000 · 0,01 micro lot = 1.000 unități</span></div>
+            <div class="lesson-impact"><strong data-i18n="education.lesson.impactLabel">Impact:</strong> <span data-i18n="education.forexBasics.item4.impact">Volumul corect, calculat pe baza riscului, este ce separă un plan de trading disciplinat de un pariu.</span></div>
+          </article>
+        </div>
+        <h4 class="lesson-actors-head" data-i18n="education.forexBasics.conceptsHead">Alte concepte esențiale</h4>
+        <div class="lesson-concepts-grid">
+          <article class="lesson-concept-card">
+            <h5 data-i18n="education.forexBasics.concept1.title">Bid, Ask și Spread</h5>
+            <p data-i18n="education.forexBasics.concept1.text">Bid este prețul la care poți vinde, Ask prețul la care poți cumpăra, iar Spread-ul este diferența dintre ele (ex: Bid 1,1500 / Ask 1,1502 = spread de 2 pipși). Spread-ul e un cost de tranzacție și poate crește în perioadele cu lichiditate redusă sau la știri importante.</p>
+          </article>
+          <article class="lesson-concept-card">
+            <h5 data-i18n="education.forexBasics.concept2.title">Ce este un Pip?</h5>
+            <p data-i18n="education.forexBasics.concept2.text">Pip-ul este unitatea de măsură a mișcării prețului — pentru majoritatea perechilor, 1 pip = 0,0001 (pentru perechile cu JPY, de obicei 0,01). La XAU/USD, termenii pip/point/tick pot diferi între brokeri — verifică mereu specificațiile simbolului în MT5.</p>
+          </article>
+          <article class="lesson-concept-card">
+            <h5 data-i18n="education.forexBasics.concept3.title">Ce este Marja?</h5>
+            <p data-i18n="education.forexBasics.concept3.text">Marja este suma blocată de broker pentru menținerea unei poziții cu efect de levier. Nu reprezintă pierderea maximă — pierderea reală depinde de volum, mișcarea prețului, Stop Loss, spread, comisioane și eventualul slippage.</p>
+          </article>
+          <article class="lesson-concept-card">
+            <h5 data-i18n="education.forexBasics.concept4.title">Ce este Efectul de Levier?</h5>
+            <p data-i18n="education.forexBasics.concept4.text">Levierul permite controlarea unei poziții mai mari cu o sumă mai mică din cont (ex: la 1:30, fiecare unitate de marjă poate controla o expunere de până la 30). Levierul amplifică atât profitul, cât și pierderea — CFTC avertizează că levierul ridicat poate amplifica rapid pierderile, iar FCA clasifică CFD-urile drept produse cu risc ridicat.</p>
+          </article>
+          <article class="lesson-concept-card">
+            <h5 data-i18n="education.forexBasics.concept5.title">Ce Influențează Cursurile Valutare?</h5>
+            <p data-i18n="education.forexBasics.concept5.text">Prețul unei monede poate fi influențat de ratele dobânzilor, inflație, date privind locurile de muncă, creșterea economică, declarațiile băncilor centrale, riscul geopolitic, cererea și oferta și sentimentul investitorilor — de aceea calendarul economic trebuie verificat înaintea oricărei tranzacții.</p>
+          </article>
+        </div>
+        <div class="lesson-checklist">
+          <h4 data-i18n="education.forexBasics.checklistTitle">Checklist pentru începători</h4>
+          <ul>
+            <li data-i18n="education.forexBasics.check1">☐ Înțeleg perechea tranzacționată?</li>
+            <li data-i18n="education.forexBasics.check2">☐ Știu care este moneda de bază?</li>
+            <li data-i18n="education.forexBasics.check3">☐ Am un motiv clar pentru BUY sau SELL?</li>
+            <li data-i18n="education.forexBasics.check4">☐ Am verificat spread-ul?</li>
+            <li data-i18n="education.forexBasics.check5">☐ Am verificat calendarul economic?</li>
+            <li data-i18n="education.forexBasics.check6">☐ Am stabilit Stop Loss-ul?</li>
+            <li data-i18n="education.forexBasics.check7">☐ Am calculat volumul?</li>
+            <li data-i18n="education.forexBasics.check8">☐ Riscul nu depășește regula planului meu?</li>
+            <li data-i18n="education.forexBasics.check9">☐ Accept pierderea posibilă înainte de intrare?</li>
+          </ul>
+        </div>
+        <div class="lesson-quiz">
+          <h4 data-i18n="education.forexBasics.quizTitle">Mini-test</h4>
+          <ol>
+            <li data-i18n="education.forexBasics.q1">Care este moneda de bază în GBP/USD?</li>
+            <li data-i18n="education.forexBasics.q2">Ce anticipezi când deschizi BUY EUR/USD?</li>
+            <li data-i18n="education.forexBasics.q3">Care este diferența dintre Bid și Ask?</li>
+            <li data-i18n="education.forexBasics.q4">Ce se întâmplă cu riscul atunci când mărești lotul?</li>
+            <li data-i18n="education.forexBasics.q5">Levierul amplifică doar profitul sau și pierderea?</li>
+          </ol>
+          <p class="lesson-quiz-answers" data-i18n="education.forexBasics.answers">Răspunsuri: GBP · aprecierea EUR față de USD · Bid e prețul de vânzare, Ask e prețul de cumpărare · riscul crește · amplifică atât profitul, cât și pierderea.</p>
+        </div>
+        <p class="lesson-disclaimer" data-i18n="education.forexBasics.disclaimer">Informațiile din această lecție au scop educativ și nu constituie sfat financiar. Trading implică risc, inclusiv pierderea parțială sau totală a capitalului investit. Primul obiectiv nu este câștigul rapid, ci înțelegerea mecanismului și protejarea capitalului.</p>
+      </article>
       <article class="lesson-card">
         <div class="lesson-intro">
           <img class="lesson-hero-img" src="assets/education-hero-robot.jpg" alt="" loading="lazy" />
