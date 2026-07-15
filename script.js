@@ -23,6 +23,17 @@ if (menuButton && mainNav) {
   });
 }
 
+/* ===================== FAQ accordion ===================== */
+document.querySelectorAll(".faq-question").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const item = btn.closest(".faq-item");
+    const answer = item.querySelector(".faq-answer");
+    const isOpen = item.classList.toggle("is-open");
+    btn.setAttribute("aria-expanded", String(isOpen));
+    answer.style.maxHeight = isOpen ? answer.scrollHeight + "px" : "0px";
+  });
+});
+
 /* ===================== i18n ===================== */
 /* ISO country codes used by flagcdn.com for each site language (en -> gb flag) */
 const FLAGS = { ro: "ro", en: "gb", ru: "ru", uk: "ua", pl: "pl" };
@@ -34,7 +45,7 @@ const translations = {
   ro: {
     riskStrip: "⚠️ Risc: Tranzacționarea CFD implică risc ridicat de pierdere. Site informativ independent.",
     mobileToggle: "Deschide meniul",
-    nav: { home: "⌂ Home", about: "◎ Despre noi", ideas: "⌁ Idei de tranzacționare", portfolioUs: "$ Portofoliu US", portfolioEu: "€ Portofoliu EU", reports: "▤ Rapoarte", education: "◈ Educație", calendar: "▦ Calendar economic", contact: "✉ Contact" },
+    nav: { home: "⌂ Home", about: "◎ Despre noi", ideas: "⌁ Idei de tranzacționare", portfolioUs: "$ Portofoliu US", portfolioEu: "€ Portofoliu EU", reports: "▤ Rapoarte", education: "◈ Educație", calendar: "▦ Calendar economic", faq: "❓ FAQ", contact: "✉ Contact" },
     memberButton: "♙ Cont membru",
     hero: {
       pill: "Idei de tranzacționare active · Membri",
@@ -238,6 +249,22 @@ const translations = {
       }
     },
     contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact pentru membri, rapoarte și idei de tranzacționare.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    faq: {
+      eyebrow: "❓ FAQ", title: "Întrebări Frecvente", desc: "Răspunsuri directe la cele mai frecvente întrebări despre echipă, semnale și rapoarte.",
+      q1: "Sunteți o companie?", a1: "Nu, nu suntem o companie — suntem o echipă independentă de traderi.",
+      q2: "Unde este sediul vostru?", a2: "Nu avem un sediu fizic. Ne coordonăm în spațiul online, prin Zoom, Discord și Telegram.",
+      q3: "Ce experiență aveți?", a3: "De peste 10 ani analizăm piețele financiare, filtrăm mișcările bursei de valori și intrăm în poziții atunci când acestea încep să se contureze.",
+      q4: "Pe ce se bazează rapoartele voastre?", a4: "Pe colectarea de date din peste 50 de surse și pe concluziile trase din evenimentele economice și financiare care apar.",
+      q5: "Ce piețe/instrumente tranzacționați?", a5: "Nu ne limităm la un singur instrument. Urmărim întreaga piață financiară și ne orientăm spre zonele unde apar mișcări relevante, în funcție de context.",
+      q6: "Câți membri sunteți?", a6: "Suntem o echipă de 7 membri.",
+      q7: "Garantați profitul semnalelor?", a7: "Nu, nu putem garanta profitul. Publicăm însă un statement lunar direct din terminalul de tranzacționare, iar concluziile sunt generate cu ajutorul AI și afișează datele reale, fără modificări — inclusiv rezultatele negative.",
+      q8: "Cât de des dați semnale?", a8: "Semnalele sunt oferite doar atunci când strategiile noastre identifică oportunități de tip swing — nu publicăm semnale artificial, doar pentru frecvență.",
+      q9: "Toate lunile sunt profitabile?", a9: "Nu, nu toate lunile din an sunt profitabile. Pe baza mai multor conturi, obținem însă un profit minim de 2–7%, chiar și în cel mai slab scenariu, raportat strict la anul curent.",
+      q10: "Pe ce platformă primesc semnalele?", a10: "Direct pe site-ul nostru, în secțiunea de membru.",
+      q11: "Am nevoie de experiență ca să urmez semnalele?", a11: "Da, ai nevoie cel puțin de cunoștințe despre terminalul de tranzacționare și despre activul tranzacționat — le găsești pe toate în secțiunea noastră de educație.",
+      q12: "Cum pot face parte din echipă?", a12: "Doar în urma unei discuții individuale și a unui statement pe cont real, urmărit timp de o lună. La aprobare, primești acces la un cont real și la serviciile noastre, cu rapoarte mai detaliate."
+    },
+
     portfolio: { statCapital: "Capital Total", statStocksEtf: "Acțiuni / ETF", statInstruments: "Instrumente", statReturn: "Randament anual", statVolatility: "Volatilitate", statHorizon: "Orizont", statBuffer: "Buffer Defensiv", tableHead: "Detalii complete — toate pozițiile", colTicker: "Ticker", colInstrument: "Instrument", colType: "Tip", colSector: "Sector", colRisk: "Risc", disclaimerLabel: "Disclaimer:", swipeHint: "← Glisează pentru mai multe →" },
     portfolioUs: { eyebrow: "Portofoliu", title: "Portofoliu US", desc: "Portofoliu diversificat demonstrativ, risc moderat, orizont 3–5 ani · Fondat 17.06.2026", disclaimer: "Portofoliu demonstrativ cu scop educativ. Nu constituie consiliere de investiții. Consultă un advisor financiar autorizat FCA înainte de a investi. Performanțele trecute nu garantează rezultate viitoare." },
     portfolioEu: { eyebrow: "Portofoliu", title: "Portofoliu European Moderat+", desc: "Strategie pe 3–5 ani, intrare în tranșe, control al riscului · Fondat 17.06.2026", statAssets: "Active Totale", statStocks: "Acțiuni Individuale", statMaxPos: "Max. per Poziție", regionEurope: "Europa (Core)", regionUs: "SUA / Tech Global", tableHead: "Toate pozițiile — privire de ansamblu", colCompany: "Companie", bufferHead: "Componente Buffer Defensiv", colComponent: "Componentă", colEstReturn: "Randament Est.", colLiquidity: "Lichiditate", tranche1: "Tranșa 1", tranche1Desc: "Intrare inițială în pozițiile core (ASML, SAP, L'Oréal, Apple, ETF buffer). Cumperi doar dacă setup-ul tehnic este acceptabil — fără grabă.", tranche2: "Tranșa 2", tranche2Desc: "După confirmări: trend peste mediile mobile, rezultate financiare bune, fără șocuri macro. Adaugi SPCX, Google, Safran, Prysmian.", tranche3: "Tranșa 3", tranche3Desc: "Rezervată pentru corecții, pullback-uri sau rotații sectoriale. Cea mai mare tranșă — pentru că piața îți va oferi oportunități mai bune decât astăzi.", disclaimer: "Document cu scop educațional și informativ — nu reprezintă recomandare de investiții personalizată. Verifică prețurile, comisioanele, taxele și riscurile înainte de orice decizie. Performanțele trecute nu garantează rezultate viitoare." }
@@ -245,7 +272,7 @@ const translations = {
   en: {
     riskStrip: "⚠️ Risk: CFD trading carries a high risk of loss. Independent informational site.",
     mobileToggle: "Open menu",
-    nav: { home: "⌂ Home", about: "◎ About Us", ideas: "⌁ Trade Ideas", portfolioUs: "$ US Portfolio", portfolioEu: "€ EU Portfolio", reports: "▤ Reports", education: "◈ Education", calendar: "▦ Economic Calendar", contact: "✉ Contact" },
+    nav: { home: "⌂ Home", about: "◎ About Us", ideas: "⌁ Trade Ideas", portfolioUs: "$ US Portfolio", portfolioEu: "€ EU Portfolio", reports: "▤ Reports", education: "◈ Education", calendar: "▦ Economic Calendar", faq: "❓ FAQ", contact: "✉ Contact" },
     memberButton: "♙ Member Area",
     hero: {
       pill: "Active trade ideas · Members",
@@ -449,6 +476,22 @@ const translations = {
       }
     },
     contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact for members, reports and trade ideas.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    faq: {
+      eyebrow: "❓ FAQ", title: "Frequently Asked Questions", desc: "Direct answers to the most common questions about the team, signals and reports.",
+      q1: "Are you a company?", a1: "No, we're not a company — we're an independent team of traders.",
+      q2: "Where is your headquarters?", a2: "We don't have a physical office. We coordinate online, through Zoom, Discord and Telegram.",
+      q3: "What experience do you have?", a3: "For over 10 years we've been analyzing financial markets, filtering stock market movements and entering positions as they start to take shape.",
+      q4: "What are your reports based on?", a4: "On data collected from over 50 sources and on conclusions drawn from the economic and financial events that occur.",
+      q5: "What markets/instruments do you trade?", a5: "We don't limit ourselves to a single instrument. We follow the entire financial market and focus on the areas where relevant moves appear, depending on context.",
+      q6: "How many members are you?", a6: "We're a team of 7 members.",
+      q7: "Do you guarantee the profitability of the signals?", a7: "No, we can't guarantee profit. We do publish a monthly statement directly from the trading terminal, and the conclusions are generated with the help of AI and show the real data, unmodified — including negative results.",
+      q8: "How often do you give signals?", a8: "Signals are only given when our strategies identify swing-type opportunities — we don't publish signals artificially, just to keep up a frequency.",
+      q9: "Are all months profitable?", a9: "No, not every month of the year is profitable. Based on multiple accounts, we do achieve a minimum profit of 2–7%, even in the worst-case scenario, strictly for the current year.",
+      q10: "Which platform do I receive signals on?", a10: "Directly on our site, in the member section.",
+      q11: "Do I need experience to follow the signals?", a11: "Yes, you need at least knowledge of the trading terminal and of the asset being traded — you'll find all of it in our education section.",
+      q12: "How can I join the team?", a12: "Only after an individual conversation and a real-account statement, tracked over one month. Upon approval, you get access to a real account and to our services, with more detailed reports."
+    },
+
     portfolio: { statCapital: "Total Capital", statStocksEtf: "Stocks / ETF", statInstruments: "Instruments", statReturn: "Annual Return", statVolatility: "Volatility", statHorizon: "Horizon", statBuffer: "Defensive Buffer", tableHead: "Full details — all positions", colTicker: "Ticker", colInstrument: "Instrument", colType: "Type", colSector: "Sector", colRisk: "Risk", disclaimerLabel: "Disclaimer:", swipeHint: "← Swipe for more →" },
     portfolioUs: { eyebrow: "Portfolio", title: "US Portfolio", desc: "Demonstration diversified portfolio, moderate risk, 3–5 year horizon · Founded 17.06.2026", disclaimer: "Demonstration portfolio for educational purposes. Not investment advice. Consult an FCA-authorised financial advisor before investing. Past performance does not guarantee future results." },
     portfolioEu: { eyebrow: "Portfolio", title: "European Moderate+ Portfolio", desc: "3–5 year strategy, phased entry, risk control · Founded 17.06.2026", statAssets: "Total Assets", statStocks: "Individual Stocks", statMaxPos: "Max. per Position", regionEurope: "Europe (Core)", regionUs: "US / Global Tech", tableHead: "All positions — overview", colCompany: "Company", bufferHead: "Defensive Buffer Components", colComponent: "Component", colEstReturn: "Est. Return", colLiquidity: "Liquidity", tranche1: "Tranche 1", tranche1Desc: "Initial entry into core positions (ASML, SAP, L'Oréal, Apple, buffer ETF). Buy only if the technical setup is acceptable — no rush.", tranche2: "Tranche 2", tranche2Desc: "After confirmations: trend above moving averages, good earnings, no macro shocks. Add SPCX, Google, Safran, Prysmian.", tranche3: "Tranche 3", tranche3Desc: "Reserved for corrections, pullbacks or sector rotations. The largest tranche — because the market will offer better opportunities than today.", disclaimer: "Educational and informational document — not personalised investment advice. Check prices, fees, taxes and risks before any decision. Past performance does not guarantee future results." }
@@ -456,7 +499,7 @@ const translations = {
   ru: {
     riskStrip: "⚠️ Риск: Торговля CFD сопряжена с высоким риском потерь. Независимый информационный сайт.",
     mobileToggle: "Открыть меню",
-    nav: { home: "⌂ Главная", about: "◎ О нас", ideas: "⌁ Торговые идеи", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Отчёты", education: "◈ Обучение", calendar: "▦ Экономический календарь", contact: "✉ Контакты" },
+    nav: { home: "⌂ Главная", about: "◎ О нас", ideas: "⌁ Торговые идеи", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Отчёты", education: "◈ Обучение", calendar: "▦ Экономический календарь", faq: "❓ FAQ", contact: "✉ Контакты" },
     memberButton: "♙ Личный кабинет",
     hero: {
       pill: "Активные торговые идеи · Участники",
@@ -660,6 +703,22 @@ const translations = {
       }
     },
     contact: { eyebrow: "Контакты", title: "Контакты TreidingSB", desc: "Контакты для участников, отчётов и торговых идей.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    faq: {
+      eyebrow: "❓ FAQ", title: "Часто задаваемые вопросы", desc: "Прямые ответы на самые частые вопросы о команде, сигналах и отчётах.",
+      q1: "Вы компания?", a1: "Нет, мы не компания — мы независимая команда трейдеров.",
+      q2: "Где находится ваш офис?", a2: "У нас нет физического офиса. Мы координируемся онлайн, через Zoom, Discord и Telegram.",
+      q3: "Какой у вас опыт?", a3: "Уже более 10 лет мы анализируем финансовые рынки, отслеживаем движения биржи и открываем позиции, когда они начинают формироваться.",
+      q4: "На чём основаны ваши отчёты?", a4: "На сборе данных из более чем 50 источников и на выводах, сделанных на основе происходящих экономических и финансовых событий.",
+      q5: "На каких рынках/инструментах вы торгуете?", a5: "Мы не ограничиваемся одним инструментом. Мы следим за всем финансовым рынком и фокусируемся на зонах, где появляются значимые движения, в зависимости от контекста.",
+      q6: "Сколько вас в команде?", a6: "Мы команда из 7 человек.",
+      q7: "Вы гарантируете прибыльность сигналов?", a7: "Нет, мы не можем гарантировать прибыль. Однако мы публикуем ежемесячный отчёт напрямую из торгового терминала, а выводы формируются с помощью ИИ и показывают реальные данные без изменений — включая отрицательные результаты.",
+      q8: "Как часто вы даёте сигналы?", a8: "Сигналы даются только тогда, когда наши стратегии определяют возможности свинг-типа — мы не публикуем сигналы искусственно, просто ради частоты.",
+      q9: "Все месяцы прибыльны?", a9: "Нет, не каждый месяц года прибыльный. На основе нескольких счетов мы всё же получаем минимальную прибыль 2–7%, даже в худшем случае, строго по текущему году.",
+      q10: "На какой платформе я получаю сигналы?", a10: "Прямо на нашем сайте, в разделе для участников.",
+      q11: "Нужен ли мне опыт, чтобы следовать сигналам?", a11: "Да, вам нужны как минимум знания о торговом терминале и об активе, которым торгуете — всё это есть в нашем разделе обучения.",
+      q12: "Как я могу присоединиться к команде?", a12: "Только после индивидуальной беседы и отчёта по реальному счёту, отслеживаемого в течение месяца. После одобрения вы получаете доступ к реальному счёту и нашим услугам с более подробными отчётами."
+    },
+
     portfolio: { statCapital: "Общий капитал", statStocksEtf: "Акции / ETF", statInstruments: "Инструменты", statReturn: "Годовая доходность", statVolatility: "Волатильность", statHorizon: "Горизонт", statBuffer: "Защитный буфер", tableHead: "Полная информация — все позиции", colTicker: "Тикер", colInstrument: "Инструмент", colType: "Тип", colSector: "Сектор", colRisk: "Риск", disclaimerLabel: "Дисклеймер:", swipeHint: "← Проведите пальцем, чтобы увидеть больше →" },
     portfolioUs: { eyebrow: "Портфель", title: "Портфель US", desc: "Демонстрационный диверсифицированный портфель, умеренный риск, горизонт 3–5 лет · Основан 17.06.2026", disclaimer: "Демонстрационный портфель в образовательных целях. Не является инвестиционной рекомендацией. Проконсультируйтесь с финансовым советником, авторизованным FCA, перед инвестированием. Прошлые результаты не гарантируют будущих." },
     portfolioEu: { eyebrow: "Портфель", title: "Европейский портфель Умеренный+", desc: "Стратегия на 3–5 лет, поэтапный вход, контроль риска · Основан 17.06.2026", statAssets: "Всего активов", statStocks: "Отдельные акции", statMaxPos: "Макс. на позицию", regionEurope: "Европа (Ядро)", regionUs: "США / Глобальные технологии", tableHead: "Все позиции — обзор", colCompany: "Компания", bufferHead: "Компоненты защитного буфера", colComponent: "Компонент", colEstReturn: "Ожид. доходность", colLiquidity: "Ликвидность", tranche1: "Транш 1", tranche1Desc: "Начальный вход в основные позиции (ASML, SAP, L'Oréal, Apple, буферный ETF). Покупайте только при приемлемой технической картине — без спешки.", tranche2: "Транш 2", tranche2Desc: "После подтверждений: тренд выше скользящих средних, хорошая отчётность, отсутствие макрошоков. Добавляете SPCX, Google, Safran, Prysmian.", tranche3: "Транш 3", tranche3Desc: "Зарезервирован для коррекций, откатов или секторальных ротаций. Самый крупный транш — потому что рынок предложит возможности лучше, чем сегодня.", disclaimer: "Образовательный и информационный документ — не является персонализированной инвестиционной рекомендацией. Проверьте цены, комиссии, налоги и риски перед любым решением. Прошлые результаты не гарантируют будущих." }
@@ -667,7 +726,7 @@ const translations = {
   uk: {
     riskStrip: "⚠️ Ризик: Торгівля CFD пов'язана з високим ризиком втрат. Незалежний інформаційний сайт.",
     mobileToggle: "Відкрити меню",
-    nav: { home: "⌂ Головна", about: "◎ Про нас", ideas: "⌁ Торгові ідеї", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Звіти", education: "◈ Навчання", calendar: "▦ Економічний календар", contact: "✉ Контакти" },
+    nav: { home: "⌂ Головна", about: "◎ Про нас", ideas: "⌁ Торгові ідеї", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Звіти", education: "◈ Навчання", calendar: "▦ Економічний календар", faq: "❓ FAQ", contact: "✉ Контакти" },
     memberButton: "♙ Особистий кабінет",
     hero: {
       pill: "Активні торгові ідеї · Учасники",
@@ -871,6 +930,22 @@ const translations = {
       }
     },
     contact: { eyebrow: "Контакти", title: "Контакти TreidingSB", desc: "Контакти для учасників, звітів і торгових ідей.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    faq: {
+      eyebrow: "❓ FAQ", title: "Часті запитання", desc: "Прямі відповіді на найпоширеніші запитання про команду, сигнали та звіти.",
+      q1: "Ви компанія?", a1: "Ні, ми не компанія — ми незалежна команда трейдерів.",
+      q2: "Де знаходиться ваш офіс?", a2: "У нас немає фізичного офісу. Ми координуємось онлайн, через Zoom, Discord та Telegram.",
+      q3: "Який у вас досвід?", a3: "Уже понад 10 років ми аналізуємо фінансові ринки, відстежуємо рухи біржі та відкриваємо позиції, коли вони починають формуватися.",
+      q4: "На чому базуються ваші звіти?", a4: "На зборі даних з понад 50 джерел та на висновках, зроблених на основі економічних і фінансових подій, що відбуваються.",
+      q5: "На яких ринках/інструментах ви торгуєте?", a5: "Ми не обмежуємось одним інструментом. Ми стежимо за всім фінансовим ринком і фокусуємось на зонах, де з'являються значущі рухи, залежно від контексту.",
+      q6: "Скільки вас у команді?", a6: "Ми команда з 7 осіб.",
+      q7: "Ви гарантуєте прибутковість сигналів?", a7: "Ні, ми не можемо гарантувати прибуток. Однак ми публікуємо щомісячний звіт безпосередньо з торгового терміналу, а висновки формуються за допомогою ШІ та показують реальні дані без змін — включно з негативними результатами.",
+      q8: "Як часто ви даєте сигнали?", a8: "Сигнали даються лише тоді, коли наші стратегії визначають можливості свінг-типу — ми не публікуємо сигнали штучно, просто заради частоти.",
+      q9: "Всі місяці прибуткові?", a9: "Ні, не кожен місяць року прибутковий. На основі кількох рахунків ми все ж отримуємо мінімальний прибуток 2–7%, навіть у найгіршому сценарії, строго за поточний рік.",
+      q10: "На якій платформі я отримую сигнали?", a10: "Прямо на нашому сайті, у розділі для учасників.",
+      q11: "Чи потрібен мені досвід, щоб слідувати сигналам?", a11: "Так, вам потрібні щонайменше знання про торговий термінал та про актив, яким торгуєте — все це є в нашому розділі навчання.",
+      q12: "Як я можу приєднатися до команди?", a12: "Тільки після індивідуальної розмови та звіту по реальному рахунку, який відстежується протягом місяця. Після схвалення ви отримуєте доступ до реального рахунку та наших послуг із детальнішими звітами."
+    },
+
     portfolio: { statCapital: "Загальний капітал", statStocksEtf: "Акції / ETF", statInstruments: "Інструменти", statReturn: "Річна дохідність", statVolatility: "Волатильність", statHorizon: "Горизонт", statBuffer: "Захисний буфер", tableHead: "Повна інформація — всі позиції", colTicker: "Тікер", colInstrument: "Інструмент", colType: "Тип", colSector: "Сектор", colRisk: "Ризик", disclaimerLabel: "Застереження:", swipeHint: "← Проведіть пальцем, щоб побачити більше →" },
     portfolioUs: { eyebrow: "Портфель", title: "Портфель US", desc: "Демонстраційний диверсифікований портфель, помірний ризик, горизонт 3–5 років · Засновано 17.06.2026", disclaimer: "Демонстраційний портфель з освітньою метою. Не є інвестиційною рекомендацією. Проконсультуйтеся з фінансовим радником, авторизованим FCA, перед інвестуванням. Минулі результати не гарантують майбутніх." },
     portfolioEu: { eyebrow: "Портфель", title: "Європейський портфель Помірний+", desc: "Стратегія на 3–5 років, поетапний вхід, контроль ризику · Засновано 17.06.2026", statAssets: "Всього активів", statStocks: "Окремі акції", statMaxPos: "Макс. на позицію", regionEurope: "Європа (Ядро)", regionUs: "США / Глобальні технології", tableHead: "Всі позиції — огляд", colCompany: "Компанія", bufferHead: "Компоненти захисного буфера", colComponent: "Компонент", colEstReturn: "Оч. дохідність", colLiquidity: "Ліквідність", tranche1: "Транш 1", tranche1Desc: "Початковий вхід в основні позиції (ASML, SAP, L'Oréal, Apple, буферний ETF). Купуйте лише за прийнятної технічної картини — без поспіху.", tranche2: "Транш 2", tranche2Desc: "Після підтверджень: тренд вище ковзних середніх, гарна звітність, відсутність макрошоків. Додаєте SPCX, Google, Safran, Prysmian.", tranche3: "Транш 3", tranche3Desc: "Зарезервований для корекцій, відкатів або секторальних ротацій. Найбільший транш — бо ринок запропонує кращі можливості, ніж сьогодні.", disclaimer: "Освітній та інформаційний документ — не є персоналізованою інвестиційною рекомендацією. Перевірте ціни, комісії, податки та ризики перед будь-яким рішенням. Минулі результати не гарантують майбутніх." }
@@ -878,7 +953,7 @@ const translations = {
   pl: {
     riskStrip: "⚠️ Ryzyko: Handel CFD wiąże się z wysokim ryzykiem straty. Niezależna strona informacyjna.",
     mobileToggle: "Otwórz menu",
-    nav: { home: "⌂ Start", about: "◎ O nas", ideas: "⌁ Pomysły transakcyjne", portfolioUs: "$ Portfel US", portfolioEu: "€ Portfel EU", reports: "▤ Raporty", education: "◈ Edukacja", calendar: "▦ Kalendarz ekonomiczny", contact: "✉ Kontakt" },
+    nav: { home: "⌂ Start", about: "◎ O nas", ideas: "⌁ Pomysły transakcyjne", portfolioUs: "$ Portfel US", portfolioEu: "€ Portfel EU", reports: "▤ Raporty", education: "◈ Edukacja", calendar: "▦ Kalendarz ekonomiczny", faq: "❓ FAQ", contact: "✉ Kontakt" },
     memberButton: "♙ Strefa członka",
     hero: {
       pill: "Aktywne pomysły transakcyjne · Członkowie",
@@ -1082,6 +1157,22 @@ const translations = {
       }
     },
     contact: { eyebrow: "Kontakt", title: "Kontakt TreidingSB", desc: "Kontakt dla członków, raportów i pomysłów transakcyjnych.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    faq: {
+      eyebrow: "❓ FAQ", title: "Najczęściej zadawane pytania", desc: "Bezpośrednie odpowiedzi na najczęstsze pytania o zespół, sygnały i raporty.",
+      q1: "Czy jesteście firmą?", a1: "Nie, nie jesteśmy firmą — jesteśmy niezależnym zespołem traderów.",
+      q2: "Gdzie znajduje się wasza siedziba?", a2: "Nie mamy fizycznego biura. Koordynujemy się online, przez Zoom, Discord i Telegram.",
+      q3: "Jakie macie doświadczenie?", a3: "Od ponad 10 lat analizujemy rynki finansowe, filtrujemy ruchy giełdowe i otwieramy pozycje, gdy zaczynają się one kształtować.",
+      q4: "Na czym oparte są wasze raporty?", a4: "Na zbieraniu danych z ponad 50 źródeł oraz na wnioskach wyciąganych z pojawiających się wydarzeń ekonomicznych i finansowych.",
+      q5: "Na jakich rynkach/instrumentach handlujecie?", a5: "Nie ograniczamy się do jednego instrumentu. Śledzimy cały rynek finansowy i skupiamy się na obszarach, gdzie pojawiają się istotne ruchy, w zależności od kontekstu.",
+      q6: "Ilu jesteście członków?", a6: "Jesteśmy zespołem 7 osób.",
+      q7: "Czy gwarantujecie zyskowność sygnałów?", a7: "Nie, nie możemy zagwarantować zysku. Publikujemy jednak miesięczny raport bezpośrednio z terminala transakcyjnego, a wnioski są generowane przy pomocy AI i pokazują rzeczywiste dane, bez zmian — łącznie z negatywnymi wynikami.",
+      q8: "Jak często wysyłacie sygnały?", a8: "Sygnały są przekazywane tylko wtedy, gdy nasze strategie identyfikują okazje typu swing — nie publikujemy sygnałów sztucznie, tylko po to, by zachować częstotliwość.",
+      q9: "Czy wszystkie miesiące są zyskowne?", a9: "Nie, nie każdy miesiąc w roku jest zyskowny. Na podstawie wielu kont osiągamy jednak minimalny zysk 2–7%, nawet w najgorszym scenariuszu, ściśle w odniesieniu do bieżącego roku.",
+      q10: "Na jakiej platformie otrzymuję sygnały?", a10: "Bezpośrednio na naszej stronie, w sekcji dla członków.",
+      q11: "Czy potrzebuję doświadczenia, aby podążać za sygnałami?", a11: "Tak, potrzebujesz przynajmniej wiedzy o terminalu transakcyjnym i o handlowanym aktywie — wszystko to znajdziesz w naszej sekcji edukacyjnej.",
+      q12: "Jak mogę dołączyć do zespołu?", a12: "Tylko po indywidualnej rozmowie i raporcie z konta rzeczywistego, śledzonym przez miesiąc. Po zatwierdzeniu otrzymujesz dostęp do konta rzeczywistego i naszych usług, z bardziej szczegółowymi raportami."
+    },
+
     portfolio: { statCapital: "Kapitał całkowity", statStocksEtf: "Akcje / ETF", statInstruments: "Instrumenty", statReturn: "Roczna stopa zwrotu", statVolatility: "Zmienność", statHorizon: "Horyzont", statBuffer: "Bufor Defensywny", tableHead: "Pełne szczegóły — wszystkie pozycje", colTicker: "Ticker", colInstrument: "Instrument", colType: "Typ", colSector: "Sektor", colRisk: "Ryzyko", disclaimerLabel: "Zastrzeżenie:", swipeHint: "← Przesuń, aby zobaczyć więcej →" },
     portfolioUs: { eyebrow: "Portfel", title: "Portfel US", desc: "Demonstracyjny zdywersyfikowany portfel, umiarkowane ryzyko, horyzont 3–5 lat · Założony 17.06.2026", disclaimer: "Portfel demonstracyjny w celach edukacyjnych. Nie stanowi porady inwestycyjnej. Skonsultuj się z doradcą finansowym autoryzowanym przez FCA przed inwestowaniem. Wyniki historyczne nie gwarantują przyszłych rezultatów." },
     portfolioEu: { eyebrow: "Portfel", title: "Portfel Europejski Umiarkowany+", desc: "Strategia na 3–5 lat, wejście w transzach, kontrola ryzyka · Założony 17.06.2026", statAssets: "Wszystkich aktywów", statStocks: "Akcje indywidualne", statMaxPos: "Maks. na pozycję", regionEurope: "Europa (Rdzeń)", regionUs: "USA / Globalna technologia", tableHead: "Wszystkie pozycje — przegląd", colCompany: "Spółka", bufferHead: "Składniki bufora defensywnego", colComponent: "Składnik", colEstReturn: "Szac. zwrot", colLiquidity: "Płynność", tranche1: "Transza 1", tranche1Desc: "Początkowe wejście w pozycje core (ASML, SAP, L'Oréal, Apple, ETF bufora). Kupuj tylko jeśli układ techniczny jest akceptowalny — bez pośpiechu.", tranche2: "Transza 2", tranche2Desc: "Po potwierdzeniach: trend powyżej średnich kroczących, dobre wyniki finansowe, brak szoków makro. Dodajesz SPCX, Google, Safran, Prysmian.", tranche3: "Transza 3", tranche3Desc: "Zarezerwowana na korekty, cofnięcia lub rotacje sektorowe. Największa transza — bo rynek zaoferuje lepsze okazje niż dziś.", disclaimer: "Dokument edukacyjny i informacyjny — nie stanowi zindywidualizowanej porady inwestycyjnej. Sprawdź ceny, opłaty, podatki i ryzyko przed podjęciem decyzji. Wyniki historyczne nie gwarantują przyszłych rezultatów." }
