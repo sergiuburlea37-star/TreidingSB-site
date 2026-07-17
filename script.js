@@ -369,6 +369,73 @@ const translations = {
       }
     },
     contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact pentru membri, rapoarte și idei de tranzacționare.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    footer: {
+      tagline: "Conținut educațional independent despre Forex și piețele financiare.",
+      legalHeading: "Legal", privacyLink: "Confidențialitate", cookiesLink: "Cookie-uri", termsLink: "Termeni și condiții", disclaimerLink: "Disclaimer",
+      contactHeading: "Contact", copyright: "© 2026 TreidingSB. Toate drepturile rezervate."
+    },
+    legal: {
+      eyebrow: "Informații legale", title: "Informații Legale", intro: "Politicile de mai jos explică cum funcționează TreidingSB, ce date colectăm și care sunt limitele conținutului educațional de pe acest site.",
+      tocPrivacy: "Confidențialitate", tocCookies: "Cookie-uri", tocTerms: "Termeni și condiții", tocDisclaimer: "Disclaimer financiar",
+      privacy: {
+        title: "Politica de Confidențialitate", updated: "Actualizată la 17 iulie 2026",
+        intro: "TreidingSB este un proiect educațional independent, operat de o persoană fizică, fără o companie înregistrată. Această politică explică ce date colectăm, de ce le colectăm și ce drepturi ai.",
+        h1: "1. Ce date colectăm",
+        p1a: "Adresa de email, dacă te abonezi la notificări pentru rapoarte prin formularul „Abonează-te la rapoarte\", procesată prin serviciul Resend.",
+        p1b: "Date de utilizare colectate automat prin Google Analytics (GA4): pagini vizitate, durata vizitei, tip de dispozitiv, țară aproximativă — fără identificarea directă a persoanei.",
+        p1c: "Un cookie de sesiune, dacă introduci parola de acces la secțiunile Idei de tranzacționare și Rapoarte, folosit exclusiv pentru a menține accesul activ în timpul vizitei.",
+        p1d: "Nu colectăm nume, adrese poștale, date de plată sau documente de identitate.",
+        h2: "2. Cum folosim datele",
+        p2a: "Emailul: exclusiv pentru a trimite notificări despre rapoarte și analize noi. Nu vindem și nu închiriem adresa ta de email către terți.",
+        p2b: "Datele Analytics: pentru a înțelege cum este folosit site-ul și a-l îmbunătăți.",
+        p2c: "Cookie-ul de sesiune: exclusiv tehnic, pentru funcționarea zonei protejate prin parolă.",
+        h3: "3. Cu cine împărtășim datele",
+        p3a: "Resend (procesare email) — resend.com", p3b: "Google Analytics (Google LLC) — policies.google.com/privacy", p3c: "Vercel (găzduire site) — vercel.com/legal/privacy-policy",
+        p3d: "Nu împărtășim date cu terți în scopuri de marketing.",
+        h4: "4. Cât timp păstrăm datele",
+        p4a: "Adresa de email: până când te dezabonezi (link de dezabonare disponibil în fiecare email trimis).",
+        p4b: "Datele Analytics: conform politicii standard de reținere Google Analytics (de regulă 14 luni).",
+        p4c: "Cookie-ul de sesiune: se șterge la închiderea browserului sau expiră automat.",
+        h5: "5. Drepturile tale (GDPR)",
+        p5a: "Dacă te afli în Spațiul Economic European sau Regatul Unit, ai dreptul de acces, rectificare, ștergere, restricționare și portabilitate a datelor tale, precum și dreptul de a te opune prelucrării. Pentru orice solicitare, scrie-ne la semnale@treidingsb.com.",
+        h6: "6. Securitate",
+        p6a: "Folosim conexiuni criptate (HTTPS) și găzduire securizată. Niciun sistem nu este 100% infailibil, dar luăm măsuri rezonabile pentru a proteja datele pe care le colectăm.",
+        h7: "7. Modificări",
+        p7a: "Această politică poate fi actualizată periodic. Data ultimei actualizări este afișată la începutul paginii."
+      },
+      cookies: {
+        title: "Politica privind Cookie-urile",
+        h1: "1. Ce sunt cookie-urile", p1: "Cookie-urile sunt fișiere text mici, salvate în browserul tău, care ajută un site să funcționeze corect sau să înțeleagă cum este folosit.",
+        h2: "2. Cookie-urile pe care le folosim",
+        p2a: "Cookie tehnic (esențial): menține accesul activ după introducerea parolei pentru secțiunile Idei de tranzacționare și Rapoarte. Fără el, ai fi nevoit să introduci parola la fiecare pagină.",
+        p2b: "Cookie-uri Google Analytics (_ga, _gid etc.): măsoară traficul și comportamentul vizitatorilor, în mod agregat și anonimizat.",
+        p2c: "Nu folosim cookie-uri de publicitate și nu facem retargeting.",
+        h3: "3. Cum poți controla cookie-urile", p3a: "Poți șterge sau bloca cookie-urile din setările browserului tău. Blocarea cookie-ului tehnic va afecta funcționarea zonelor protejate prin parolă. Blocarea cookie-urilor Analytics nu afectează funcționarea site-ului.",
+        h4: "4. Cookie-uri terțe", p4a: "Widget-ul TradingView, integrat în secțiunea Calendar economic, poate seta propriile cookie-uri, conform politicii TradingView (tradingview.com/policies)."
+      },
+      terms: {
+        title: "Termeni și Condiții",
+        h1: "1. Acceptarea termenilor", p1: "Prin accesarea și utilizarea TreidingSB, accepți acești Termeni și Condiții. Dacă nu ești de acord, te rugăm să nu folosești site-ul.",
+        h2: "2. Natura site-ului", p2: "TreidingSB este un proiect educațional independent despre piețele financiare (Forex, CFD-uri, analiză tehnică și fundamentală). Site-ul este operat de o persoană fizică și nu este o firmă de investiții, un broker sau un consultant financiar autorizat.",
+        h3: "3. Fără consultanță financiară", p3: "Niciun conținut de pe acest site — lecții, analize, rapoarte, idei de tranzacționare — nu constituie consultanță financiară, recomandare de investiții sau o promisiune de rezultate. Deciziile de tranzacționare rămân exclusiv responsabilitatea ta.",
+        h4: "4. Riscul de tranzacționare", p4: "Tranzacționarea Forex și CFD implică un risc ridicat de pierdere a capitalului investit și nu este potrivită pentru toți investitorii. Performanțele anterioare nu garantează rezultate viitoare.",
+        h5: "5. Acces protejat prin parolă", p5: "Secțiunile Idei de tranzacționare și Rapoarte sunt accesibile doar cu o parolă furnizată membrilor. Distribuirea neautorizată a parolei sau a conținutului protejat este interzisă.",
+        h6: "6. Proprietate intelectuală", p6: "Conținutul site-ului (texte, imagini, logo, materiale educaționale) este proprietatea TreidingSB, cu excepția materialelor atribuite explicit unor surse externe (de exemplu, resursele oficiale FCA/FSCS menționate în Lecția 8). Reproducerea fără acord scris este interzisă.",
+        h7: "7. Linkuri externe", p7: "Site-ul poate conține linkuri către resurse externe (de exemplu, FCA, FSCS, Financial Ombudsman Service). Nu avem control asupra conținutului acestor site-uri și nu ne asumăm răspunderea pentru acuratețea sau disponibilitatea lor.",
+        h8: "8. Limitarea răspunderii", p8: "În limita permisă de lege, TreidingSB nu răspunde pentru pierderi financiare, directe sau indirecte, rezultate din utilizarea informațiilor de pe acest site.",
+        h9: "9. Legea aplicabilă", p9: "Acești Termeni sunt guvernați de legislația Angliei și Țării Galilor, fără a aduce atingere drepturilor pe care le ai conform legislației țării tale de reședință.",
+        h10: "10. Modificări", p10: "Ne rezervăm dreptul de a actualiza acești Termeni. Continuarea utilizării site-ului după modificări reprezintă acceptarea noilor termeni."
+      },
+      disclaimer: {
+        title: "Disclaimer Financiar",
+        p1: "TreidingSB oferă exclusiv conținut educațional și informativ despre piețele financiare. Nimic din acest site nu trebuie interpretat ca:",
+        li1: "recomandare de a cumpăra, vinde sau deține un instrument financiar", li2: "consultanță de investiții personalizată", li3: "o garanție a profitului sau a unui anumit rezultat",
+        p2: "Riscuri: Tranzacționarea instrumentelor cu efect de levier (Forex, CFD-uri) poate duce la pierderea integrală a capitalului investit, uneori într-un timp foarte scurt. Majoritatea conturilor de retail care tranzacționează CFD-uri înregistrează pierderi.",
+        p3: "Rapoartele și ideile de tranzacționare publicate reflectă opinii personale, bazate pe analiză proprie, și pot conține erori. Nu sunt verificate de o autoritate de reglementare și nu constituie o recomandare profesională.",
+        p4: "Înainte de a tranzacționa, informează-te temeinic, evaluează-ți toleranța la risc și, dacă este necesar, consultă un consultant financiar autorizat și independent.",
+        p5: "Materialul educațional din Lecția 8 referitor la reglementarea din Regatul Unit (FCA, FSCS, Financial Ombudsman Service) are scop strict informativ, este bazat pe informații publice disponibile la 16 iulie 2026, și nu constituie consultanță juridică."
+      }
+    },
     faq: {
       eyebrow: "❓ FAQ", title: "Întrebări Frecvente", desc: "Răspunsuri directe la cele mai frecvente întrebări despre echipă, semnale și rapoarte.",
       q1: "Sunteți o companie?", a1: "Nu, nu suntem o companie — suntem o echipă independentă de traderi.",
@@ -716,6 +783,73 @@ const translations = {
       }
     },
     contact: { eyebrow: "Contact", title: "Contact TreidingSB", desc: "Contact for members, reports and trade ideas.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    footer: {
+      tagline: "Independent educational content about Forex and financial markets.",
+      legalHeading: "Legal", privacyLink: "Privacy Policy", cookiesLink: "Cookie Policy", termsLink: "Terms & Conditions", disclaimerLink: "Disclaimer",
+      contactHeading: "Contact", copyright: "© 2026 TreidingSB. All rights reserved."
+    },
+    legal: {
+      eyebrow: "Legal information", title: "Legal Information", intro: "The policies below explain how TreidingSB works, what data we collect, and the limits of the educational content on this site.",
+      tocPrivacy: "Privacy Policy", tocCookies: "Cookie Policy", tocTerms: "Terms & Conditions", tocDisclaimer: "Financial Disclaimer",
+      privacy: {
+        title: "Privacy Policy", updated: "Updated on 17 July 2026",
+        intro: "TreidingSB is an independent educational project, operated by a private individual, with no registered company. This policy explains what data we collect, why we collect it, and what rights you have.",
+        h1: "1. What data we collect",
+        p1a: "Your email address, if you subscribe to report notifications through the \"Subscribe to reports\" form, processed via the Resend service.",
+        p1b: "Usage data collected automatically via Google Analytics (GA4): pages visited, visit duration, device type, approximate country — without directly identifying you.",
+        p1c: "A session cookie, if you enter the access password for the Trade Ideas and Reports sections, used solely to keep your access active during your visit.",
+        p1d: "We do not collect names, postal addresses, payment details, or identity documents.",
+        h2: "2. How we use the data",
+        p2a: "Email: solely to send notifications about new reports and analyses. We do not sell or rent your email address to third parties.",
+        p2b: "Analytics data: to understand how the site is used and to improve it.",
+        p2c: "Session cookie: purely technical, for the password-protected area to function.",
+        h3: "3. Who we share data with",
+        p3a: "Resend (email processing) — resend.com", p3b: "Google Analytics (Google LLC) — policies.google.com/privacy", p3c: "Vercel (site hosting) — vercel.com/legal/privacy-policy",
+        p3d: "We do not share data with third parties for marketing purposes.",
+        h4: "4. How long we keep the data",
+        p4a: "Email address: until you unsubscribe (an unsubscribe link is included in every email sent).",
+        p4b: "Analytics data: per Google Analytics' standard retention policy (typically 14 months).",
+        p4c: "Session cookie: deleted when you close your browser, or expires automatically.",
+        h5: "5. Your rights (GDPR)",
+        p5a: "If you are located in the European Economic Area or the United Kingdom, you have the right to access, rectify, delete, restrict, and port your data, as well as the right to object to processing. For any request, write to us at semnale@treidingsb.com.",
+        h6: "6. Security",
+        p6a: "We use encrypted connections (HTTPS) and secure hosting. No system is 100% foolproof, but we take reasonable measures to protect the data we collect.",
+        h7: "7. Changes",
+        p7a: "This policy may be updated periodically. The date of the last update is shown at the top of the page."
+      },
+      cookies: {
+        title: "Cookie Policy",
+        h1: "1. What cookies are", p1: "Cookies are small text files stored in your browser that help a website function correctly or understand how it is used.",
+        h2: "2. The cookies we use",
+        p2a: "Technical (essential) cookie: keeps your access active after entering the password for the Trade Ideas and Reports sections. Without it, you would need to re-enter the password on every page.",
+        p2b: "Google Analytics cookies (_ga, _gid, etc.): measure traffic and visitor behaviour, in aggregate and anonymised form.",
+        p2c: "We do not use advertising cookies and do not perform retargeting.",
+        h3: "3. How you can control cookies", p3a: "You can delete or block cookies from your browser settings. Blocking the technical cookie will affect the functioning of the password-protected areas. Blocking Analytics cookies does not affect the site's functioning.",
+        h4: "4. Third-party cookies", p4a: "The TradingView widget, embedded in the Economic Calendar section, may set its own cookies, per TradingView's policy (tradingview.com/policies)."
+      },
+      terms: {
+        title: "Terms & Conditions",
+        h1: "1. Acceptance of terms", p1: "By accessing and using TreidingSB, you accept these Terms & Conditions. If you do not agree, please do not use the site.",
+        h2: "2. Nature of the site", p2: "TreidingSB is an independent educational project about financial markets (Forex, CFDs, technical and fundamental analysis). The site is operated by a private individual and is not an investment firm, a broker, or an authorised financial advisor.",
+        h3: "3. No financial advice", p3: "No content on this site — lessons, analyses, reports, trade ideas — constitutes financial advice, an investment recommendation, or a promise of results. Trading decisions remain solely your responsibility.",
+        h4: "4. Trading risk", p4: "Forex and CFD trading carries a high risk of losing the invested capital and is not suitable for all investors. Past performance does not guarantee future results.",
+        h5: "5. Password-protected access", p5: "The Trade Ideas and Reports sections are only accessible with a password provided to members. Unauthorised sharing of the password or of protected content is prohibited.",
+        h6: "6. Intellectual property", p6: "The site's content (text, images, logo, educational materials) is the property of TreidingSB, except for materials explicitly attributed to external sources (for example, the official FCA/FSCS resources referenced in Lesson 8). Reproduction without written consent is prohibited.",
+        h7: "7. External links", p7: "The site may contain links to external resources (for example, the FCA, FSCS, Financial Ombudsman Service). We have no control over the content of these sites and accept no responsibility for their accuracy or availability.",
+        h8: "8. Limitation of liability", p8: "To the extent permitted by law, TreidingSB accepts no liability for financial losses, direct or indirect, resulting from the use of information on this site.",
+        h9: "9. Governing law", p9: "These Terms are governed by the laws of England and Wales, without prejudice to the rights you have under the law of your country of residence.",
+        h10: "10. Changes", p10: "We reserve the right to update these Terms. Continued use of the site after changes constitutes acceptance of the new terms."
+      },
+      disclaimer: {
+        title: "Financial Disclaimer",
+        p1: "TreidingSB provides educational and informational content about financial markets only. Nothing on this site should be interpreted as:",
+        li1: "a recommendation to buy, sell, or hold a financial instrument", li2: "personalised investment advice", li3: "a guarantee of profit or of any particular outcome",
+        p2: "Risks: Trading leveraged instruments (Forex, CFDs) can result in the total loss of invested capital, sometimes very quickly. Most retail accounts trading CFDs lose money.",
+        p3: "The published reports and trade ideas reflect personal opinions, based on our own analysis, and may contain errors. They are not verified by a regulatory authority and do not constitute professional advice.",
+        p4: "Before trading, inform yourself thoroughly, assess your risk tolerance, and, if necessary, consult an authorised, independent financial advisor.",
+        p5: "The educational material in Lesson 8 regarding UK regulation (FCA, FSCS, Financial Ombudsman Service) is strictly informational, based on public information available as of 16 July 2026, and does not constitute legal advice."
+      }
+    },
     faq: {
       eyebrow: "❓ FAQ", title: "Frequently Asked Questions", desc: "Direct answers to the most common questions about the team, signals and reports.",
       q1: "Are you a company?", a1: "No, we're not a company — we're an independent team of traders.",
@@ -1063,6 +1197,73 @@ const translations = {
       }
     },
     contact: { eyebrow: "Контакты", title: "Контакты TreidingSB", desc: "Контакты для участников, отчётов и торговых идей.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    footer: {
+      tagline: "Независимый образовательный контент о Forex и финансовых рынках.",
+      legalHeading: "Правовая информация", privacyLink: "Политика конфиденциальности", cookiesLink: "Политика Cookie", termsLink: "Условия использования", disclaimerLink: "Дисклеймер",
+      contactHeading: "Контакты", copyright: "© 2026 TreidingSB. Все права защищены."
+    },
+    legal: {
+      eyebrow: "Правовая информация", title: "Правовая информация", intro: "Приведённые ниже политики объясняют, как работает TreidingSB, какие данные мы собираем и каковы границы образовательного контента на этом сайте.",
+      tocPrivacy: "Конфиденциальность", tocCookies: "Cookie-файлы", tocTerms: "Условия использования", tocDisclaimer: "Финансовый дисклеймер",
+      privacy: {
+        title: "Политика конфиденциальности", updated: "Обновлено 17 июля 2026 г.",
+        intro: "TreidingSB — независимый образовательный проект, управляемый частным лицом, без зарегистрированной компании. Эта политика объясняет, какие данные мы собираем, зачем и какие права у вас есть.",
+        h1: "1. Какие данные мы собираем",
+        p1a: "Ваш адрес электронной почты, если вы подписываетесь на уведомления об отчётах через форму «Подписаться на отчёты», обрабатываемую сервисом Resend.",
+        p1b: "Данные об использовании, автоматически собираемые через Google Analytics (GA4): посещённые страницы, продолжительность визита, тип устройства, приблизительная страна — без прямой идентификации личности.",
+        p1c: "Сессионный cookie-файл, если вы вводите пароль доступа к разделам «Идеи для трейдинга» и «Отчёты», используемый исключительно для поддержания активного доступа во время визита.",
+        p1d: "Мы не собираем имена, почтовые адреса, платёжные данные или документы, удостоверяющие личность.",
+        h2: "2. Как мы используем данные",
+        p2a: "Email: исключительно для отправки уведомлений о новых отчётах и анализах. Мы не продаём и не сдаём в аренду ваш email третьим лицам.",
+        p2b: "Данные Analytics: чтобы понять, как используется сайт, и улучшить его.",
+        p2c: "Сессионный cookie: чисто технический, для работы зоны, защищённой паролем.",
+        h3: "3. С кем мы делимся данными",
+        p3a: "Resend (обработка email) — resend.com", p3b: "Google Analytics (Google LLC) — policies.google.com/privacy", p3c: "Vercel (хостинг сайта) — vercel.com/legal/privacy-policy",
+        p3d: "Мы не передаём данные третьим лицам в маркетинговых целях.",
+        h4: "4. Как долго мы храним данные",
+        p4a: "Адрес email: до момента отписки (ссылка для отписки есть в каждом отправленном письме).",
+        p4b: "Данные Analytics: согласно стандартной политике хранения Google Analytics (обычно 14 месяцев).",
+        p4c: "Сессионный cookie: удаляется при закрытии браузера или истекает автоматически.",
+        h5: "5. Ваши права (GDPR)",
+        p5a: "Если вы находитесь в Европейской экономической зоне или Великобритании, у вас есть право на доступ, исправление, удаление, ограничение и переносимость ваших данных, а также право возражать против обработки. По любым вопросам пишите нам на semnale@treidingsb.com.",
+        h6: "6. Безопасность",
+        p6a: "Мы используем зашифрованные соединения (HTTPS) и безопасный хостинг. Ни одна система не является на 100% защищённой от сбоев, но мы принимаем разумные меры для защиты собираемых данных.",
+        h7: "7. Изменения",
+        p7a: "Эта политика может периодически обновляться. Дата последнего обновления указана в начале страницы."
+      },
+      cookies: {
+        title: "Политика Cookie",
+        h1: "1. Что такое cookie-файлы", p1: "Cookie-файлы — это небольшие текстовые файлы, сохраняемые в вашем браузере, которые помогают сайту работать корректно или понимать, как он используется.",
+        h2: "2. Какие cookie-файлы мы используем",
+        p2a: "Технический (обязательный) cookie: поддерживает активный доступ после ввода пароля для разделов «Идеи для трейдинга» и «Отчёты». Без него пришлось бы вводить пароль на каждой странице.",
+        p2b: "Cookie-файлы Google Analytics (_ga, _gid и др.): измеряют трафик и поведение посетителей в агрегированной и анонимизированной форме.",
+        p2c: "Мы не используем рекламные cookie-файлы и не занимаемся ретаргетингом.",
+        h3: "3. Как вы можете контролировать cookie-файлы", p3a: "Вы можете удалить или заблокировать cookie-файлы в настройках браузера. Блокировка технического cookie повлияет на работу зон, защищённых паролем. Блокировка Analytics-cookie не влияет на работу сайта.",
+        h4: "4. Cookie-файлы третьих сторон", p4a: "Виджет TradingView, встроенный в раздел «Экономический календарь», может устанавливать собственные cookie-файлы согласно политике TradingView (tradingview.com/policies)."
+      },
+      terms: {
+        title: "Условия использования",
+        h1: "1. Принятие условий", p1: "Заходя на TreidingSB и используя его, вы принимаете настоящие Условия использования. Если вы не согласны, пожалуйста, не используйте сайт.",
+        h2: "2. Характер сайта", p2: "TreidingSB — независимый образовательный проект о финансовых рынках (Forex, CFD, технический и фундаментальный анализ). Сайт управляется частным лицом и не является инвестиционной компанией, брокером или лицензированным финансовым консультантом.",
+        h3: "3. Отсутствие финансовой консультации", p3: "Никакой контент на этом сайте — уроки, анализы, отчёты, идеи для трейдинга — не является финансовой консультацией, инвестиционной рекомендацией или обещанием результата. Торговые решения остаются исключительно вашей ответственностью.",
+        h4: "4. Торговый риск", p4: "Торговля Forex и CFD сопряжена с высоким риском потери вложенного капитала и подходит не всем инвесторам. Прошлые результаты не гарантируют будущих.",
+        h5: "5. Доступ, защищённый паролем", p5: "Разделы «Идеи для трейдинга» и «Отчёты» доступны только по паролю, предоставленному участникам. Несанкционированное распространение пароля или защищённого контента запрещено.",
+        h6: "6. Интеллектуальная собственность", p6: "Контент сайта (тексты, изображения, логотип, обучающие материалы) является собственностью TreidingSB, за исключением материалов, явно приписанных внешним источникам (например, официальные ресурсы FCA/FSCS, упомянутые в Уроке 8). Воспроизведение без письменного согласия запрещено.",
+        h7: "7. Внешние ссылки", p7: "Сайт может содержать ссылки на внешние ресурсы (например, FCA, FSCS, Financial Ombudsman Service). Мы не контролируем содержание этих сайтов и не несём ответственности за их точность или доступность.",
+        h8: "8. Ограничение ответственности", p8: "В пределах, разрешённых законом, TreidingSB не несёт ответственности за финансовые потери, прямые или косвенные, возникшие в результате использования информации на этом сайте.",
+        h9: "9. Применимое право", p9: "Настоящие Условия регулируются законодательством Англии и Уэльса, без ущерба для прав, которые у вас есть по законодательству страны вашего проживания.",
+        h10: "10. Изменения", p10: "Мы оставляем за собой право обновлять настоящие Условия. Продолжение использования сайта после изменений означает принятие новых условий."
+      },
+      disclaimer: {
+        title: "Финансовый дисклеймер",
+        p1: "TreidingSB предоставляет исключительно образовательный и информационный контент о финансовых рынках. Ничто на этом сайте не должно толковаться как:",
+        li1: "рекомендация покупать, продавать или держать финансовый инструмент", li2: "персонализированная инвестиционная консультация", li3: "гарантия прибыли или какого-либо конкретного результата",
+        p2: "Риски: торговля инструментами с кредитным плечом (Forex, CFD) может привести к полной потере вложенного капитала, иногда очень быстро. Большинство розничных счетов, торгующих CFD, теряют деньги.",
+        p3: "Публикуемые отчёты и идеи для трейдинга отражают личные мнения, основанные на собственном анализе, и могут содержать ошибки. Они не проверяются регулирующим органом и не являются профессиональной рекомендацией.",
+        p4: "Перед торговлей тщательно изучите информацию, оцените свою терпимость к риску и, при необходимости, проконсультируйтесь с лицензированным независимым финансовым консультантом.",
+        p5: "Образовательный материал Урока 8 о регулировании в Великобритании (FCA, FSCS, Financial Ombudsman Service) носит исключительно информационный характер, основан на публичной информации, доступной на 16 июля 2026 года, и не является юридической консультацией."
+      }
+    },
     faq: {
       eyebrow: "❓ FAQ", title: "Часто задаваемые вопросы", desc: "Прямые ответы на самые частые вопросы о команде, сигналах и отчётах.",
       q1: "Вы компания?", a1: "Нет, мы не компания — мы независимая команда трейдеров.",
@@ -1410,6 +1611,73 @@ const translations = {
       }
     },
     contact: { eyebrow: "Контакти", title: "Контакти TreidingSB", desc: "Контакти для учасників, звітів і торгових ідей.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    footer: {
+      tagline: "Незалежний освітній контент про Forex та фінансові ринки.",
+      legalHeading: "Правова інформація", privacyLink: "Політика конфіденційності", cookiesLink: "Політика Cookie", termsLink: "Умови використання", disclaimerLink: "Дисклеймер",
+      contactHeading: "Контакти", copyright: "© 2026 TreidingSB. Усі права захищено."
+    },
+    legal: {
+      eyebrow: "Правова інформація", title: "Правова інформація", intro: "Наведені нижче політики пояснюють, як працює TreidingSB, які дані ми збираємо та які межі освітнього контенту на цьому сайті.",
+      tocPrivacy: "Конфіденційність", tocCookies: "Cookie-файли", tocTerms: "Умови використання", tocDisclaimer: "Фінансовий дисклеймер",
+      privacy: {
+        title: "Політика конфіденційності", updated: "Оновлено 17 липня 2026 р.",
+        intro: "TreidingSB — незалежний освітній проєкт, яким керує приватна особа, без зареєстрованої компанії. Ця політика пояснює, які дані ми збираємо, навіщо і які права у вас є.",
+        h1: "1. Які дані ми збираємо",
+        p1a: "Вашу електронну адресу, якщо ви підписуєтесь на сповіщення про звіти через форму «Підписатися на звіти», яку обробляє сервіс Resend.",
+        p1b: "Дані про використання, автоматично зібрані через Google Analytics (GA4): відвідані сторінки, тривалість візиту, тип пристрою, приблизна країна — без прямої ідентифікації особи.",
+        p1c: "Сесійний cookie-файл, якщо ви вводите пароль доступу до розділів «Ідеї для трейдингу» та «Звіти», який використовується виключно для підтримання активного доступу під час візиту.",
+        p1d: "Ми не збираємо імена, поштові адреси, платіжні дані чи документи, що посвідчують особу.",
+        h2: "2. Як ми використовуємо дані",
+        p2a: "Email: виключно для надсилання сповіщень про нові звіти та аналізи. Ми не продаємо і не здаємо в оренду вашу email-адресу третім особам.",
+        p2b: "Дані Analytics: щоб зрозуміти, як використовується сайт, і покращити його.",
+        p2c: "Сесійний cookie: суто технічний, для роботи зони, захищеної паролем.",
+        h3: "3. З ким ми ділимося даними",
+        p3a: "Resend (обробка email) — resend.com", p3b: "Google Analytics (Google LLC) — policies.google.com/privacy", p3c: "Vercel (хостинг сайту) — vercel.com/legal/privacy-policy",
+        p3d: "Ми не передаємо дані третім особам у маркетингових цілях.",
+        h4: "4. Як довго ми зберігаємо дані",
+        p4a: "Email-адреса: до моменту відписки (посилання для відписки є в кожному надісланому листі).",
+        p4b: "Дані Analytics: згідно зі стандартною політикою зберігання Google Analytics (зазвичай 14 місяців).",
+        p4c: "Сесійний cookie: видаляється при закритті браузера або закінчується автоматично.",
+        h5: "5. Ваші права (GDPR)",
+        p5a: "Якщо ви перебуваєте в Європейській економічній зоні або Великій Британії, ви маєте право на доступ, виправлення, видалення, обмеження та перенесення ваших даних, а також право заперечувати проти обробки. З будь-яких питань пишіть нам на semnale@treidingsb.com.",
+        h6: "6. Безпека",
+        p6a: "Ми використовуємо зашифровані з'єднання (HTTPS) та безпечний хостинг. Жодна система не є на 100% захищеною від збоїв, але ми вживаємо розумних заходів для захисту зібраних даних.",
+        h7: "7. Зміни",
+        p7a: "Ця політика може періодично оновлюватися. Дата останнього оновлення вказана на початку сторінки."
+      },
+      cookies: {
+        title: "Політика Cookie",
+        h1: "1. Що таке cookie-файли", p1: "Cookie-файли — це невеликі текстові файли, які зберігаються у вашому браузері та допомагають сайту працювати коректно або розуміти, як він використовується.",
+        h2: "2. Які cookie-файли ми використовуємо",
+        p2a: "Технічний (обов'язковий) cookie: підтримує активний доступ після введення пароля для розділів «Ідеї для трейдингу» та «Звіти». Без нього довелося б вводити пароль на кожній сторінці.",
+        p2b: "Cookie-файли Google Analytics (_ga, _gid тощо): вимірюють трафік і поведінку відвідувачів в агрегованій та анонімізованій формі.",
+        p2c: "Ми не використовуємо рекламні cookie-файли і не займаємося ретаргетингом.",
+        h3: "3. Як ви можете контролювати cookie-файли", p3a: "Ви можете видалити або заблокувати cookie-файли в налаштуваннях браузера. Блокування технічного cookie вплине на роботу зон, захищених паролем. Блокування Analytics-cookie не впливає на роботу сайту.",
+        h4: "4. Cookie-файли третіх сторін", p4a: "Віджет TradingView, вбудований у розділ «Економічний календар», може встановлювати власні cookie-файли згідно з політикою TradingView (tradingview.com/policies)."
+      },
+      terms: {
+        title: "Умови використання",
+        h1: "1. Прийняття умов", p1: "Заходячи на TreidingSB і використовуючи його, ви приймаєте ці Умови використання. Якщо ви не згодні, будь ласка, не використовуйте сайт.",
+        h2: "2. Характер сайту", p2: "TreidingSB — незалежний освітній проєкт про фінансові ринки (Forex, CFD, технічний і фундаментальний аналіз). Сайтом керує приватна особа, і він не є інвестиційною компанією, брокером чи ліцензованим фінансовим консультантом.",
+        h3: "3. Відсутність фінансової консультації", p3: "Жоден контент на цьому сайті — уроки, аналізи, звіти, ідеї для трейдингу — не є фінансовою консультацією, інвестиційною рекомендацією чи обіцянкою результату. Торгові рішення залишаються виключно вашою відповідальністю.",
+        h4: "4. Торговий ризик", p4: "Торгівля Forex і CFD пов'язана з високим ризиком втрати вкладеного капіталу і підходить не всім інвесторам. Минулі результати не гарантують майбутніх.",
+        h5: "5. Доступ, захищений паролем", p5: "Розділи «Ідеї для трейдингу» та «Звіти» доступні лише за паролем, наданим учасникам. Несанкціоноване поширення пароля чи захищеного контенту заборонено.",
+        h6: "6. Інтелектуальна власність", p6: "Контент сайту (тексти, зображення, логотип, навчальні матеріали) є власністю TreidingSB, за винятком матеріалів, явно віднесених до зовнішніх джерел (наприклад, офіційні ресурси FCA/FSCS, згадані в Уроці 8). Відтворення без письмової згоди заборонено.",
+        h7: "7. Зовнішні посилання", p7: "Сайт може містити посилання на зовнішні ресурси (наприклад, FCA, FSCS, Financial Ombudsman Service). Ми не контролюємо вміст цих сайтів і не несемо відповідальності за їхню точність чи доступність.",
+        h8: "8. Обмеження відповідальності", p8: "У межах, дозволених законом, TreidingSB не несе відповідальності за фінансові втрати, прямі чи непрямі, що виникли внаслідок використання інформації на цьому сайті.",
+        h9: "9. Застосовне право", p9: "Ці Умови регулюються законодавством Англії та Уельсу, без шкоди для прав, які у вас є згідно із законодавством країни вашого проживання.",
+        h10: "10. Зміни", p10: "Ми залишаємо за собою право оновлювати ці Умови. Подальше використання сайту після змін означає прийняття нових умов."
+      },
+      disclaimer: {
+        title: "Фінансовий дисклеймер",
+        p1: "TreidingSB надає виключно освітній та інформаційний контент про фінансові ринки. Ніщо на цьому сайті не повинно тлумачитися як:",
+        li1: "рекомендація купувати, продавати чи утримувати фінансовий інструмент", li2: "персоналізована інвестиційна консультація", li3: "гарантія прибутку чи будь-якого конкретного результату",
+        p2: "Ризики: торгівля інструментами з кредитним плечем (Forex, CFD) може призвести до повної втрати вкладеного капіталу, іноді дуже швидко. Більшість роздрібних рахунків, які торгують CFD, втрачають гроші.",
+        p3: "Опубліковані звіти та ідеї для трейдингу відображають особисті думки, засновані на власному аналізі, і можуть містити помилки. Вони не перевіряються регуляторним органом і не є професійною рекомендацією.",
+        p4: "Перед торгівлею ретельно вивчіть інформацію, оцініть свою толерантність до ризику і, за потреби, проконсультуйтеся з ліцензованим незалежним фінансовим консультантом.",
+        p5: "Освітній матеріал Уроку 8 щодо регулювання у Великій Британії (FCA, FSCS, Financial Ombudsman Service) має виключно інформаційний характер, заснований на публічній інформації, доступній станом на 16 липня 2026 року, і не є юридичною консультацією."
+      }
+    },
     faq: {
       eyebrow: "❓ FAQ", title: "Часті запитання", desc: "Прямі відповіді на найпоширеніші запитання про команду, сигнали та звіти.",
       q1: "Ви компанія?", a1: "Ні, ми не компанія — ми незалежна команда трейдерів.",
@@ -1757,6 +2025,73 @@ const translations = {
       }
     },
     contact: { eyebrow: "Kontakt", title: "Kontakt TreidingSB", desc: "Kontakt dla członków, raportów i pomysłów transakcyjnych.", emailLabel: "Email:", discordLabel: "Discord:", telegramLabel: "Telegram:" },
+    footer: {
+      tagline: "Niezależne treści edukacyjne o Forex i rynkach finansowych.",
+      legalHeading: "Informacje prawne", privacyLink: "Polityka prywatności", cookiesLink: "Polityka cookie", termsLink: "Regulamin", disclaimerLink: "Zastrzeżenie",
+      contactHeading: "Kontakt", copyright: "© 2026 TreidingSB. Wszelkie prawa zastrzeżone."
+    },
+    legal: {
+      eyebrow: "Informacje prawne", title: "Informacje prawne", intro: "Poniższe polityki wyjaśniają, jak działa TreidingSB, jakie dane zbieramy i jakie są granice treści edukacyjnych na tej stronie.",
+      tocPrivacy: "Polityka prywatności", tocCookies: "Polityka cookie", tocTerms: "Regulamin", tocDisclaimer: "Zastrzeżenie finansowe",
+      privacy: {
+        title: "Polityka prywatności", updated: "Zaktualizowano 17 lipca 2026 r.",
+        intro: "TreidingSB to niezależny projekt edukacyjny, prowadzony przez osobę prywatną, bez zarejestrowanej firmy. Niniejsza polityka wyjaśnia, jakie dane zbieramy, dlaczego je zbieramy i jakie masz prawa.",
+        h1: "1. Jakie dane zbieramy",
+        p1a: "Twój adres e-mail, jeśli zapisujesz się na powiadomienia o raportach za pomocą formularza „Zapisz się na raporty”, przetwarzany przez usługę Resend.",
+        p1b: "Dane o użytkowaniu zbierane automatycznie przez Google Analytics (GA4): odwiedzone strony, czas trwania wizyty, typ urządzenia, przybliżony kraj — bez bezpośredniej identyfikacji osoby.",
+        p1c: "Plik cookie sesji, jeśli wprowadzasz hasło dostępu do sekcji Pomysły na transakcje i Raporty, używany wyłącznie do utrzymania aktywnego dostępu podczas wizyty.",
+        p1d: "Nie zbieramy imion i nazwisk, adresów pocztowych, danych płatniczych ani dokumentów tożsamości.",
+        h2: "2. Jak wykorzystujemy dane",
+        p2a: "E-mail: wyłącznie do wysyłania powiadomień o nowych raportach i analizach. Nie sprzedajemy ani nie wynajmujemy Twojego adresu e-mail stronom trzecim.",
+        p2b: "Dane Analytics: aby zrozumieć, jak strona jest używana, i ją ulepszyć.",
+        p2c: "Plik cookie sesji: wyłącznie techniczny, do działania obszaru chronionego hasłem.",
+        h3: "3. Z kim udostępniamy dane",
+        p3a: "Resend (przetwarzanie e-maili) — resend.com", p3b: "Google Analytics (Google LLC) — policies.google.com/privacy", p3c: "Vercel (hosting strony) — vercel.com/legal/privacy-policy",
+        p3d: "Nie udostępniamy danych stronom trzecim w celach marketingowych.",
+        h4: "4. Jak długo przechowujemy dane",
+        p4a: "Adres e-mail: do momentu wypisania się (link do wypisania znajduje się w każdej wysłanej wiadomości).",
+        p4b: "Dane Analytics: zgodnie ze standardową polityką przechowywania Google Analytics (zwykle 14 miesięcy).",
+        p4c: "Plik cookie sesji: usuwany po zamknięciu przeglądarki lub wygasa automatycznie.",
+        h5: "5. Twoje prawa (RODO)",
+        p5a: "Jeśli znajdujesz się w Europejskim Obszarze Gospodarczym lub Wielkiej Brytanii, masz prawo do dostępu, sprostowania, usunięcia, ograniczenia i przenoszenia swoich danych, a także prawo do sprzeciwu wobec przetwarzania. W przypadku jakichkolwiek pytań napisz do nas na semnale@treidingsb.com.",
+        h6: "6. Bezpieczeństwo",
+        p6a: "Używamy szyfrowanych połączeń (HTTPS) i bezpiecznego hostingu. Żaden system nie jest w 100% niezawodny, ale podejmujemy rozsądne środki w celu ochrony zbieranych danych.",
+        h7: "7. Zmiany",
+        p7a: "Niniejsza polityka może być okresowo aktualizowana. Data ostatniej aktualizacji jest wyświetlana na początku strony."
+      },
+      cookies: {
+        title: "Polityka cookie",
+        h1: "1. Czym są pliki cookie", p1: "Pliki cookie to małe pliki tekstowe zapisywane w przeglądarce, które pomagają stronie działać poprawnie lub rozumieć, jak jest używana.",
+        h2: "2. Pliki cookie, których używamy",
+        p2a: "Plik cookie techniczny (niezbędny): utrzymuje aktywny dostęp po wprowadzeniu hasła do sekcji Pomysły na transakcje i Raporty. Bez niego trzeba by wprowadzać hasło na każdej stronie.",
+        p2b: "Pliki cookie Google Analytics (_ga, _gid itp.): mierzą ruch i zachowanie odwiedzających w formie zagregowanej i zanonimizowanej.",
+        p2c: "Nie używamy plików cookie reklamowych ani nie stosujemy retargetingu.",
+        h3: "3. Jak możesz kontrolować pliki cookie", p3a: "Możesz usunąć lub zablokować pliki cookie w ustawieniach przeglądarki. Zablokowanie pliku cookie technicznego wpłynie na działanie obszarów chronionych hasłem. Zablokowanie plików cookie Analytics nie wpływa na działanie strony.",
+        h4: "4. Pliki cookie stron trzecich", p4a: "Widżet TradingView, osadzony w sekcji Kalendarz ekonomiczny, może ustawiać własne pliki cookie zgodnie z polityką TradingView (tradingview.com/policies)."
+      },
+      terms: {
+        title: "Regulamin",
+        h1: "1. Akceptacja regulaminu", p1: "Uzyskując dostęp do TreidingSB i korzystając z niego, akceptujesz niniejszy Regulamin. Jeśli się nie zgadzasz, prosimy nie korzystać ze strony.",
+        h2: "2. Charakter strony", p2: "TreidingSB to niezależny projekt edukacyjny dotyczący rynków finansowych (Forex, CFD, analiza techniczna i fundamentalna). Strona jest prowadzona przez osobę prywatną i nie jest firmą inwestycyjną, brokerem ani licencjonowanym doradcą finansowym.",
+        h3: "3. Brak porady finansowej", p3: "Żadna treść na tej stronie — lekcje, analizy, raporty, pomysły na transakcje — nie stanowi porady finansowej, rekomendacji inwestycyjnej ani obietnicy wyników. Decyzje handlowe pozostają wyłącznie Twoją odpowiedzialnością.",
+        h4: "4. Ryzyko handlowe", p4: "Handel Forex i CFD wiąże się z wysokim ryzykiem utraty zainwestowanego kapitału i nie jest odpowiedni dla wszystkich inwestorów. Wyniki historyczne nie gwarantują przyszłych rezultatów.",
+        h5: "5. Dostęp chroniony hasłem", p5: "Sekcje Pomysły na transakcje i Raporty są dostępne wyłącznie za pomocą hasła udostępnionego członkom. Nieautoryzowane udostępnianie hasła lub chronionej treści jest zabronione.",
+        h6: "6. Własność intelektualna", p6: "Treść strony (teksty, obrazy, logo, materiały edukacyjne) jest własnością TreidingSB, z wyjątkiem materiałów wyraźnie przypisanych źródłom zewnętrznym (na przykład oficjalne zasoby FCA/FSCS wymienione w Lekcji 8). Powielanie bez pisemnej zgody jest zabronione.",
+        h7: "7. Linki zewnętrzne", p7: "Strona może zawierać linki do zasobów zewnętrznych (na przykład FCA, FSCS, Financial Ombudsman Service). Nie mamy kontroli nad treścią tych stron i nie ponosimy odpowiedzialności za ich dokładność ani dostępność.",
+        h8: "8. Ograniczenie odpowiedzialności", p8: "W zakresie dozwolonym przez prawo, TreidingSB nie ponosi odpowiedzialności za straty finansowe, bezpośrednie lub pośrednie, wynikające z korzystania z informacji zawartych na tej stronie.",
+        h9: "9. Prawo właściwe", p9: "Niniejszy Regulamin podlega prawu Anglii i Walii, bez uszczerbku dla praw przysługujących Ci na mocy prawa kraju Twojego zamieszkania.",
+        h10: "10. Zmiany", p10: "Zastrzegamy sobie prawo do aktualizacji niniejszego Regulaminu. Dalsze korzystanie ze strony po wprowadzeniu zmian oznacza akceptację nowych warunków."
+      },
+      disclaimer: {
+        title: "Zastrzeżenie finansowe",
+        p1: "TreidingSB dostarcza wyłącznie treści edukacyjne i informacyjne dotyczące rynków finansowych. Nic na tej stronie nie powinno być interpretowane jako:",
+        li1: "rekomendacja kupna, sprzedaży lub posiadania instrumentu finansowego", li2: "spersonalizowana porada inwestycyjna", li3: "gwarancja zysku lub jakiegokolwiek konkretnego wyniku",
+        p2: "Ryzyka: Handel instrumentami z dźwignią (Forex, CFD) może prowadzić do całkowitej utraty zainwestowanego kapitału, czasem bardzo szybko. Większość rachunków detalicznych handlujących CFD traci pieniądze.",
+        p3: "Publikowane raporty i pomysły na transakcje odzwierciedlają osobiste opinie, oparte na własnej analizie, i mogą zawierać błędy. Nie są weryfikowane przez organ regulacyjny i nie stanowią profesjonalnej rekomendacji.",
+        p4: "Przed rozpoczęciem handlu dokładnie się poinformuj, oceń swoją tolerancję na ryzyko i, jeśli to konieczne, skonsultuj się z licencjonowanym, niezależnym doradcą finansowym.",
+        p5: "Materiał edukacyjny z Lekcji 8 dotyczący regulacji w Wielkiej Brytanii (FCA, FSCS, Financial Ombudsman Service) ma charakter wyłącznie informacyjny, oparty na publicznie dostępnych informacjach na dzień 16 lipca 2026 r., i nie stanowi porady prawnej."
+      }
+    },
     faq: {
       eyebrow: "❓ FAQ", title: "Najczęściej zadawane pytania", desc: "Bezpośrednie odpowiedzi na najczęstsze pytania o zespół, sygnały i raporty.",
       q1: "Czy jesteście firmą?", a1: "Nie, nie jesteśmy firmą — jesteśmy niezależnym zespołem traderów.",
