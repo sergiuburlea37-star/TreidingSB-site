@@ -38,6 +38,7 @@ document.querySelectorAll(".faq-question").forEach((btn) => {
 /* ISO country codes used by flagcdn.com for each site language (en -> gb flag) */
 const FLAGS = { ro: "ro", en: "gb", ru: "ru", uk: "ua", pl: "pl" };
 const CODES = { ro: "RO", en: "EN", ru: "RU", uk: "UA", pl: "PL" };
+const HERO_VIDEOS = { ro: "assets/tsb-promo-ro.mp4", en: "assets/tsb-promo-en.mp4", ru: "assets/tsb-promo-ru.mp4", uk: "assets/tsb-promo-uk.mp4", pl: "assets/tsb-promo-pl.mp4" };
 const SUPPORTED_LANGS = Object.keys(FLAGS);
 let currentLang = "ro";
 
@@ -2124,6 +2125,17 @@ function applyLanguage(lang) {
   currentLang = lang;
 
   document.documentElement.setAttribute("lang", lang);
+
+  const heroVideoSource = document.getElementById("heroVideoSource");
+  if (heroVideoSource && HERO_VIDEOS[lang] && !heroVideoSource.getAttribute("src").endsWith(HERO_VIDEOS[lang])) {
+    const wasPlaying = document.getElementById("heroVideo") && !document.getElementById("heroVideo").paused;
+    heroVideoSource.setAttribute("src", HERO_VIDEOS[lang]);
+    const heroVideoEl = document.getElementById("heroVideo");
+    if (heroVideoEl) {
+      heroVideoEl.load();
+      if (wasPlaying) heroVideoEl.play().catch(() => {});
+    }
+  }
 
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const val = getNested(dict, el.getAttribute("data-i18n"));
