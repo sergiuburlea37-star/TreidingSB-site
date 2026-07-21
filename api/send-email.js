@@ -118,7 +118,7 @@ function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer) {
         <tr>
           <td>
             <img
-              src="https://treidingsb.com/assets/email-banner.jpg"
+              src="https://treidingsb.com/assets/email-banner-v2.jpg"
               alt="TreidingSB AI"
               width="700"
               style="display:block;width:100%;height:auto;border:0;">
