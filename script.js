@@ -39,6 +39,11 @@ document.querySelectorAll(".faq-question").forEach((btn) => {
 const FLAGS = { ro: "ro", en: "gb", ru: "ru", uk: "ua", pl: "pl" };
 const CODES = { ro: "RO", en: "EN", ru: "RU", uk: "UA", pl: "PL" };
 const HERO_VIDEOS = { ro: "assets/tsb-promo-ro.mp4", en: "assets/tsb-promo-en.mp4", ru: "assets/tsb-promo-ru.mp4", uk: "assets/tsb-promo-uk.mp4", pl: "assets/tsb-promo-pl.mp4" };
+const LESSON1_VIDEOS = { ro: "assets/lesson1-forex-basics-ro.mp4", en: "assets/lesson1-forex-basics-en.mp4", ru: "assets/lesson1-forex-basics-ru.mp4", uk: "assets/lesson1-forex-basics-uk.mp4", pl: "assets/lesson1-forex-basics-pl.mp4" };
+const LANG_VIDEOS = [
+  { videoId: "heroVideo", sourceId: "heroVideoSource", map: HERO_VIDEOS },
+  { videoId: "lesson1Video", sourceId: "lesson1VideoSource", map: LESSON1_VIDEOS },
+];
 const SUPPORTED_LANGS = Object.keys(FLAGS);
 let currentLang = "ro";
 
@@ -2126,16 +2131,17 @@ function applyLanguage(lang) {
 
   document.documentElement.setAttribute("lang", lang);
 
-  const heroVideoSource = document.getElementById("heroVideoSource");
-  if (heroVideoSource && HERO_VIDEOS[lang] && !heroVideoSource.getAttribute("src").endsWith(HERO_VIDEOS[lang])) {
-    const wasPlaying = document.getElementById("heroVideo") && !document.getElementById("heroVideo").paused;
-    heroVideoSource.setAttribute("src", HERO_VIDEOS[lang]);
-    const heroVideoEl = document.getElementById("heroVideo");
-    if (heroVideoEl) {
-      heroVideoEl.load();
-      if (wasPlaying) heroVideoEl.play().catch(() => {});
-    }
-  }
+  LANG_VIDEOS.forEach(({ videoId, sourceId, map }) => {
+    const sourceEl = document.getElementById(sourceId);
+    const videoEl = document.getElementById(videoId);
+    const src = map[lang];
+    if (!sourceEl || !videoEl || !src) return;
+    if (sourceEl.getAttribute("src").endsWith(src)) return;
+    const wasPlaying = !videoEl.paused;
+    sourceEl.setAttribute("src", src);
+    videoEl.load();
+    if (wasPlaying) videoEl.play().catch(() => {});
+  });
 
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const val = getNested(dict, el.getAttribute("data-i18n"));
