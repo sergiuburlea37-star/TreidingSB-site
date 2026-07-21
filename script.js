@@ -2520,3 +2520,384 @@ async function loadLatestReport() {
 }
 
 applyLanguage(detectInitialLang());
+         
+/* ==================== Cont / Cabinet abonat ==================== */
+const ACCOUNT_STORAGE_KEY = "tsb_session_token";
+const ACCOUNT_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ACCOUNT_LOCALE_MAP = { ro: "ro-RO", en: "en-US", ru: "ru-RU", uk: "uk-UA", pl: "pl-PL" };
+
+const ACCOUNT_I18N = {
+  ro: {
+    eyebrow: "Cabinetul tău",
+    title: "Cont TreidingSB",
+    tabLogin: "Autentificare",
+    tabSignup: "Creează cont",
+    emailPlaceholder: "Adresa de email",
+    passwordPlaceholder: "Parolă (minim 8 caractere)",
+    loginButton: "Intră în cont",
+    signupButton: "Creează cont",
+    welcome: "Bine ai venit,",
+    memberIdLabel: "ID membru",
+    sinceLabel: "Membru din",
+    reportsTitle: "Rapoartele tale",
+    reportsBody: "Vei primi 52 de rapoarte pe an, câte unul în fiecare săptămână, standard în fiecare zi de luni. Dacă apar noutăți fundamentale importante pe piață, s-ar putea să primești și rapoarte suplimentare cu noi orientări, în afara programului obișnuit.",
+    logout: "Deconectare",
+    errGeneric: "A apărut o eroare. Te rugăm să încerci din nou.",
+    errInvalidEmail: "Adresa de email nu este validă.",
+    errWeakPassword: "Parola trebuie să aibă minim 8 caractere.",
+    errEmailTaken: "Există deja un cont cu acest email. Încearcă să te autentifici.",
+    errBadLogin: "Email sau parolă incorectă.",
+    errRateLimited: "Prea multe încercări. Te rugăm să aștepți puțin și să încerci din nou.",
+    errMissingFields: "Completează emailul și parola.",
+    signupSuccess: "Cont creat cu succes! Bine ai venit.",
+    loginSuccess: "Autentificare reușită!"
+  },
+  en: {
+    eyebrow: "Your account",
+    title: "TreidingSB Account",
+    tabLogin: "Log in",
+    tabSignup: "Sign up",
+    emailPlaceholder: "Email address",
+    passwordPlaceholder: "Password (min. 8 characters)",
+    loginButton: "Log in",
+    signupButton: "Create account",
+    welcome: "Welcome,",
+    memberIdLabel: "Member ID",
+    sinceLabel: "Member since",
+    reportsTitle: "Your reports",
+    reportsBody: "You'll receive 52 reports a year, one every week, standard delivery every Monday. If major fundamental news arises, you may also receive extra reports with new guidance outside the regular schedule.",
+    logout: "Log out",
+    errGeneric: "Something went wrong. Please try again.",
+    errInvalidEmail: "Please enter a valid email address.",
+    errWeakPassword: "Password must be at least 8 characters.",
+    errEmailTaken: "An account with this email already exists. Try logging in instead.",
+    errBadLogin: "Incorrect email or password.",
+    errRateLimited: "Too many attempts. Please wait a moment and try again.",
+    errMissingFields: "Please fill in both email and password.",
+    signupSuccess: "Account created successfully! Welcome.",
+    loginSuccess: "Logged in successfully!"
+  },
+  ru: {
+    eyebrow: "Ваш кабинет",
+    title: "Аккаунт TreidingSB",
+    tabLogin: "Вход",
+    tabSignup: "Регистрация",
+    emailPlaceholder: "Адрес электронной почты",
+    passwordPlaceholder: "Пароль (минимум 8 символов)",
+    loginButton: "Войти",
+    signupButton: "Создать аккаунт",
+    welcome: "Добро пожаловать,",
+    memberIdLabel: "ID участника",
+    sinceLabel: "Участник с",
+    reportsTitle: "Ваши отчёты",
+    reportsBody: "Вы будете получать 52 отчёта в год, по одному каждую неделю, стандартно по понедельникам. При появлении важных фундаментальных новостей вы также можете получить дополнительные отчёты с новыми рекомендациями вне обычного графика.",
+    logout: "Выйти",
+    errGeneric: "Произошла ошибка. Попробуйте ещё раз.",
+    errInvalidEmail: "Введите корректный адрес электронной почты.",
+    errWeakPassword: "Пароль должен содержать минимум 8 символов.",
+    errEmailTaken: "Аккаунт с таким email уже существует. Попробуйте войти.",
+    errBadLogin: "Неверный email или пароль.",
+    errRateLimited: "Слишком много попыток. Подождите немного и попробуйте снова.",
+    errMissingFields: "Заполните email и пароль.",
+    signupSuccess: "Аккаунт успешно создан! Добро пожаловать.",
+    loginSuccess: "Вход выполнен успешно!"
+  },
+  uk: {
+    eyebrow: "Ваш кабінет",
+    title: "Обліковий запис TreidingSB",
+    tabLogin: "Вхід",
+    tabSignup: "Реєстрація",
+    emailPlaceholder: "Адреса електронної пошти",
+    passwordPlaceholder: "Пароль (мінімум 8 символів)",
+    loginButton: "Увійти",
+    signupButton: "Створити акаунт",
+    welcome: "Ласкаво просимо,",
+    memberIdLabel: "ID учасника",
+    sinceLabel: "Учасник з",
+    reportsTitle: "Ваші звіти",
+    reportsBody: "Ви отримуватимете 52 звіти на рік, по одному щотижня, стандартно щопонеділка. Якщо з'являться важливі фундаментальні новини, ви також можете отримати додаткові звіти з новими рекомендаціями поза звичайним графіком.",
+    logout: "Вийти",
+    errGeneric: "Сталася помилка. Спробуйте ще раз.",
+    errInvalidEmail: "Введіть коректну адресу електронної пошти.",
+    errWeakPassword: "Пароль має містити мінімум 8 символів.",
+    errEmailTaken: "Акаунт з такою поштою вже існує. Спробуйте увійти.",
+    errBadLogin: "Невірний email або пароль.",
+    errRateLimited: "Забагато спроб. Зачекайте трохи і спробуйте знову.",
+    errMissingFields: "Заповніть email та пароль.",
+    signupSuccess: "Акаунт успішно створено! Ласкаво просимо.",
+    loginSuccess: "Вхід виконано успішно!"
+  },
+  pl: {
+    eyebrow: "Twoje konto",
+    title: "Konto TreidingSB",
+    tabLogin: "Logowanie",
+    tabSignup: "Rejestracja",
+    emailPlaceholder: "Adres e-mail",
+    passwordPlaceholder: "Hasło (min. 8 znaków)",
+    loginButton: "Zaloguj się",
+    signupButton: "Utwórz konto",
+    welcome: "Witaj,",
+    memberIdLabel: "ID członka",
+    sinceLabel: "Członek od",
+    reportsTitle: "Twoje raporty",
+    reportsBody: "Będziesz otrzymywać 52 raporty rocznie, jeden co tydzień, standardowo w każdy poniedziałek. W przypadku ważnych wydarzeń fundamentalnych możesz też otrzymać dodatkowe raporty z nowymi wskazówkami poza standardowym harmonogramem.",
+    logout: "Wyloguj się",
+    errGeneric: "Wystąpił błąd. Spróbuj ponownie.",
+    errInvalidEmail: "Podaj prawidłowy adres e-mail.",
+    errWeakPassword: "Hasło musi mieć co najmniej 8 znaków.",
+    errEmailTaken: "Konto z tym adresem e-mail już istnieje. Spróbuj się zalogować.",
+    errBadLogin: "Nieprawidłowy e-mail lub hasło.",
+    errRateLimited: "Zbyt wiele prób. Poczekaj chwilę i spróbuj ponownie.",
+    errMissingFields: "Uzupełnij e-mail i hasło.",
+    signupSuccess: "Konto utworzone pomyślnie! Witamy.",
+    loginSuccess: "Zalogowano pomyślnie!"
+  }
+};
+
+function accountT(key) {
+  var lang = (typeof currentLang !== "undefined" && ACCOUNT_I18N[currentLang]) ? currentLang : "ro";
+  var dict = ACCOUNT_I18N[lang] || ACCOUNT_I18N.ro;
+  return dict[key] || ACCOUNT_I18N.ro[key] || "";
+}
+
+function accountMapError(serverMessage, status) {
+  var msg = serverMessage || "";
+  if (status === 429 || msg.indexOf("Too many requests") > -1) return accountT("errRateLimited");
+  if (msg.indexOf("Există deja") > -1) return accountT("errEmailTaken");
+  if (msg.indexOf("email invalidă") > -1) return accountT("errInvalidEmail");
+  if (msg.indexOf("Parola trebuie") > -1) return accountT("errWeakPassword");
+  if (msg.indexOf("necesare") > -1) return accountT("errMissingFields");
+  if (msg.indexOf("incorectă") > -1 || status === 401) return accountT("errBadLogin");
+  return accountT("errGeneric");
+}
+
+function renderAccountTexts() {
+  var set = function (id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+  set("accountEyebrow", accountT("eyebrow"));
+  set("accountTitleText", accountT("title"));
+  set("accountTabLogin", accountT("tabLogin"));
+  set("accountTabSignup", accountT("tabSignup"));
+  set("accountLoginButton", accountT("loginButton"));
+  set("accountSignupButton", accountT("signupButton"));
+  set("cabinetWelcomeLabel", accountT("welcome"));
+  set("cabinetMemberIdLabel", accountT("memberIdLabel"));
+  set("cabinetSinceLabel", accountT("sinceLabel"));
+  set("cabinetReportsTitle", accountT("reportsTitle"));
+  set("cabinetReportsBody", accountT("reportsBody"));
+  set("accountLogoutButton", accountT("logout"));
+
+  var loginEmailEl = document.getElementById("loginEmail");
+  if (loginEmailEl) loginEmailEl.placeholder = accountT("emailPlaceholder");
+  var loginPasswordEl = document.getElementById("loginPassword");
+  if (loginPasswordEl) loginPasswordEl.placeholder = accountT("passwordPlaceholder");
+  var signupEmailEl = document.getElementById("signupEmail");
+  if (signupEmailEl) signupEmailEl.placeholder = accountT("emailPlaceholder");
+  var signupPasswordEl = document.getElementById("signupPassword");
+  if (signupPasswordEl) signupPasswordEl.placeholder = accountT("passwordPlaceholder");
+}
+
+function accountSetMessage(text, type) {
+  var el = document.getElementById("accountMessage");
+  if (!el) return;
+  el.textContent = text || "";
+  el.classList.remove("is-error", "is-success");
+  if (type === "error") el.classList.add("is-error");
+  if (type === "success") el.classList.add("is-success");
+}
+
+function accountSwitchTab(which) {
+  var tabLogin = document.getElementById("accountTabLogin");
+  var tabSignup = document.getElementById("accountTabSignup");
+  var formLogin = document.getElementById("accountLoginForm");
+  var formSignup = document.getElementById("accountSignupForm");
+  if (!tabLogin || !tabSignup || !formLogin || !formSignup) return;
+
+  var isLogin = which === "login";
+  tabLogin.classList.toggle("is-active", isLogin);
+  tabSignup.classList.toggle("is-active", !isLogin);
+  formLogin.hidden = !isLogin;
+  formSignup.hidden = isLogin;
+  accountSetMessage("", null);
+}
+
+function accountShowAuthView() {
+  var auth = document.getElementById("accountAuth");
+  var cabinet = document.getElementById("accountCabinet");
+  if (auth) auth.hidden = false;
+  if (cabinet) cabinet.hidden = true;
+  renderAccountTexts();
+}
+
+function accountShowCabinetView(data) {
+  var auth = document.getElementById("accountAuth");
+  var cabinet = document.getElementById("accountCabinet");
+  if (auth) auth.hidden = true;
+  if (cabinet) cabinet.hidden = false;
+
+  var emailEl = document.getElementById("cabinetEmail");
+  if (emailEl) emailEl.textContent = data.email || "";
+
+  var memberIdEl = document.getElementById("cabinetMemberId");
+  if (memberIdEl) memberIdEl.textContent = data.memberId || "";
+
+  var sinceEl = document.getElementById("cabinetSince");
+  if (sinceEl) {
+    var lang = (typeof currentLang !== "undefined" && ACCOUNT_LOCALE_MAP[currentLang]) ? currentLang : "ro";
+    var locale = ACCOUNT_LOCALE_MAP[lang];
+    try {
+      sinceEl.textContent = new Date(data.createdAt).toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" });
+    } catch (e) {
+      sinceEl.textContent = data.createdAt || "";
+    }
+  }
+
+  renderAccountTexts();
+}
+
+function accountRestoreSession() {
+  var token = localStorage.getItem(ACCOUNT_STORAGE_KEY);
+  if (!token) {
+    accountShowAuthView();
+    return;
+  }
+  fetch("/api/auth-me", { headers: { Authorization: "Bearer " + token } })
+    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+    .then(function (res) {
+      if (res.ok && res.data && res.data.success) {
+        accountShowCabinetView(res.data);
+      } else {
+        localStorage.removeItem(ACCOUNT_STORAGE_KEY);
+        accountShowAuthView();
+      }
+    })
+    .catch(function () {
+      accountShowAuthView();
+    });
+}
+
+function accountHandleSignup(e) {
+  e.preventDefault();
+  var emailEl = document.getElementById("signupEmail");
+  var passwordEl = document.getElementById("signupPassword");
+  var button = document.getElementById("accountSignupButton");
+  var email = emailEl ? emailEl.value.trim() : "";
+  var password = passwordEl ? passwordEl.value : "";
+
+  if (!email || !password) { accountSetMessage(accountT("errMissingFields"), "error"); return; }
+  if (!ACCOUNT_EMAIL_RE.test(email)) { accountSetMessage(accountT("errInvalidEmail"), "error"); return; }
+  if (password.length < 8) { accountSetMessage(accountT("errWeakPassword"), "error"); return; }
+
+  if (button) button.disabled = true;
+  accountSetMessage("", null);
+
+  var lang = (typeof currentLang !== "undefined") ? currentLang : "ro";
+
+  fetch("/api/auth-signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email, password: password, lang: lang })
+  })
+    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
+    .then(function (res) {
+      if (res.ok && res.data && res.data.success) {
+        localStorage.setItem(ACCOUNT_STORAGE_KEY, res.data.token);
+        accountSetMessage(accountT("signupSuccess"), "success");
+        accountShowCabinetView(res.data);
+      } else {
+        accountSetMessage(accountMapError(res.data && res.data.error, res.status), "error");
+      }
+    })
+    .catch(function () {
+      accountSetMessage(accountT("errGeneric"), "error");
+    })
+    .finally(function () {
+      if (button) button.disabled = false;
+    });
+}
+
+function accountHandleLogin(e) {
+  e.preventDefault();
+  var emailEl = document.getElementById("loginEmail");
+  var passwordEl = document.getElementById("loginPassword");
+  var button = document.getElementById("accountLoginButton");
+  var email = emailEl ? emailEl.value.trim() : "";
+  var password = passwordEl ? passwordEl.value : "";
+
+  if (!email || !password) { accountSetMessage(accountT("errMissingFields"), "error"); return; }
+
+  if (button) button.disabled = true;
+  accountSetMessage("", null);
+
+  fetch("/api/auth-login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email, password: password })
+  })
+    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
+    .then(function (res) {
+      if (res.ok && res.data && res.data.success) {
+        localStorage.setItem(ACCOUNT_STORAGE_KEY, res.data.token);
+        accountSetMessage(accountT("loginSuccess"), "success");
+        accountShowCabinetView(res.data);
+      } else {
+        accountSetMessage(accountMapError(res.data && res.data.error, res.status), "error");
+      }
+    })
+    .catch(function () {
+      accountSetMessage(accountT("errGeneric"), "error");
+    })
+    .finally(function () {
+      if (button) button.disabled = false;
+    });
+}
+
+function accountHandleLogout() {
+  localStorage.removeItem(ACCOUNT_STORAGE_KEY);
+  var loginForm = document.getElementById("accountLoginForm");
+  var signupForm = document.getElementById("accountSignupForm");
+  if (loginForm) loginForm.reset();
+  if (signupForm) signupForm.reset();
+  accountSwitchTab("login");
+  accountShowAuthView();
+}
+
+function initAccountBox() {
+  var box = document.getElementById("accountBox");
+  if (!box) return;
+
+  var tabLogin = document.getElementById("accountTabLogin");
+  var tabSignup = document.getElementById("accountTabSignup");
+  if (tabLogin) tabLogin.addEventListener("click", function () { accountSwitchTab("login"); });
+  if (tabSignup) tabSignup.addEventListener("click", function () { accountSwitchTab("signup"); });
+
+  var loginForm = document.getElementById("accountLoginForm");
+  if (loginForm) loginForm.addEventListener("submit", accountHandleLogin);
+
+  var signupForm = document.getElementById("accountSignupForm");
+  if (signupForm) signupForm.addEventListener("submit", accountHandleSignup);
+
+  var logoutButton = document.getElementById("accountLogoutButton");
+  if (logoutButton) logoutButton.addEventListener("click", accountHandleLogout);
+
+  accountSwitchTab("login");
+  renderAccountTexts();
+  accountRestoreSession();
+
+  if (typeof applyLanguage === "function" && !applyLanguage.__accountWrapped) {
+    var accountOriginalApplyLanguage = applyLanguage;
+    applyLanguage = function (lang) {
+      accountOriginalApplyLanguage(lang);
+      renderAccountTexts();
+    };
+    applyLanguage.__accountWrapped = true;
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAccountBox);
+} else {
+  initAccountBox();
+}
