@@ -55,7 +55,8 @@ const i18n = {
     welcomeText2: 'Vei primi analize si rapoarte pentru XAU/USD, XAG/USD, EUR/USD si GBP/USD, bazate pe metodologia Smart Money Concepts.',
     reportSubject: 'Raport nou disponibil pe TreidingSB',
     reportTitle: 'Raport nou disponibil!',
-    reportText: 'Un nou raport de analiza a fost publicat pe site, in sectiunea Rapoarte.',
+    reportText: 'Un nou raport de analiza a fost publicat pe site, in sectiunea Rapoarte. Il gasesti atasat la acest email in format PDF.',
+    reportTextNoAttachment: 'Un nou raport de analiza a fost publicat pe site, in sectiunea Rapoarte.',
     btnSite: 'Viziteaza site-ul',
     btnReport: 'Citeste raportul',
     disclaimer: 'TreidingSB &middot; Analiza educationala &middot; Nu constituie sfat de investitii'
@@ -67,7 +68,8 @@ const i18n = {
     welcomeText2: 'You will receive analysis and reports for XAU/USD, XAG/USD, EUR/USD and GBP/USD, based on the Smart Money Concepts methodology.',
     reportSubject: 'New report available on TreidingSB',
     reportTitle: 'New report available!',
-    reportText: 'A new analysis report has been published on the site, in the Reports section.',
+    reportText: 'A new analysis report has been published on the site, in the Reports section. You will find it attached to this email as a PDF.',
+    reportTextNoAttachment: 'A new analysis report has been published on the site, in the Reports section.',
     btnSite: 'Visit the website',
     btnReport: 'Read the report',
     disclaimer: 'TreidingSB &middot; Educational analysis &middot; Not investment advice'
@@ -79,7 +81,8 @@ const i18n = {
     welcomeText2: 'Вы будете получать аналитику и отчёты по XAU/USD, XAG/USD, EUR/USD и GBP/USD на основе методологии Smart Money Concepts.',
     reportSubject: 'Новый отчёт доступен на TreidingSB',
     reportTitle: 'Доступен новый отчёт!',
-    reportText: 'Новый аналитический отчёт опубликован на сайте, в разделе «Отчёты».',
+    reportText: 'Новый аналитический отчёт опубликован на сайте, в разделе «Отчёты». Он приложен к этому письму в формате PDF.',
+    reportTextNoAttachment: 'Новый аналитический отчёт опубликован на сайте, в разделе «Отчёты».',
     btnSite: 'Перейти на сайт',
     btnReport: 'Читать отчёт',
     disclaimer: 'TreidingSB &middot; Образовательная аналитика &middot; Не является инвестиционной рекомендацией'
@@ -91,7 +94,8 @@ const i18n = {
     welcomeText2: 'Bedziesz otrzymywac analizy i raporty dla XAU/USD, XAG/USD, EUR/USD oraz GBP/USD, oparte na metodologii Smart Money Concepts.',
     reportSubject: 'Nowy raport dostepny na TreidingSB',
     reportTitle: 'Nowy raport jest dostepny!',
-    reportText: 'Nowy raport analityczny zostal opublikowany na stronie, w sekcji Raporty.',
+    reportText: 'Nowy raport analityczny zostal opublikowany na stronie, w sekcji Raporty. Znajdziesz go w zalaczniku do tej wiadomosci w formacie PDF.',
+    reportTextNoAttachment: 'Nowy raport analityczny zostal opublikowany na stronie, w sekcji Raporty.',
     btnSite: 'Odwiedz strone',
     btnReport: 'Przeczytaj raport',
     disclaimer: 'TreidingSB &middot; Analiza edukacyjna &middot; To nie jest porada inwestycyjna'
@@ -114,7 +118,7 @@ function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer) {
         <tr>
           <td>
             <img
-              src="https://treidingsb.com/email-banner.jpg"
+              src="https://treidingsb.com/assets/email-banner.jpg"
               alt="TreidingSB AI"
               width="700"
               style="display:block;width:100%;height:auto;border:0;">
@@ -160,6 +164,36 @@ function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer) {
     </div>`;
 }
 
+// ---------- Ataseaza ultimul raport PDF (best-effort) ----------
+// Daca ceva esueaza (index.json indisponibil, PDF lipsa, fetch prea lent),
+// intoarcem null si emailul se trimite oricum, doar fara atasament — nu
+// blocam niciodata trimiterea notificarii din cauza atasamentului.
+async function fetchLatestReportAttachment(lang) {
+  try {
+    const idxRes = await fetch('https://raw.githubusercontent.com/sergiuburlea37-star/treidingsb-reports/main/reports/index.json');
+    if (!idxRes.ok) return null;
+    const idxData = await idxRes.json();
+    const latest = idxData && idxData.rapoarte && idxData.rapoarte[0];
+    if (!latest) return null;
+
+    const relPath =
+      (latest.fisiere && (latest.fisiere[lang] || latest.fisiere.ro)) ||
+      latest.fisier;
+    if (!relPath) return null;
+
+    const pdfRes = await fetch(`https://raw.githubusercontent.com/sergiuburlea37-star/treidingsb-reports/main/reports/${relPath}`);
+    if (!pdfRes.ok) return null;
+
+    const buf = Buffer.from(await pdfRes.arrayBuffer());
+    return {
+      filename: `TreidingSB_Raport_${latest.data}.pdf`,
+      content: buf.toString('base64')
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   // Acceptam doar cereri POST
   if (req.method !== 'POST') {
@@ -185,12 +219,15 @@ export default async function handler(req, res) {
 
   // Template-uri predefinite (serverul decide continutul, nu vizitatorul)
   let subject, html;
+  let attachments;
 
   if (type === 'report') {
+    attachments = await fetchLatestReportAttachment(lang);
+
     subject = t.reportSubject;
     html = buildHtml(
       t.reportTitle,
-      [t.reportText],
+      [attachments ? t.reportText : t.reportTextNoAttachment],
       t.btnReport,
       'https://treidingsb.com',
       t.disclaimer
@@ -208,18 +245,23 @@ export default async function handler(req, res) {
   }
 
   try {
+    const emailPayload = {
+      from: 'TreidingSB <semnale@treidingsb.com>',
+      to: [to],
+      subject: subject,
+      html: html
+    };
+    if (attachments) {
+      emailPayload.attachments = [attachments];
+    }
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        from: 'TreidingSB <semnale@treidingsb.com>',
-        to: [to],
-        subject: subject,
-        html: html
-      })
+      body: JSON.stringify(emailPayload)
     });
 
     const data = await response.json();
@@ -247,7 +289,7 @@ export default async function handler(req, res) {
       } catch (e) { /* notificarea nu blocheaza raspunsul */ }
     }
 
-    return res.status(200).json({ success: true, id: data.id });
+    return res.status(200).json({ success: true, id: data.id, attached: !!attachments });
   } catch (err) {
     return res.status(500).json({ error: 'Server error: ' + err.message });
   }
