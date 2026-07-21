@@ -23,6 +23,39 @@ if (menuButton && mainNav) {
   });
 }
 
+
+/* ===================== Nav dropdowns (Portofolii / Contul meu) ===================== */
+function initNavDropdown(wrapperId, btnId) {
+  const wrapper = document.getElementById(wrapperId);
+  const btn = document.getElementById(btnId);
+  if (!wrapper || !btn) return;
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = wrapper.classList.toggle("is-open");
+    btn.setAttribute("aria-expanded", String(isOpen));
+  });
+  wrapper.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      wrapper.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+    });
+  });
+  document.addEventListener("click", (e) => {
+    if (!wrapper.contains(e.target)) {
+      wrapper.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+    }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      wrapper.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+initNavDropdown("portfoliosDropdown", "portfoliosBtn");
+initNavDropdown("accountDropdown", "memberButton");
+
 /* ===================== FAQ accordion ===================== */
 document.querySelectorAll(".faq-question").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -49,8 +82,8 @@ const translations = {
   ro: {
     riskStrip: "⚠️ Risc: Tranzacționarea CFD implică risc ridicat de pierdere. Site informativ independent.",
     mobileToggle: "Deschide meniul",
-    nav: { home: "⌂ Home", about: "◎ Despre noi", ideas: "⌁ Idei de tranzacționare", portfolioUs: "$ Portofoliu US", portfolioEu: "€ Portofoliu EU", reports: "▤ Rapoarte", education: "◈ Educație", calendar: "▦ Calendar economic", faq: "❓ FAQ", contact: "✉ Contact" },
-    memberButton: "♙ Cont membru",
+    nav: { home: "⌂ Home", about: "◎ Despre noi", ideas: "⌁ Idei de tranzacționare", portfolios: "$ Portofolii", portfolioUs: "$ Portofoliu US", portfolioEu: "€ Portofoliu EU", reports: "▤ Rapoarte", education: "◈ Educație", calendar: "▦ Calendar economic", faq: "❓ FAQ", contact: "✉ Contact" },
+    memberButton: "♙ Contul meu",
     hero: {
       pill: "Idei de tranzacționare active · Membri",
       titlePre: "Tranzacționează mai bine cu",
@@ -463,7 +496,7 @@ const translations = {
   en: {
     riskStrip: "⚠️ Risk: CFD trading carries a high risk of loss. Independent informational site.",
     mobileToggle: "Open menu",
-    nav: { home: "⌂ Home", about: "◎ About Us", ideas: "⌁ Trade Ideas", portfolioUs: "$ US Portfolio", portfolioEu: "€ EU Portfolio", reports: "▤ Reports", education: "◈ Education", calendar: "▦ Economic Calendar", faq: "❓ FAQ", contact: "✉ Contact" },
+    nav: { home: "⌂ Home", about: "◎ About Us", ideas: "⌁ Trade Ideas", portfolios: "$ Portfolios", portfolioUs: "$ US Portfolio", portfolioEu: "€ EU Portfolio", reports: "▤ Reports", education: "◈ Education", calendar: "▦ Economic Calendar", faq: "❓ FAQ", contact: "✉ Contact" },
     memberButton: "♙ Member Area",
     hero: {
       pill: "Active trade ideas · Members",
@@ -877,7 +910,7 @@ const translations = {
   ru: {
     riskStrip: "⚠️ Риск: Торговля CFD сопряжена с высоким риском потерь. Независимый информационный сайт.",
     mobileToggle: "Открыть меню",
-    nav: { home: "⌂ Главная", about: "◎ О нас", ideas: "⌁ Торговые идеи", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Отчёты", education: "◈ Обучение", calendar: "▦ Экономический календарь", faq: "❓ FAQ", contact: "✉ Контакты" },
+    nav: { home: "⌂ Главная", about: "◎ О нас", ideas: "⌁ Торговые идеи", portfolios: "$ Портфели", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Отчёты", education: "◈ Обучение", calendar: "▦ Экономический календарь", faq: "❓ FAQ", contact: "✉ Контакты" },
     memberButton: "♙ Личный кабинет",
     hero: {
       pill: "Активные торговые идеи · Участники",
@@ -1291,7 +1324,7 @@ const translations = {
   uk: {
     riskStrip: "⚠️ Ризик: Торгівля CFD пов'язана з високим ризиком втрат. Незалежний інформаційний сайт.",
     mobileToggle: "Відкрити меню",
-    nav: { home: "⌂ Головна", about: "◎ Про нас", ideas: "⌁ Торгові ідеї", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Звіти", education: "◈ Навчання", calendar: "▦ Економічний календар", faq: "❓ FAQ", contact: "✉ Контакти" },
+    nav: { home: "⌂ Головна", about: "◎ Про нас", ideas: "⌁ Торгові ідеї", portfolios: "$ Портфелі", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Звіти", education: "◈ Навчання", calendar: "▦ Економічний календар", faq: "❓ FAQ", contact: "✉ Контакти" },
     memberButton: "♙ Особистий кабінет",
     hero: {
       pill: "Активні торгові ідеї · Учасники",
@@ -1705,7 +1738,7 @@ const translations = {
   pl: {
     riskStrip: "⚠️ Ryzyko: Handel CFD wiąże się z wysokim ryzykiem straty. Niezależna strona informacyjna.",
     mobileToggle: "Otwórz menu",
-    nav: { home: "⌂ Start", about: "◎ O nas", ideas: "⌁ Pomysły transakcyjne", portfolioUs: "$ Portfel US", portfolioEu: "€ Portfel EU", reports: "▤ Raporty", education: "◈ Edukacja", calendar: "▦ Kalendarz ekonomiczny", faq: "❓ FAQ", contact: "✉ Kontakt" },
+    nav: { home: "⌂ Start", about: "◎ O nas", ideas: "⌁ Pomysły transakcyjne", portfolios: "$ Portfele", portfolioUs: "$ Portfel US", portfolioEu: "€ Portfel EU", reports: "▤ Raporty", education: "◈ Edukacja", calendar: "▦ Kalendarz ekonomiczny", faq: "❓ FAQ", contact: "✉ Kontakt" },
     memberButton: "♙ Strefa członka",
     hero: {
       pill: "Aktywne pomysły transakcyjne · Członkowie",
