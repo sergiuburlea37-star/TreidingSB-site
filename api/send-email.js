@@ -3,6 +3,8 @@
 // Suporta 4 limbi: ro (implicit), en, ru, pl — parametrul "lang"
 // Cheia API este citita din Environment Variable (RESEND_API_KEY), NU din cod.
 
+import { personalizeReportPdf } from './lib/personalize-report.js';
+
 // ---------- Rate limiting simplu (in-memory, per instanta) ----------
 // Endpoint-ul e public (oricine poate trimite email catre orice adresa prin
 // formularul de abonare), deci fara limitare putea fi folosit ca releu de spam.
@@ -105,70 +107,67 @@ const i18n = {
 // ---------- Constructor HTML comun (logo + buton + disclaimer) ----------
 function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer) {
   const paras = paragraphs.map(p => `
-    <p style="margin:0 0 18px 0;font-size:18px;line-height:1.6;color:#E6E6E6;">
-      ${p}
-    </p>
-  `).join('');
+      <p style="margin:0 0 18px 0;font-size:18px;line-height:1.6;color:#E6E6E6;">
+        ${p}
+      </p>
+    `).join('');
 
   return `
-    <div style="background:#111111;padding:30px 0;font-family:Arial,sans-serif;">
-      <table align="center" cellpadding="0" cellspacing="0" width="700"
-        style="max-width:700px;width:100%;background:#1A1A1A;border-radius:18px;overflow:hidden;">
+  <div style="background:#111111;padding:30px 0;font-family:Arial,sans-serif;">
+    <table align="center" cellpadding="0" cellspacing="0" width="700"
+      style="max-width:700px;width:100%;background:#1A1A1A;border-radius:18px;overflow:hidden;">
 
-        <tr>
-          <td>
-            <img
-              src="https://treidingsb.com/assets/email-banner-v2.jpg"
-              alt="TreidingSB AI"
-              width="700"
-              style="display:block;width:100%;height:auto;border:0;">
-          </td>
-        </tr>
+      <tr>
+        <td>
+          <img
+            src="https://treidingsb.com/assets/email-banner-v2.jpg"
+            alt="TreidingSB AI"
+            width="700"
+            style="display:block;width:100%;height:auto;border:0;">
+        </td>
+      </tr>
 
-        <tr>
-          <td style="padding:35px;">
-            <h2 style="color:#D4AF37;font-size:32px;margin:0 0 20px 0;">
-              ${title}
-            </h2>
+      <tr>
+        <td style="padding:35px;">
+          <h2 style="color:#D4AF37;font-size:32px;margin:0 0 20px 0;">
+            ${title}
+          </h2>
 
-            ${paras}
+          ${paras}
 
-            <div style="margin-top:30px;">
-              <a href="${btnUrl}"
-                style="background:#D4AF37;
-                color:#111111;
-                text-decoration:none;
-                padding:15px 28px;
-                border-radius:8px;
-                font-size:18px;
-                font-weight:bold;
-                display:inline-block;">
-                ${btnText}
-              </a>
-            </div>
-          </td>
-        </tr>
+          <div style="margin-top:30px;">
+            <a href="${btnUrl}"
+              style="background:#D4AF37;
+                     color:#111111;
+                     text-decoration:none;
+                     padding:15px 28px;
+                     border-radius:8px;
+                     font-size:18px;
+                     font-weight:bold;
+                     display:inline-block;">
+              ${btnText}
+            </a>
+          </div>
+        </td>
+      </tr>
 
-        <tr>
-          <td style="padding:22px 35px;
-            border-top:1px solid #2B2B2B;
-            color:#8C8C8C;
-            font-size:13px;
-            line-height:1.6;">
-            ${disclaimer}<br>
-            <strong>TreidingSB AI</strong> · AI Trading Intelligence
-          </td>
-        </tr>
+      <tr>
+        <td style="padding:22px 35px;
+                   border-top:1px solid #2B2B2B;
+                   color:#8C8C8C;
+                   font-size:13px;
+                   line-height:1.6;">
+          ${disclaimer}<br>
+          <strong>TreidingSB AI</strong> &middot; AI Trading Intelligence
+        </td>
+      </tr>
 
-      </table>
-    </div>`;
+    </table>
+  </div>`;
 }
 
-// ---------- Ataseaza ultimul raport PDF (best-effort) ----------
-// Daca ceva esueaza (index.json indisponibil, PDF lipsa, fetch prea lent),
-// intoarcem null si emailul se trimite oricum, doar fara atasament — nu
-// blocam niciodata trimiterea notificarii din cauza atasamentului.
-async function fetchLatestReportAttachment(lang) {
+// ---------- Descarca ultimul raport PDF brut (best-effort) ----------
+async function fetchLatestReportRaw(lang) {
   try {
     const idxRes = await fetch('https://raw.githubusercontent.com/sergiuburlea37-star/treidingsb-reports/main/reports/index.json');
     if (!idxRes.ok) return null;
@@ -185,12 +184,39 @@ async function fetchLatestReportAttachment(lang) {
     if (!pdfRes.ok) return null;
 
     const buf = Buffer.from(await pdfRes.arrayBuffer());
-    return {
-      filename: `TreidingSB_Raport_${latest.data}.pdf`,
-      content: buf.toString('base64')
-    };
+    return { buf, reportDate: latest.data };
   } catch (e) {
     return null;
+  }
+}
+
+// ---------- Personalizeaza si ataseaza raportul (best-effort) ----------
+// Fiecare abonat primeste un PDF unic: pagina de licenta personala, watermark
+// cu emailul lui pe fiecare pagina, ID de raport unic, hash unic, pagina
+// finala de copyright/declaratie legala si metadate ascunse in fisier
+// (email, member ID, report ID, timestamp). Daca personalizarea esueaza
+// dintr-un motiv tehnic, atasam raportul brut ca sa nu blocam niciodata
+// trimiterea notificarii — dar incercam intotdeauna varianta personalizata
+// mai intai, niciodata nu trimitem intentionat o copie anonima.
+async function fetchLatestReportAttachment(lang, email) {
+  const raw = await fetchLatestReportRaw(lang);
+  if (!raw) return null;
+
+  try {
+    const { bytes, reportNumber } = await personalizeReportPdf(raw.buf, {
+      email,
+      lang,
+      reportDate: raw.reportDate
+    });
+    return {
+      filename: `TreidingSB_Raport_${raw.reportDate}_${reportNumber}.pdf`,
+      content: Buffer.from(bytes).toString('base64')
+    };
+  } catch (e) {
+    return {
+      filename: `TreidingSB_Raport_${raw.reportDate}.pdf`,
+      content: raw.buf.toString('base64')
+    };
   }
 }
 
@@ -222,7 +248,7 @@ export default async function handler(req, res) {
   let attachments;
 
   if (type === 'report') {
-    attachments = await fetchLatestReportAttachment(lang);
+    attachments = await fetchLatestReportAttachment(lang, to);
 
     subject = t.reportSubject;
     html = buildHtml(
