@@ -59,6 +59,11 @@ const i18n = {
     reportTitle: 'Raport nou disponibil!',
     reportText: 'Un nou raport de analiza a fost publicat pe site, in sectiunea Rapoarte. Il gasesti atasat la acest email in format PDF.',
     reportTextNoAttachment: 'Un nou raport de analiza a fost publicat pe site, in sectiunea Rapoarte.',
+    updateSubject: 'TreidingSB s-a actualizat - rubrici noi pentru tine',
+    updateTitle: 'Site-ul TreidingSB s-a actualizat!',
+    updateText1: 'Am adaugat rubrici noi pe site, gandite pentru confortul tau.',
+    updateText2: 'Descopera ce e nou si exploreaza site-ul actualizat, inclusiv noul Cabinet personal.',
+    btnUpdate: 'Vezi ce e nou',
     btnSite: 'Viziteaza site-ul',
     btnReport: 'Citeste raportul',
     disclaimer: 'TreidingSB &middot; Analiza educationala &middot; Nu constituie sfat de investitii'
@@ -72,6 +77,11 @@ const i18n = {
     reportTitle: 'New report available!',
     reportText: 'A new analysis report has been published on the site, in the Reports section. You will find it attached to this email as a PDF.',
     reportTextNoAttachment: 'A new analysis report has been published on the site, in the Reports section.',
+    updateSubject: 'TreidingSB has been updated - new sections for you',
+    updateTitle: 'The TreidingSB website has been updated!',
+    updateText1: 'We have added new sections to the site, designed for your convenience.',
+    updateText2: 'Discover what is new and explore the updated website, including the new personal Account area.',
+    btnUpdate: 'See what is new',
     btnSite: 'Visit the website',
     btnReport: 'Read the report',
     disclaimer: 'TreidingSB &middot; Educational analysis &middot; Not investment advice'
@@ -85,6 +95,11 @@ const i18n = {
     reportTitle: 'Доступен новый отчёт!',
     reportText: 'Новый аналитический отчёт опубликован на сайте, в разделе «Отчёты». Он приложен к этому письму в формате PDF.',
     reportTextNoAttachment: 'Новый аналитический отчёт опубликован на сайте, в разделе «Отчёты».',
+    updateSubject: 'TreidingSB обновлён - новые разделы для вас',
+    updateTitle: 'Сайт TreidingSB обновлён!',
+    updateText1: 'Мы добавили новые разделы на сайт для вашего удобства.',
+    updateText2: 'Узнайте, что нового, и изучите обновлённый сайт, включая новый Личный кабинет.',
+    btnUpdate: 'Посмотреть новинки',
     btnSite: 'Перейти на сайт',
     btnReport: 'Читать отчёт',
     disclaimer: 'TreidingSB &middot; Образовательная аналитика &middot; Не является инвестиционной рекомендацией'
@@ -98,6 +113,11 @@ const i18n = {
     reportTitle: 'Nowy raport jest dostepny!',
     reportText: 'Nowy raport analityczny zostal opublikowany na stronie, w sekcji Raporty. Znajdziesz go w zalaczniku do tej wiadomosci w formacie PDF.',
     reportTextNoAttachment: 'Nowy raport analityczny zostal opublikowany na stronie, w sekcji Raporty.',
+    updateSubject: 'TreidingSB zostal zaktualizowany - nowe sekcje dla Ciebie',
+    updateTitle: 'Strona TreidingSB zostala zaktualizowana!',
+    updateText1: 'Dodalismy nowe sekcje na stronie, z mysla o Twojej wygodzie.',
+    updateText2: 'Odkryj co nowego i zapoznaj sie z zaktualizowana strona, w tym nowe Konto osobiste.',
+    btnUpdate: 'Zobacz co nowego',
     btnSite: 'Odwiedz strone',
     btnReport: 'Przeczytaj raport',
     disclaimer: 'TreidingSB &middot; Analiza edukacyjna &middot; To nie jest porada inwestycyjna'
@@ -258,6 +278,15 @@ export default async function handler(req, res) {
       'https://treidingsb.com',
       t.disclaimer
     );
+  } else if (type === 'update') {
+    subject = t.updateSubject;
+    html = buildHtml(
+      t.updateTitle,
+      [t.updateText1, t.updateText2],
+      t.btnUpdate,
+      'https://treidingsb.com/#account',
+      t.disclaimer
+    );
   } else {
     // implicit: welcome
     subject = t.welcomeSubject;
@@ -297,7 +326,7 @@ export default async function handler(req, res) {
     }
 
     // La abonare (welcome): notificare catre proprietar cu adresa noului abonat
-    if (type !== 'report') {
+    if (type !== 'report' && type !== 'update') {
       try {
         await fetch('https://api.resend.com/emails', {
           method: 'POST',
