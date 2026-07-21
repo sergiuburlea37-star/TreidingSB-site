@@ -2719,23 +2719,23 @@ function accountSwitchTab(which) {
   tabLogin.classList.toggle("is-active", isLogin);
   tabSignup.classList.toggle("is-active", !isLogin);
   formLogin.hidden = !isLogin;
-  formSignup.hidden = isLogin;
+  formSignup.hidden = isLogin; formLogin.style.display = isLogin ? "" : "none"; formSignup.style.display = isLogin ? "none" : "";
   accountSetMessage("", null);
 }
 
 function accountShowAuthView() {
   var auth = document.getElementById("accountAuth");
   var cabinet = document.getElementById("accountCabinet");
-  if (auth) auth.hidden = false;
-  if (cabinet) cabinet.hidden = true;
+  if (auth) { auth.hidden = false; auth.style.display = ""; }
+  if (cabinet) { cabinet.hidden = true; cabinet.style.display = "none"; }
   renderAccountTexts();
 }
 
 function accountShowCabinetView(data) {
   var auth = document.getElementById("accountAuth");
   var cabinet = document.getElementById("accountCabinet");
-  if (auth) auth.hidden = true;
-  if (cabinet) cabinet.hidden = false;
+  if (auth) { auth.hidden = true; auth.style.display = "none"; }
+  if (cabinet) { cabinet.hidden = false; cabinet.style.display = ""; }
 
   var emailEl = document.getElementById("cabinetEmail");
   if (emailEl) emailEl.textContent = data.email || "";
