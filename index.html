@@ -102,18 +102,18 @@
     <nav class="main-nav" aria-label="Navigație principală">
       <a href="#home" class="active" data-i18n="nav.home">⌂ Home</a>
       <a href="#about" data-i18n="nav.about">◎ Despre noi</a>
-      <a href="#ideas" data-i18n="nav.ideas">⌁ Idei de tranzacționare</a>
-      <a href="#portfolio-us" data-i18n="nav.portfolioUs">$ Portofoliu US</a>
-      <a href="#portfolio-eu" data-i18n="nav.portfolioEu">€ Portofoliu EU</a>
-      <a href="#reports" data-i18n="nav.reports">▤ Rapoarte</a>
+      <div class="nav-dropdown" id="portfoliosDropdown"><button class="nav-link-btn nav-dropdown-btn" id="portfoliosBtn" type="button" aria-haspopup="true" aria-expanded="false"><span data-i18n="nav.portfolios">$ Portofolii</span><span class="dd-caret">▾</span></button><ul class="nav-dropdown-menu" id="portfoliosMenu" role="menu"><li role="none"><a href="#portfolio-us" role="menuitem" data-i18n="nav.portfolioUs">$ Portofoliu US</a></li><li role="none"><a href="#portfolio-eu" role="menuitem" data-i18n="nav.portfolioEu">€ Portofoliu EU</a></li></ul></div>
+      
+      
+      
       <a href="#education" data-i18n="nav.education">◈ Educație</a>
       <a href="#calendar" data-i18n="nav.calendar">▦ Calendar economic</a>
       <a href="#faq" data-i18n="nav.faq">❓ FAQ</a>
       <a href="#contact" data-i18n="nav.contact">✉ Contact</a>
-      <a href="#account" id="navAccountLink">👤 Cabinet</a>
+      
     </nav>
 
-    <a href="#ideas" class="member-button" id="memberButton" data-i18n="memberButton">♙ Cont membru</a>
+    <div class="nav-dropdown account-dropdown" id="accountDropdown"><button class="member-button nav-dropdown-btn" id="memberButton" type="button" aria-haspopup="true" aria-expanded="false"><span data-i18n="memberButton">♙ Contul meu</span><span class="dd-caret">▾</span></button><ul class="nav-dropdown-menu" id="accountMenu" role="menu"><li role="none"><a href="#account" id="navAccountLink" role="menuitem">👤 Cabinet</a></li><li role="none"><a href="#ideas" role="menuitem" data-i18n="nav.ideas">⌁ Idei de tranzacționare</a></li><li role="none"><a href="#reports" role="menuitem" data-i18n="nav.reports">▤ Rapoarte</a></li></ul></div>
   </header>
 
   <main>
@@ -131,9 +131,9 @@
           <a href="#calendar" class="btn secondary" data-i18n="hero.btnSecondary">Calendar economic</a>
         </div>
         <form class="subscribe-form" id="subscribeForm" novalidate>
-          <label data-i18n="subscribe.label">Abonează-te la rapoarte</label>
+          <div class="subscribe-banner"><img src="assets/subscribe-banner.jpg" alt="Abonează-te la rapoarte TreidingSB" loading="lazy"></div><label data-i18n="subscribe.label">Abonează-te la rapoarte</label>
           <p data-i18n="subscribe.desc">Primești pe email notificări când publicăm rapoarte și analize noi pentru XAU/USD, XAG/USD, EUR/USD și GBP/USD.</p>
-          <div><input type="email" id="subscribeEmail" data-i18n-placeholder="subscribe.placeholder" placeholder="Adresa ta de email" required><button type="submit" id="subscribeButton" data-i18n="subscribe.button">Abonează-te</button></div>
+          <div class="subscribe-fields"><input type="email" id="subscribeEmail" data-i18n-placeholder="subscribe.placeholder" placeholder="Adresa ta de email" required><button type="submit" id="subscribeButton" data-i18n="subscribe.button">Abonează-te</button></div>
           <p class="form-message" id="subscribeMessage" role="status" aria-live="polite"></p>
         </form>
       </div>
