@@ -2,10 +2,10 @@
 // Autentificare cu email + parola. Emite acelasi tip de token de sesiune ca
 // signup-ul.
 
-import { getUser } from './lib/store.js';
-import { createSessionToken } from './lib/session.js';
-import { verifyPassword } from './lib/password.js';
-import { createRateLimiter, getClientIp } from './lib/ratelimit.js';
+import { getUser } from './_lib/store.js';
+import { createSessionToken } from './_lib/session.js';
+import { verifyPassword } from './_lib/password.js';
+import { createRateLimiter, getClientIp } from './_lib/ratelimit.js';
 
 const isRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 10 });
 
