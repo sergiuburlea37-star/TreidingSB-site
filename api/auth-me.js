@@ -3,8 +3,8 @@
 // Folosit de cabinet ca sa randeze mesajul personalizat (Member ID, data
 // inscrierii etc) si sa confirme ca sesiunea e inca valida.
 
-import { getUser } from './lib/store.js';
-import { verifySessionToken } from './lib/session.js';
+import { getUser } from './_lib/store.js';
+import { verifySessionToken } from './_lib/session.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
