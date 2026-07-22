@@ -43,3 +43,20 @@ export async function updateUser(email, patch) {
   await redis.set(userKey(email), updated);
   return updated;
 }
+
+export async function logDownload(entry) {
+    const redis = getRedis();
+    await redis.lpush('downloads:log', JSON.stringify(entry));
+}
+
+export async function getDownloadLog(limit = 1000) {
+    const redis = getRedis();
+    const raw = await redis.lrange('downloads:log', 0, limit - 1);
+    return raw.map((item) => {
+          try {
+                  return typeof item === 'string' ? JSON.parse(item) : item;
+          } catch (e) {
+                  return null;
+          }
+    }).filter(Boolean);
+}
