@@ -2,9 +2,9 @@
 // Returneaza jurnalul complet de descarcari de rapoarte. Accesibil doar
 // conturilor din lista de administratori (vezi api/lib/admin.js).
 
-import { getDownloadLog } from '../lib/store.js';
-import { verifySessionToken } from '../lib/session.js';
-import { isAdminEmail } from '../lib/admin.js';
+import { getDownloadLog } from '../_lib/store.js';
+import { verifySessionToken } from '../_lib/session.js';
+import { isAdminEmail } from '../_lib/admin.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
