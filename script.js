@@ -2385,7 +2385,7 @@ const ACCOUNT_I18N = {
     errRateLimited: "Prea multe încercări. Te rugăm să aștepți puțin și să încerci din nou.",
     errMissingFields: "Completează emailul și parola.",
     signupSuccess: "Cont creat cu succes! Bine ai venit.",
-    loginSuccess: "Autentificare reușită!"
+    loginSuccess: "Autentificare reușită!", errPasswordMismatch: "Parolele nu coincid.", forgotLink: "Ai uitat parola?", forgotBack: "Înapoi la autentificare", forgotButton: "Trimite link de resetare", forgotSuccess: "Dacă există un cont cu acest email, vei primi în câteva minute un link pentru resetarea parolei.", resetPageTitle: "Setează o parolă nouă", resetPageSubtitle: "Alege o parolă nouă pentru contul tău TreidingSB.", newPasswordPlaceholder: "Parolă nouă (minim 8 caractere)", confirmPasswordPlaceholder: "Confirmă parola nouă", resetButton: "Salvează parola nouă", resetInvalidTitle: "Link invalid sau expirat", resetInvalidText: "Acest link de resetare nu mai este valabil. Poți solicita unul nou din pagina de autentificare.", resetInvalidLink: "Înapoi la autentificare", resetSuccessTitle: "Parolă actualizată", resetSuccessText: "Parola ta a fost schimbată cu succes și ai fost autentificat automat.", resetSuccessLink: "Continuă către cabinet"
   },
   en: {
     eyebrow: "Your account",
@@ -2410,7 +2410,7 @@ const ACCOUNT_I18N = {
     errRateLimited: "Too many attempts. Please wait a moment and try again.",
     errMissingFields: "Please fill in both email and password.",
     signupSuccess: "Account created successfully! Welcome.",
-    loginSuccess: "Logged in successfully!"
+    loginSuccess: "Logged in successfully!", errPasswordMismatch: "Passwords don't match.", forgotLink: "Forgot your password?", forgotBack: "Back to login", forgotButton: "Send reset link", forgotSuccess: "If an account exists for this email, you'll receive a password reset link within a few minutes.", resetPageTitle: "Set a new password", resetPageSubtitle: "Choose a new password for your TreidingSB account.", newPasswordPlaceholder: "New password (min. 8 characters)", confirmPasswordPlaceholder: "Confirm new password", resetButton: "Save new password", resetInvalidTitle: "Invalid or expired link", resetInvalidText: "This reset link is no longer valid. You can request a new one from the login page.", resetInvalidLink: "Back to login", resetSuccessTitle: "Password updated", resetSuccessText: "Your password has been changed successfully and you've been logged in automatically.", resetSuccessLink: "Continue to your account"
   },
   ru: {
     eyebrow: "Ваш кабинет",
@@ -2435,7 +2435,7 @@ const ACCOUNT_I18N = {
     errRateLimited: "Слишком много попыток. Подождите немного и попробуйте снова.",
     errMissingFields: "Заполните email и пароль.",
     signupSuccess: "Аккаунт успешно создан! Добро пожаловать.",
-    loginSuccess: "Вход выполнен успешно!"
+    loginSuccess: "Вход выполнен успешно!", errPasswordMismatch: "Пароли не совпадают.", forgotLink: "Забыли пароль?", forgotBack: "Назад ко входу", forgotButton: "Отправить ссылку для сброса", forgotSuccess: "Если аккаунт с таким email существует, в течение нескольких минут вы получите ссылку для сброса пароля.", resetPageTitle: "Установите новый пароль", resetPageSubtitle: "Выберите новый пароль для вашего аккаунта TreidingSB.", newPasswordPlaceholder: "Новый пароль (минимум 8 символов)", confirmPasswordPlaceholder: "Подтвердите новый пароль", resetButton: "Сохранить новый пароль", resetInvalidTitle: "Ссылка недействительна или истекла", resetInvalidText: "Эта ссылка для сброса пароля больше не действительна. Вы можете запросить новую на странице входа.", resetInvalidLink: "Назад ко входу", resetSuccessTitle: "Пароль обновлён", resetSuccessText: "Ваш пароль успешно изменён, и вы автоматически вошли в аккаунт.", resetSuccessLink: "Перейти в кабинет"
   },
   uk: {
     eyebrow: "Ваш кабінет",
@@ -2460,7 +2460,7 @@ const ACCOUNT_I18N = {
     errRateLimited: "Забагато спроб. Зачекайте трохи і спробуйте знову.",
     errMissingFields: "Заповніть email та пароль.",
     signupSuccess: "Акаунт успішно створено! Ласкаво просимо.",
-    loginSuccess: "Вхід виконано успішно!"
+    loginSuccess: "Вхід виконано успішно!", errPasswordMismatch: "Паролі не збігаються.", forgotLink: "Забули пароль?", forgotBack: "Назад до входу", forgotButton: "Надіслати посилання для скидання", forgotSuccess: "Якщо акаунт із такою поштою існує, протягом кількох хвилин ви отримаєте посилання для скидання пароля.", resetPageTitle: "Встановіть новий пароль", resetPageSubtitle: "Оберіть новий пароль для свого акаунта TreidingSB.", newPasswordPlaceholder: "Новий пароль (мінімум 8 символів)", confirmPasswordPlaceholder: "Підтвердіть новий пароль", resetButton: "Зберегти новий пароль", resetInvalidTitle: "Посилання недійсне або застаріло", resetInvalidText: "Це посилання для скидання пароля більше не дійсне. Ви можете запросити нове на сторінці входу.", resetInvalidLink: "Назад до входу", resetSuccessTitle: "Пароль оновлено", resetSuccessText: "Ваш пароль успішно змінено, і ви автоматично увійшли в акаунт.", resetSuccessLink: "Перейти до кабінету"
   },
   pl: {
     eyebrow: "Twoje konto",
@@ -2485,7 +2485,7 @@ const ACCOUNT_I18N = {
     errRateLimited: "Zbyt wiele prób. Poczekaj chwilę i spróbuj ponownie.",
     errMissingFields: "Uzupełnij e-mail i hasło.",
     signupSuccess: "Konto utworzone pomyślnie! Witamy.",
-    loginSuccess: "Zalogowano pomyślnie!"
+    loginSuccess: "Zalogowano pomyślnie!", errPasswordMismatch: "Hasła się nie zgadzają.", forgotLink: "Nie pamiętasz hasła?", forgotBack: "Powrót do logowania", forgotButton: "Wyślij link resetujący", forgotSuccess: "Jeśli konto z tym adresem e-mail istnieje, w ciągu kilku minut otrzymasz link do zresetowania hasła.", resetPageTitle: "Ustaw nowe hasło", resetPageSubtitle: "Wybierz nowe hasło dla swojego konta TreidingSB.", newPasswordPlaceholder: "Nowe hasło (min. 8 znaków)", confirmPasswordPlaceholder: "Potwierdź nowe hasło", resetButton: "Zapisz nowe hasło", resetInvalidTitle: "Link jest nieprawidłowy lub wygasł", resetInvalidText: "Ten link resetujący hasło już nie jest ważny. Możesz poprosić o nowy na stronie logowania.", resetInvalidLink: "Powrót do logowania", resetSuccessTitle: "Hasło zaktualizowane", resetSuccessText: "Twoje hasło zostało pomyślnie zmienione, a Ty zostałeś automatycznie zalogowany.", resetSuccessLink: "Przejdź do konta"
   }
 };
 
@@ -2522,7 +2522,7 @@ function renderAccountTexts() {
   set("cabinetSinceLabel", accountT("sinceLabel"));
   set("cabinetIdeasTitle", accountT("ideasTitle")); set("cabinetReportsTitle", accountT("reportsTitle"));
   set("cabinetReportsBody", accountT("reportsBody"));
-  set("accountLogoutButton", accountT("logout"));
+  set("accountLogoutButton", accountT("logout")); set("accountForgotLink", accountT("forgotLink")); set("accountForgotBack", accountT("forgotBack")); set("accountForgotButton", accountT("forgotButton"));
 
   var loginEmailEl = document.getElementById("loginEmail");
   if (loginEmailEl) loginEmailEl.placeholder = accountT("emailPlaceholder");
@@ -2531,7 +2531,7 @@ function renderAccountTexts() {
   var signupEmailEl = document.getElementById("signupEmail");
   if (signupEmailEl) signupEmailEl.placeholder = accountT("emailPlaceholder");
   var signupPasswordEl = document.getElementById("signupPassword");
-  if (signupPasswordEl) signupPasswordEl.placeholder = accountT("passwordPlaceholder");
+  if (signupPasswordEl) signupPasswordEl.placeholder = accountT("passwordPlaceholder"); var forgotEmailEl = document.getElementById("forgotEmail"); if (forgotEmailEl) forgotEmailEl.placeholder = accountT("emailPlaceholder");
 }
 
 function accountSetMessage(text, type) {
@@ -2558,7 +2558,7 @@ function accountSwitchTab(which) {
   accountSetMessage("", null);
 }
 
-function accountShowAuthView() {
+function accountShowForgot() { var tabs = document.querySelector("#accountAuth .account-tabs"); var formLogin = document.getElementById("accountLoginForm"); var formSignup = document.getElementById("accountSignupForm"); var formForgot = document.getElementById("accountForgotForm"); if (!formForgot) return; if (tabs) tabs.style.display = "none"; if (formLogin) formLogin.style.display = "none"; if (formSignup) formSignup.style.display = "none"; formForgot.hidden = false; formForgot.style.display = ""; accountSetMessage("", null); } function accountHideForgot() { var tabs = document.querySelector("#accountAuth .account-tabs"); var formForgot = document.getElementById("accountForgotForm"); if (tabs) tabs.style.display = ""; if (formForgot) { formForgot.hidden = true; formForgot.style.display = "none"; } accountSwitchTab("login"); } function accountHandleForgot(e) { e.preventDefault(); var emailEl = document.getElementById("forgotEmail"); var button = document.getElementById("accountForgotButton"); var email = emailEl ? emailEl.value.trim() : ""; if (!email || !ACCOUNT_EMAIL_RE.test(email)) { accountSetMessage(accountT("errInvalidEmail"), "error"); return; } if (button) button.disabled = true; accountSetMessage("", null); var lang = (typeof currentLang !== "undefined") ? currentLang : "ro"; fetch("/api/auth-forgot-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email, lang: lang }) }) .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); }) .then(function (res) { if (res.ok && res.data && res.data.success) { accountSetMessage(accountT("forgotSuccess"), "success"); if (emailEl) emailEl.value = ""; } else { accountSetMessage(accountMapError(res.data && res.data.error, res.status), "error"); } }) .catch(function () { accountSetMessage(accountT("errGeneric"), "error"); }) .finally(function () { if (button) button.disabled = false; }); } function accountShowAuthView() {
   var auth = document.getElementById("accountAuth");
   var cabinet = document.getElementById("accountCabinet");
   if (auth) { auth.hidden = false; auth.style.display = ""; }
@@ -2694,9 +2694,7 @@ function accountHandleLogout() { var ideasGridEl = document.getElementById("idea
   var loginForm = document.getElementById("accountLoginForm");
   var signupForm = document.getElementById("accountSignupForm");
   if (loginForm) loginForm.reset();
-  if (signupForm) signupForm.reset();
-  accountSwitchTab("login");
-  accountShowAuthView();
+  if (signupForm) signupForm.reset(); var forgotForm = document.getElementById("accountForgotForm"); if (forgotForm) forgotForm.reset(); accountHideForgot(); accountShowAuthView();
 }
 
 function initAccountBox() {
@@ -2712,7 +2710,7 @@ function initAccountBox() {
   if (loginForm) loginForm.addEventListener("submit", accountHandleLogin);
 
   var signupForm = document.getElementById("accountSignupForm");
-  if (signupForm) signupForm.addEventListener("submit", accountHandleSignup);
+  if (signupForm) signupForm.addEventListener("submit", accountHandleSignup); var forgotLink = document.getElementById("accountForgotLink"); if (forgotLink) forgotLink.addEventListener("click", accountShowForgot); var forgotBack = document.getElementById("accountForgotBack"); if (forgotBack) forgotBack.addEventListener("click", accountHideForgot); var forgotForm = document.getElementById("accountForgotForm"); if (forgotForm) forgotForm.addEventListener("submit", accountHandleForgot);
 
   var logoutButton = document.getElementById("accountLogoutButton");
   if (logoutButton) logoutButton.addEventListener("click", accountHandleLogout);
@@ -2734,5 +2732,4 @@ function initAccountBox() {
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initAccountBox);
 } else {
-  initAccountBox();
-}
+  initAccountBox(); } /* ===================== Pagina reset-password.html ===================== */ /* Citeste tokenul din URL (?token=...), afiseaza formularul de parola noua, */ /* si trateaza cele 3 stari posibile: formular, link invalid/expirat, succes. */ /* Reutilizeaza ACCOUNT_I18N / accountT / accountMapError / ACCOUNT_STORAGE_KEY */ /* definite mai sus, in blocul Cabinet personal. */ function resetPasswordGetToken() { try { return new URLSearchParams(window.location.search).get("token"); } catch (e) { return null; } } function renderResetPasswordTexts() { var set = function (id, text) { var el = document.getElementById(id); if (el) el.textContent = text; }; set("resetPageTitleText", accountT("resetPageTitle")); set("resetPageSubtitleText", accountT("resetPageSubtitle")); set("resetPasswordButton", accountT("resetButton")); set("resetInvalidTitleText", accountT("resetInvalidTitle")); set("resetInvalidTextEl", accountT("resetInvalidText")); set("resetInvalidLinkText", accountT("resetInvalidLink")); set("resetSuccessTitleText", accountT("resetSuccessTitle")); set("resetSuccessTextEl", accountT("resetSuccessText")); set("resetSuccessLinkText", accountT("resetSuccessLink")); var pwEl = document.getElementById("resetPasswordNew"); if (pwEl) pwEl.placeholder = accountT("newPasswordPlaceholder"); var pw2El = document.getElementById("resetPasswordConfirm"); if (pw2El) pw2El.placeholder = accountT("confirmPasswordPlaceholder"); } function initResetPasswordPage() { var root = document.getElementById("resetPasswordBox"); if (!root) return; try { var urlLang = new URLSearchParams(window.location.search).get("lang"); if (urlLang && typeof SUPPORTED_LANGS !== "undefined" && SUPPORTED_LANGS.includes(urlLang) && typeof applyLanguage === "function") { applyLanguage(urlLang); } } catch (e) { /* ignore */ } renderResetPasswordTexts(); var token = resetPasswordGetToken(); var stateForm = document.getElementById("resetPasswordFormState"); var stateInvalid = document.getElementById("resetPasswordInvalidState"); var stateSuccess = document.getElementById("resetPasswordSuccessState"); var formEl = document.getElementById("resetPasswordForm"); var messageEl = document.getElementById("resetPasswordMessage"); function showState(state) { if (stateForm) stateForm.style.display = state === "form" ? "" : "none"; if (stateInvalid) stateInvalid.style.display = state === "invalid" ? "" : "none"; if (stateSuccess) stateSuccess.style.display = state === "success" ? "" : "none"; } if (!token) { showState("invalid"); return; } showState("form"); if (formEl) { formEl.addEventListener("submit", function (e) { e.preventDefault(); var pwEl = document.getElementById("resetPasswordNew"); var pw2El = document.getElementById("resetPasswordConfirm"); var button = document.getElementById("resetPasswordButton"); var pw = pwEl ? pwEl.value : ""; var pw2 = pw2El ? pw2El.value : ""; if (messageEl) { messageEl.textContent = ""; messageEl.classList.remove("is-error", "is-success"); } if (pw.length < 8) { if (messageEl) { messageEl.textContent = accountT("errWeakPassword"); messageEl.classList.add("is-error"); } return; } if (pw !== pw2) { if (messageEl) { messageEl.textContent = accountT("errPasswordMismatch"); messageEl.classList.add("is-error"); } return; } if (button) button.disabled = true; fetch("/api/auth-reset-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: token, password: pw }) }) .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); }) .then(function (res) { if (res.ok && res.data && res.data.success) { try { localStorage.setItem(ACCOUNT_STORAGE_KEY, res.data.token); } catch (e) { /* ignore storage errors */ } showState("success"); } else if (res.data && typeof res.data.error === "string" && res.data.error.indexOf("Link invalid") > -1) { showState("invalid"); } else { if (messageEl) { messageEl.textContent = accountMapError(res.data && res.data.error, res.status); messageEl.classList.add("is-error"); } } }) .catch(function () { if (messageEl) { messageEl.textContent = accountT("errGeneric"); messageEl.classList.add("is-error"); } }) .finally(function () { if (button) button.disabled = false; }); }); } if (typeof applyLanguage === "function" && !applyLanguage.__resetPasswordWrapped) { var resetOriginalApplyLanguage = applyLanguage; applyLanguage = function (lang) { resetOriginalApplyLanguage(lang); renderResetPasswordTexts(); }; applyLanguage.__resetPasswordWrapped = true; } } if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", initResetPasswordPage); } else { initResetPasswordPage(); }
