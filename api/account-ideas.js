@@ -5,8 +5,8 @@
 // vechi cu parola comuna), aici fiecare client vede ideile doar daca are o
 // sesiune valida legata de contul lui.
 
-import { getUser } from './lib/store.js';
-import { verifySessionToken } from './lib/session.js';
+import { getUser } from './_lib/store.js';
+import { verifySessionToken } from './_lib/session.js';
 
 // Continutul real al ideilor de tranzactionare traieste doar aici, pe server.
 const IDEAS = [
