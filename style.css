@@ -24,7 +24,7 @@
 .form-message{margin-top:14px;font-size:14px;min-height:20px}
 .form-message.is-error{color:var(--red)}
 .form-message.is-success{color:var(--green)}
-.account-cabinet{display:flex;flex-direction:column;gap:20px}
+.account-forgot-link{align-self:flex-end;padding:0;margin-top:-4px;border:0;background:transparent;color:var(--cyan);font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;width:auto}.account-forgot-link:hover{background:transparent;color:var(--blue)}.account-forgot-back{background:transparent;border:1px solid var(--line);color:var(--muted)}.account-forgot-back:hover{background:rgba(255,255,255,.06);color:var(--text)}.reset-password-box{max-width:520px;margin:0 auto;background:rgba(10,16,28,.55);border:1px solid var(--line);border-radius:18px;padding:32px 28px;text-align:center}.reset-password-box p{font-size:15px;color:var(--muted);line-height:1.6;margin:0 0 20px}.reset-password-box .account-form{text-align:left}.reset-password-box .account-form a.btn{margin-top:6px}.reset-state-icon{font-size:30px;margin-bottom:10px}.account-cabinet{display:flex;flex-direction:column;gap:20px}
 .account-cabinet[hidden]{display:none}
 .cabinet-welcome{font-size:16px;color:var(--muted)}
 .cabinet-welcome strong{color:var(--text)}
