@@ -2399,7 +2399,7 @@ async function fetchIdeasWithToken(token) {
     });
 })();
 
-const ideasGateForm = document.getElementById("ideasGateForm");
+function loadCabinetIdeas(sessionToken) { if (!sessionToken) return; fetch("/api/account-ideas", { headers: { Authorization: "Bearer " + sessionToken } }).then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); }).then(function (res) { if (res.ok && res.data && res.data.success && Array.isArray(res.data.ideas)) { renderIdeaCards(res.data.ideas); } }).catch(function () {}); } const ideasGateForm = document.getElementById("ideasGateForm");
 if (ideasGateForm) {
   const passwordInput = document.getElementById("ideasGatePassword");
   const gateButton = document.getElementById("ideasGateButton");
@@ -2572,7 +2572,7 @@ const ACCOUNT_I18N = {
     welcome: "Bine ai venit,",
     memberIdLabel: "ID membru",
     sinceLabel: "Membru din",
-    reportsTitle: "Rapoartele tale",
+    ideasTitle: "Idei de tranzacționare", reportsTitle: "Rapoartele tale",
     reportsBody: "Vei primi 52 de rapoarte pe an, câte unul în fiecare săptămână, standard în fiecare zi de luni. Dacă apar noutăți fundamentale importante pe piață, s-ar putea să primești și rapoarte suplimentare cu noi orientări, în afara programului obișnuit.",
     logout: "Deconectare",
     errGeneric: "A apărut o eroare. Te rugăm să încerci din nou.",
@@ -2597,7 +2597,7 @@ const ACCOUNT_I18N = {
     welcome: "Welcome,",
     memberIdLabel: "Member ID",
     sinceLabel: "Member since",
-    reportsTitle: "Your reports",
+    ideasTitle: "Trading ideas", reportsTitle: "Your reports",
     reportsBody: "You'll receive 52 reports a year, one every week, standard delivery every Monday. If major fundamental news arises, you may also receive extra reports with new guidance outside the regular schedule.",
     logout: "Log out",
     errGeneric: "Something went wrong. Please try again.",
@@ -2622,7 +2622,7 @@ const ACCOUNT_I18N = {
     welcome: "Добро пожаловать,",
     memberIdLabel: "ID участника",
     sinceLabel: "Участник с",
-    reportsTitle: "Ваши отчёты",
+    ideasTitle: "Торговые идеи", reportsTitle: "Ваши отчёты",
     reportsBody: "Вы будете получать 52 отчёта в год, по одному каждую неделю, стандартно по понедельникам. При появлении важных фундаментальных новостей вы также можете получить дополнительные отчёты с новыми рекомендациями вне обычного графика.",
     logout: "Выйти",
     errGeneric: "Произошла ошибка. Попробуйте ещё раз.",
@@ -2647,7 +2647,7 @@ const ACCOUNT_I18N = {
     welcome: "Ласкаво просимо,",
     memberIdLabel: "ID учасника",
     sinceLabel: "Учасник з",
-    reportsTitle: "Ваші звіти",
+    ideasTitle: "Торгові ідеї", reportsTitle: "Ваші звіти",
     reportsBody: "Ви отримуватимете 52 звіти на рік, по одному щотижня, стандартно щопонеділка. Якщо з'являться важливі фундаментальні новини, ви також можете отримати додаткові звіти з новими рекомендаціями поза звичайним графіком.",
     logout: "Вийти",
     errGeneric: "Сталася помилка. Спробуйте ще раз.",
@@ -2672,7 +2672,7 @@ const ACCOUNT_I18N = {
     welcome: "Witaj,",
     memberIdLabel: "ID członka",
     sinceLabel: "Członek od",
-    reportsTitle: "Twoje raporty",
+    ideasTitle: "Pomysły transakcyjne", reportsTitle: "Twoje raporty",
     reportsBody: "Będziesz otrzymywać 52 raporty rocznie, jeden co tydzień, standardowo w każdy poniedziałek. W przypadku ważnych wydarzeń fundamentalnych możesz też otrzymać dodatkowe raporty z nowymi wskazówkami poza standardowym harmonogramem.",
     logout: "Wyloguj się",
     errGeneric: "Wystąpił błąd. Spróbuj ponownie.",
@@ -2718,7 +2718,7 @@ function renderAccountTexts() {
   set("cabinetWelcomeLabel", accountT("welcome"));
   set("cabinetMemberIdLabel", accountT("memberIdLabel"));
   set("cabinetSinceLabel", accountT("sinceLabel"));
-  set("cabinetReportsTitle", accountT("reportsTitle"));
+  set("cabinetIdeasTitle", accountT("ideasTitle")); set("cabinetReportsTitle", accountT("reportsTitle"));
   set("cabinetReportsBody", accountT("reportsBody"));
   set("accountLogoutButton", accountT("logout"));
 
@@ -2764,7 +2764,7 @@ function accountShowAuthView() {
   renderAccountTexts();
 }
 
-function accountShowCabinetView(data) {
+function accountShowCabinetView(data, sessionToken) {
   var auth = document.getElementById("accountAuth");
   var cabinet = document.getElementById("accountCabinet");
   if (auth) { auth.hidden = true; auth.style.display = "none"; }
@@ -2776,7 +2776,7 @@ function accountShowCabinetView(data) {
   var memberIdEl = document.getElementById("cabinetMemberId");
   if (memberIdEl) memberIdEl.textContent = data.memberId || "";
 
-  var sinceEl = document.getElementById("cabinetSince");
+  loadCabinetIdeas(sessionToken); var sinceEl = document.getElementById("cabinetSince");
   if (sinceEl) {
     var lang = (typeof currentLang !== "undefined" && ACCOUNT_LOCALE_MAP[currentLang]) ? currentLang : "ro";
     var locale = ACCOUNT_LOCALE_MAP[lang];
@@ -2797,10 +2797,10 @@ function accountRestoreSession() {
     return;
   }
   fetch("/api/auth-me", { headers: { Authorization: "Bearer " + token } })
-    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+    .then(function (r) { return r.json().then(function (data) { data.token = token; return { ok: r.ok, data: data }; }); })
     .then(function (res) {
       if (res.ok && res.data && res.data.success) {
-        accountShowCabinetView(res.data);
+        accountShowCabinetView(res.data, res.data.token);
       } else {
         localStorage.removeItem(ACCOUNT_STORAGE_KEY);
         accountShowAuthView();
@@ -2838,7 +2838,7 @@ function accountHandleSignup(e) {
       if (res.ok && res.data && res.data.success) {
         localStorage.setItem(ACCOUNT_STORAGE_KEY, res.data.token);
         accountSetMessage(accountT("signupSuccess"), "success");
-        accountShowCabinetView(res.data);
+        accountShowCabinetView(res.data, res.data.token);
       } else {
         accountSetMessage(accountMapError(res.data && res.data.error, res.status), "error");
       }
@@ -2874,7 +2874,7 @@ function accountHandleLogin(e) {
       if (res.ok && res.data && res.data.success) {
         localStorage.setItem(ACCOUNT_STORAGE_KEY, res.data.token);
         accountSetMessage(accountT("loginSuccess"), "success");
-        accountShowCabinetView(res.data);
+        accountShowCabinetView(res.data, res.data.token);
       } else {
         accountSetMessage(accountMapError(res.data && res.data.error, res.status), "error");
       }
@@ -2887,7 +2887,7 @@ function accountHandleLogin(e) {
     });
 }
 
-function accountHandleLogout() {
+function accountHandleLogout() { var ideasGridEl = document.getElementById("ideasGrid"); if (ideasGridEl) ideasGridEl.innerHTML = "";
   localStorage.removeItem(ACCOUNT_STORAGE_KEY);
   var loginForm = document.getElementById("accountLoginForm");
   var signupForm = document.getElementById("accountSignupForm");
