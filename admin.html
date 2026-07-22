@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Admin – TreidingSB</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <style>
+          .admin-wrap{max-width:960px;margin:0 auto;padding:60px 20px 80px}
+          .admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+          .admin-header h1{font-size:26px;margin:0}
+          .admin-header a{font-size:13px;color:var(--muted)}
+          .admin-message{min-height:20px;margin:14px 0 0;font-size:14px;font-weight:700}
+          .admin-message.is-error{color:var(--red)}
+          .admin-message.is-success{color:var(--green)}
+          .admin-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:rgba(6,13,24,.42)}
+          table.admin-table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
+          table.admin-table th{padding:12px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line);background:rgba(255,255,255,.03)}
+          table.admin-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);color:#dce6f5}
+          .admin-empty{padding:30px;text-align:center;color:var(--muted)}
+          .admin-summary{margin:0 0 18px;color:var(--muted);font-size:14px}
+          [hidden]{display:none !important}
+        </style>
+  </head>
+  <body style="background:var(--bg)">
+      <div class="admin-wrap">
+            <div class="admin-header">
+                    <h1>Panou Admin — Descărcări rapoarte</h1>
+                  <a href="/">← Înapoi la site</a>
+            </div>
+      
+          <div class="account-box" id="adminLoginBox" style="max-width:420px">
+                <form class="account-form" id="adminLoginForm" novalidate>
+                        <input type="email" id="adminEmail" placeholder="adresa@email.com" autocomplete="email" required>
+                        <input type="password" id="adminPassword" placeholder="Parolă" autocomplete="current-password" required>
+                        <button type="submit" id="adminLoginButton">Intră în cont</button>
+                </form>
+                <p class="admin-message" id="adminMessage" role="status" aria-live="polite"></p>
+          </div>
+      
+          <div id="adminTableBox" hidden>
+                <p class="admin-summary" id="adminSummary"></p>
+                <div class="admin-table-wrap">
+                        <table class="admin-table" id="adminTable">
+                                  <thead>
+                                                <tr>
+                                                                <th>Email</th>
+                                                <th>ID Membru</th>
+                                                <th>Data / Ora</th>
+                                                <th>Raport</th>
+                                                <th>Limbă</th>
+                                                </tr>
+                                  </thead>
+                                  <tbody id="adminTableBody"></tbody>
+                        </table>
+                </div>
+          </div>
+      </div>
+  
+    <script>
+          var ADMIN_TOKEN_KEY = "tsb_session_token";
+
+          function adminSetMessage(text, type) {
+                  var el = document.getElementById("adminMessage");
+                  el.textContent = text || "";
+                  el.classList.remove("is-error", "is-success");
+                  if (type) el.classList.add(type === "error" ? "is-error" : "is-success");
+          }
+
+          function adminRenderTable(downloads) {
+                  var loginBox = document.getElementById("adminLoginBox");
+                  var tableBox = document.getElementById("adminTableBox");
+                  var body = document.getElementById("adminTableBody");
+                  var summary = document.getElementById("adminSummary");
+                  loginBox.hidden = true;
+                  tableBox.hidden = false;
+
+                  if (!downloads.length) {
+                            summary.textContent = "Nicio descărcare înregistrată încă.";
+                            body.innerHTML = "";
+                            return;
+                  }
+
+                  summary.textContent = downloads.length + " descărcări înregistrate.";
+                  body.innerHTML = downloads.map(function (d) {
+                            var date = d.timestamp ? new Date(d.timestamp).toLocaleString("ro-RO") : "-";
+                            return "<tr><td>" + (d.email || "-") + "</td><td>" + (d.memberId || "-") + "</td><td>" + date + "</td><td>" + (d.reportDate || "-") + "</td><td>" + (d.lang || "-").toUpperCase() + "</td></tr>";
+                  }).join("");
+          }
+
+          function adminLoadDownloads(token) {
+                  fetch("/api/admin/downloads", { headers: { Authorization: "Bearer " + token } })
+                    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
+                    .then(function (res) {
+                                if (res.ok && res.data && res.data.success) {
+                                              adminRenderTable(res.data.downloads || []);
+                                } else if (res.status === 403) {
+                                              adminSetMessage("Acest cont nu are drepturi de administrator.", "error");
+                                              localStorage.removeItem(ADMIN_TOKEN_KEY);
+                                } else {
+                                              adminSetMessage("Sesiune invalidă. Te rugăm să te autentifici din nou.", "error");
+                                              localStorage.removeItem(ADMIN_TOKEN_KEY);
+                                }
+                    })
+                    .catch(function () {
+                                adminSetMessage("A apărut o eroare de rețea. Încearcă din nou.", "error");
+                    });
+          }
+
+          document.getElementById("adminLoginForm").addEventListener("submit", function (e) {
+                  e.preventDefault();
+                  var email = document.getElementById("adminEmail").value.trim();
+                  var password = document.getElementById("adminPassword").value;
+                  var button = document.getElementById("adminLoginButton");
+                  if (!email || !password) {
+                            adminSetMessage("Completează emailul și parola.", "error");
+                            return;
+                  }
+                  button.disabled = true;
+                  adminSetMessage("", null);
+                  fetch("/api/auth-login", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email: email, password: password })
+                  })
+                    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+                    .then(function (res) {
+                                if (res.ok && res.data && res.data.success) {
+                                              localStorage.setItem(ADMIN_TOKEN_KEY, res.data.token);
+                                              adminLoadDownloads(res.data.token);
+                                } else {
+                                              adminSetMessage("Email sau parolă incorectă.", "error");
+                                }
+                    })
+                    .catch(function () {
+                                adminSetMessage("A apărut o eroare. Încearcă din nou.", "error");
+                    })
+                    .finally(function () {
+                                button.disabled = false;
+                    });
+          });
+
+          (function initAdmin() {
+                  var token = null;
+                  try { token = localStorage.getItem(ADMIN_TOKEN_KEY); } catch (e) { /* ignore */ }
+                  if (token) adminLoadDownloads(token);
+          })();
+    </script>
+  </body>
+</html>
+    
