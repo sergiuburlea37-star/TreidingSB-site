@@ -4,8 +4,8 @@
 // descarcare trece prin sesiunea utilizatorului si este inregistrata in
 // jurnalul de descarcari (vezi api/admin/downloads.js).
 
-import { getUser, logDownload } from './lib/store.js';
-import { verifySessionToken } from './lib/session.js';
+import { getUser, logDownload } from './_lib/store.js';
+import { verifySessionToken } from './_lib/session.js';
 
 const REPORTS_REPO_API = "https://api.github.com/repos/sergiuburlea37-star/treidingsb-reports/contents/reports";
 const REPORT_LANGS = ["ro", "en", "ru", "uk", "pl"];
