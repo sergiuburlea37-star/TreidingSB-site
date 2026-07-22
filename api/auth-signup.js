@@ -3,11 +3,11 @@
 // email (aceeasi functie folosita si la personalizarea rapoartelor PDF), deci
 // ID-ul din cabinet coincide mereu cu cel de pe rapoartele trimise prin email.
 
-import { getUser, createUser } from './lib/store.js';
-import { createSessionToken } from './lib/session.js';
-import { hashPassword } from './lib/password.js';
-import { deriveMemberId } from './lib/personalize-report.js';
-import { createRateLimiter, getClientIp } from './lib/ratelimit.js';
+import { getUser, createUser } from './_lib/store.js';
+import { createSessionToken } from './_lib/session.js';
+import { hashPassword } from './_lib/password.js';
+import { deriveMemberId } from './_lib/personalize-report.js';
+import { createRateLimiter, getClientIp } from './_lib/ratelimit.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5 });
