@@ -114,7 +114,7 @@ const translations = {
       card2: { riskValue: "Scăzut", note: "Valid doar dacă USD slăbește după știri." },
       gate: { title: "Acces Idei de Tranzacționare — Membri", desc: "Ideile de tranzacționare sunt disponibile exclusiv membrilor TreidingSB. Introdu parola pentru acces.", label: "Parolă acces", placeholder: "PAROLA ACCES", button: "Intră în cont", sending: "Se verifică...", noAccess: "Nu ai acces?", contact: "Contactează-ne pe Telegram", invalid: "Parolă incorectă. Încearcă din nou.", error: "A apărut o eroare. Te rugăm încearcă din nou." }
     },
-    reports: { eyebrow: "Rapoarte", title: "Rapoarte săptămânale", desc: "Analize tehnice, context de piață și perspective pentru săptămâna următoare.", panelTitle: "Analiză săptămânală", panelDesc: "O imagine completă asupra piețelor financiare pentru săptămâna curentă.", btn: "Descarcă raportul PDF", loading: "Se caută cel mai recent raport...", latestLabel: "Ultimul raport:", unavailable: "Niciun raport disponibil momentan.", lockedText: "Conținutul este disponibil exclusiv membrilor. Accesează secțiunea Idei de tranzacționare pentru a introduce parola.", lockedLink: "Mergi la acces membri" },
+    reports: { eyebrow: "Rapoarte", title: "Rapoarte săptămânale", desc: "Analize tehnice, context de piață și perspective pentru săptămâna următoare.", panelTitle: "Analiză săptămânală", panelDesc: "O imagine completă asupra piețelor financiare pentru săptămâna curentă.", btn: "Descarcă raportul săptămânal", loading: "Se caută cel mai recent raport...", latestLabel: "Ultimul raport:", unavailable: "Niciun raport disponibil momentan.", lockedText: "Conținutul este disponibil exclusiv membrilor. Accesează secțiunea Idei de tranzacționare pentru a introduce parola.", lockedLink: "Mergi la acces membri" },
     education: { eyebrow: "Educație", title: "Educație de bază", desc: "Învață cum funcționează piața, cine formează lichiditatea și cum gestionezi riscul.",
       forexBasics: {
         head: "Bazele Pieței Forex — Lecția 1", subhead: "Înainte de orice tranzacție, un trader trebuie să înțeleagă mecanismele de bază ale pieței Forex — de la perechi valutare până la efectul de levier și managementul volumului.",
@@ -528,7 +528,7 @@ const translations = {
       card2: { riskValue: "Low", note: "Valid only if USD weakens after the news." },
       gate: { title: "Trade Ideas Access — Members Only", desc: "Trade ideas are available exclusively to TreidingSB members. Enter the password to access.", label: "Access password", placeholder: "ACCESS PASSWORD", button: "Sign in", sending: "Checking...", noAccess: "No access?", contact: "Contact us on Telegram", invalid: "Incorrect password. Try again.", error: "Something went wrong. Please try again." }
     },
-    reports: { eyebrow: "Reports", title: "Weekly Reports", desc: "Technical analysis, market context and outlook for the coming week.", panelTitle: "Weekly Analysis", panelDesc: "A complete overview of financial markets for the current week.", btn: "Download PDF report", loading: "Looking for the latest report...", latestLabel: "Latest report:", unavailable: "No report available yet.", lockedText: "This content is available exclusively to members. Go to the Trade Ideas section to enter the password.", lockedLink: "Go to member access" },
+    reports: { eyebrow: "Reports", title: "Weekly Reports", desc: "Technical analysis, market context and outlook for the coming week.", panelTitle: "Weekly Analysis", panelDesc: "A complete overview of financial markets for the current week.", btn: "Download the weekly report", loading: "Looking for the latest report...", latestLabel: "Latest report:", unavailable: "No report available yet.", lockedText: "This content is available exclusively to members. Go to the Trade Ideas section to enter the password.", lockedLink: "Go to member access" },
     education: { eyebrow: "Education", title: "Trading Basics", desc: "Learn how the market works, who forms liquidity and how to manage risk.",
       forexBasics: {
         head: "Forex Market Basics — Lesson 1", subhead: "Before any trade, a trader needs to understand the basic mechanics of the Forex market — from currency pairs to leverage and position sizing.",
@@ -942,7 +942,7 @@ const translations = {
       card2: { riskValue: "Низкий", note: "Актуально только при ослаблении USD после новостей." },
       gate: { title: "Доступ к торговым идеям — только для участников", desc: "Торговые идеи доступны исключительно участникам TreidingSB. Введите пароль для доступа.", label: "Пароль доступа", placeholder: "ПАРОЛЬ ДОСТУПА", button: "Войти", sending: "Проверка...", noAccess: "Нет доступа?", contact: "Свяжитесь с нами в Telegram", invalid: "Неверный пароль. Попробуйте ещё раз.", error: "Произошла ошибка. Попробуйте ещё раз." }
     },
-    reports: { eyebrow: "Отчёты", title: "Еженедельные отчёты", desc: "Технический анализ, рыночный контекст и прогноз на следующую неделю.", panelTitle: "Еженедельный анализ", panelDesc: "Полный обзор финансовых рынков за текущую неделю.", btn: "Скачать PDF-отчёт", loading: "Поиск последнего отчёта...", latestLabel: "Последний отчёт:", unavailable: "Пока нет доступных отчётов.", lockedText: "Этот контент доступен исключительно участникам. Перейдите в раздел «Торговые идеи», чтобы ввести пароль.", lockedLink: "Перейти к доступу для участников" },
+    reports: { eyebrow: "Отчёты", title: "Еженедельные отчёты", desc: "Технический анализ, рыночный контекст и прогноз на следующую неделю.", panelTitle: "Еженедельный анализ", panelDesc: "Полный обзор финансовых рынков за текущую неделю.", btn: "Скачать еженедельный отчёт", loading: "Поиск последнего отчёта...", latestLabel: "Последний отчёт:", unavailable: "Пока нет доступных отчётов.", lockedText: "Этот контент доступен исключительно участникам. Перейдите в раздел «Торговые идеи», чтобы ввести пароль.", lockedLink: "Перейти к доступу для участников" },
     education: { eyebrow: "Обучение", title: "Основы трейдинга", desc: "Узнайте, как работает рынок, кто формирует ликвидность и как управлять риском.",
       forexBasics: {
         head: "Основы рынка Форекс — Урок 1", subhead: "Перед любой сделкой трейдер должен понимать базовые механизмы рынка Форекс — от валютных пар до кредитного плеча и расчёта объёма позиции.",
@@ -1356,7 +1356,7 @@ const translations = {
       card2: { riskValue: "Низький", note: "Актуально лише якщо USD слабшає після новин." },
       gate: { title: "Доступ до торгових ідей — лише для учасників", desc: "Торгові ідеї доступні виключно учасникам TreidingSB. Введіть пароль для доступу.", label: "Пароль доступу", placeholder: "ПАРОЛЬ ДОСТУПУ", button: "Увійти", sending: "Перевірка...", noAccess: "Немає доступу?", contact: "Зв'яжіться з нами в Telegram", invalid: "Невірний пароль. Спробуйте ще раз.", error: "Сталася помилка. Спробуйте ще раз." }
     },
-    reports: { eyebrow: "Звіти", title: "Щотижневі звіти", desc: "Технічний аналіз, ринковий контекст та прогноз на наступний тиждень.", panelTitle: "Щотижневий аналіз", panelDesc: "Повний огляд фінансових ринків за поточний тиждень.", btn: "Завантажити PDF-звіт", loading: "Пошук останнього звіту...", latestLabel: "Останній звіт:", unavailable: "Поки що немає доступних звітів.", lockedText: "Цей контент доступний виключно учасникам. Перейдіть до розділу «Торгові ідеї», щоб ввести пароль.", lockedLink: "Перейти до доступу для учасників" },
+    reports: { eyebrow: "Звіти", title: "Щотижневі звіти", desc: "Технічний аналіз, ринковий контекст та прогноз на наступний тиждень.", panelTitle: "Щотижневий аналіз", panelDesc: "Повний огляд фінансових ринків за поточний тиждень.", btn: "Завантажити щотижневий звіт", loading: "Пошук останнього звіту...", latestLabel: "Останній звіт:", unavailable: "Поки що немає доступних звітів.", lockedText: "Цей контент доступний виключно учасникам. Перейдіть до розділу «Торгові ідеї», щоб ввести пароль.", lockedLink: "Перейти до доступу для учасників" },
     education: { eyebrow: "Навчання", title: "Основи трейдингу", desc: "Дізнайтеся, як працює ринок, хто формує ліквідність і як керувати ризиком.",
       forexBasics: {
         head: "Основи ринку Форекс — Урок 1", subhead: "Перед будь-якою угодою трейдер повинен розуміти базові механізми ринку Форекс — від валютних пар до кредитного плеча та розрахунку обсягу позиції.",
@@ -1770,7 +1770,7 @@ const translations = {
       card2: { riskValue: "Niskie", note: "Ważne tylko jeśli USD osłabnie po newsach." },
       gate: { title: "Dostęp do pomysłów transakcyjnych — tylko dla członków", desc: "Pomysły transakcyjne są dostępne wyłącznie dla członków TreidingSB. Wprowadź hasło, aby uzyskać dostęp.", label: "Hasło dostępu", placeholder: "HASŁO DOSTĘPU", button: "Zaloguj się", sending: "Sprawdzanie...", noAccess: "Brak dostępu?", contact: "Skontaktuj się z nami na Telegramie", invalid: "Nieprawidłowe hasło. Spróbuj ponownie.", error: "Wystąpił błąd. Spróbuj ponownie." }
     },
-    reports: { eyebrow: "Raporty", title: "Raporty tygodniowe", desc: "Analiza techniczna, kontekst rynkowy i perspektywy na nadchodzący tydzień.", panelTitle: "Analiza tygodniowa", panelDesc: "Pełny przegląd rynków finansowych w bieżącym tygodniu.", btn: "Pobierz raport PDF", loading: "Szukanie najnowszego raportu...", latestLabel: "Najnowszy raport:", unavailable: "Brak dostępnych raportów.", lockedText: "Ta treść jest dostępna wyłącznie dla członków. Przejdź do sekcji Pomysły transakcyjne, aby wprowadzić hasło.", lockedLink: "Przejdź do dostępu dla członków" },
+    reports: { eyebrow: "Raporty", title: "Raporty tygodniowe", desc: "Analiza techniczna, kontekst rynkowy i perspektywy na nadchodzący tydzień.", panelTitle: "Analiza tygodniowa", panelDesc: "Pełny przegląd rynków finansowych w bieżącym tygodniu.", btn: "Pobierz cotygodniowy raport", loading: "Szukanie najnowszego raportu...", latestLabel: "Najnowszy raport:", unavailable: "Brak dostępnych raportów.", lockedText: "Ta treść jest dostępna wyłącznie dla członków. Przejdź do sekcji Pomysły transakcyjne, aby wprowadzić hasło.", lockedLink: "Przejdź do dostępu dla członków" },
     education: { eyebrow: "Edukacja", title: "Podstawy tradingu", desc: "Dowiedz się, jak działa rynek, kto tworzy płynność i jak zarządzać ryzykiem.",
       forexBasics: {
         head: "Podstawy rynku Forex — Lekcja 1", subhead: "Przed każdą transakcją trader musi rozumieć podstawowe mechanizmy rynku Forex — od par walutowych po dźwignię finansową i zarządzanie wielkością pozycji.",
@@ -2336,11 +2336,7 @@ if (subscribeForm) {
   });
 }
 
-/* ===================== Trade ideas access gate ===================== */
-const IDEAS_TOKEN_KEY = "tsb_member_token";
-let unlockedIdeas = null;
-
-function renderIdeaCards(ideas) {
+let unlockedIdeas = null; function renderIdeaCards(ideas) {
   const grid = document.getElementById("ideasGrid");
   if (!grid || !Array.isArray(ideas)) return;
   const dict = translations[currentLang] || translations.ro;
@@ -2357,202 +2353,8 @@ function renderIdeaCards(ideas) {
   }).join("");
 }
 
-function unlockIdeas(ideas) {
-  unlockedIdeas = ideas;
-  renderIdeaCards(ideas);
-  const gate = document.getElementById("ideasGate");
-  const grid = document.getElementById("ideasGrid");
-  if (gate) gate.setAttribute("hidden", "");
-  if (grid) grid.removeAttribute("hidden");
-  const memberBtn = document.getElementById("memberButton");
-  if (memberBtn) memberBtn.classList.add("is-member");
-  unlockReports();
-}
-
-function unlockReports() {
-  const locked = document.getElementById("reportLocked");
-  const panel = document.getElementById("reportPanel");
-  if (locked) locked.setAttribute("hidden", "");
-  if (panel) panel.removeAttribute("hidden");
-  loadLatestReport();
-}
-
-async function fetchIdeasWithToken(token) {
-  const response = await fetch("/api/ideas", {
-    headers: { Authorization: "Bearer " + token }
-  });
-  if (!response.ok) throw new Error("unauthorized");
-  const data = await response.json();
-  if (!data.success || !Array.isArray(data.ideas)) throw new Error("bad response");
-  return data.ideas;
-}
-
-// Deblocare automată dacă există deja un token valid, stocat la o vizită anterioară.
-(function tryStoredAccess() {
-  let token = null;
-  try { token = localStorage.getItem(IDEAS_TOKEN_KEY); } catch (e) { /* ignore storage errors */ }
-  if (!token) return;
-  fetchIdeasWithToken(token)
-    .then((ideas) => unlockIdeas(ideas))
-    .catch(() => {
-      try { localStorage.removeItem(IDEAS_TOKEN_KEY); } catch (e) { /* ignore storage errors */ }
-    });
-})();
-
-function loadCabinetIdeas(sessionToken) { if (!sessionToken) return; fetch("/api/account-ideas", { headers: { Authorization: "Bearer " + sessionToken } }).then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); }).then(function (res) { if (res.ok && res.data && res.data.success && Array.isArray(res.data.ideas)) { renderIdeaCards(res.data.ideas); } }).catch(function () {}); } const ideasGateForm = document.getElementById("ideasGateForm");
-if (ideasGateForm) {
-  const passwordInput = document.getElementById("ideasGatePassword");
-  const gateButton = document.getElementById("ideasGateButton");
-  const gateMessage = document.getElementById("ideasGateMessage");
-  const gateButtonDefaultText = gateButton.textContent;
-
-  ideasGateForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const dict = translations[currentLang] || translations.ro;
-    const password = (passwordInput.value || "").trim();
-
-    gateMessage.classList.remove("is-error", "is-success");
-
-    if (!password) {
-      gateMessage.textContent = getNested(dict, "ideas.gate.invalid") || "Incorrect password.";
-      gateMessage.classList.add("is-error");
-      return;
-    }
-
-    gateButton.disabled = true;
-    gateButton.textContent = getNested(dict, "ideas.gate.sending") || "...";
-    gateMessage.textContent = "";
-
-    try {
-      const response = await fetch("/api/verify-access", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password })
-      });
-
-      let data = {};
-      try { data = await response.json(); } catch (parseErr) { /* non-JSON response */ }
-
-      if (!response.ok || !data.success || !data.token) {
-        throw new Error((data && data.error) || "Request failed");
-      }
-
-      try { localStorage.setItem(IDEAS_TOKEN_KEY, data.token); } catch (storageErr) { /* ignore storage errors */ }
-
-      const ideas = await fetchIdeasWithToken(data.token);
-      unlockIdeas(ideas);
-      passwordInput.value = "";
-    } catch (err) {
-      gateMessage.textContent = getNested(dict, "ideas.gate.invalid") || "Incorrect password.";
-      gateMessage.classList.add("is-error");
-    } finally {
-      gateButton.disabled = false;
-      gateButton.textContent = getNested(dict, "ideas.gate.button") || gateButtonDefaultText;
-    }
-  });
-}
-
-/* ===================== Ultimul raport PDF (din treidingsb-reports) ===================== */
-const REPORTS_REPO_API = "https://api.github.com/repos/sergiuburlea37-star/treidingsb-reports/contents/reports";
-let latestReportInfo = null;
-
-// Limbile in care se pot genera rapoartele PDF (trebuie sa corespunda cu
-// sufixele de fisier produse de treidingsb-reports/scripts/generate_report.py)
-const REPORT_LANGS = ["ro", "en", "ru", "uk", "pl"];
-
-function pickReportUrl(urls) {
-  if (!urls) return null;
-  if (urls[currentLang]) return urls[currentLang];
-  if (urls.ro) return urls.ro;
-  const firstKey = Object.keys(urls)[0];
-  return firstKey ? urls[firstKey] : null;
-}
-
-function renderReportStatus() {
-  const statusEl = document.getElementById("reportStatus");
-  const linkEl = document.getElementById("reportDownloadLink");
-  if (!statusEl || !latestReportInfo) return;
-  const dict = translations[currentLang] || translations.ro;
-  const url = pickReportUrl(latestReportInfo.urls);
-  statusEl.textContent = (getNested(dict, "reports.latestLabel") || "Latest report:") + " " + latestReportInfo.dateStr;
-  statusEl.classList.remove("is-error");
-  statusEl.classList.add("is-ready");
-  if (linkEl && url) {
-    linkEl.href = url;
-    linkEl.classList.remove("is-loading");
-  }
-}
-
-async function loadLatestReport() {
-  const statusEl = document.getElementById("reportStatus");
-  try {
-    const quarterRes = await fetch(REPORTS_REPO_API);
-    if (!quarterRes.ok) throw new Error("quarters fetch failed");
-    const quarters = await quarterRes.json();
-    const quarterDirs = (Array.isArray(quarters) ? quarters : []).filter(
-      (it) => it.type === "dir" && /^Q[1-4]_\d{4}$/.test(it.name)
-    );
-    if (!quarterDirs.length) throw new Error("no quarters");
-
-    quarterDirs.sort((a, b) => {
-      const ma = a.name.match(/^Q([1-4])_(\d{4})$/);
-      const mb = b.name.match(/^Q([1-4])_(\d{4})$/);
-      if (mb[2] !== ma[2]) return Number(mb[2]) - Number(ma[2]);
-      return Number(mb[1]) - Number(ma[1]);
-    });
-    const latestQuarter = quarterDirs[0].name;
-
-    const filesRes = await fetch(`${REPORTS_REPO_API}/${latestQuarter}`);
-    if (!filesRes.ok) throw new Error("files fetch failed");
-    const files = await filesRes.json();
-
-    // Fisiere noi, cu limba in nume: raport-2026-07-13-en.pdf
-    // Fisiere vechi, fara limba (dinainte de suport multilingv): raport-2026-07-13.pdf -> tratate ca "ro"
-    const langPattern = /^raport-(\d{4}-\d{2}-\d{2})-(ro|en|ru|uk|pl)\.pdf$/;
-    const legacyPattern = /^raport-(\d{4}-\d{2}-\d{2})\.pdf$/;
-
-    const byDate = {};
-    (Array.isArray(files) ? files : []).forEach((it) => {
-      if (it.type !== "file") return;
-      let date = null;
-      let lang = null;
-      const langMatch = it.name.match(langPattern);
-      if (langMatch) {
-        date = langMatch[1];
-        lang = langMatch[2];
-      } else {
-        const legacyMatch = it.name.match(legacyPattern);
-        if (legacyMatch) {
-          date = legacyMatch[1];
-          lang = "ro";
-        }
-      }
-      if (!date || !lang) return;
-      if (!byDate[date]) byDate[date] = {};
-      byDate[date][lang] = it.download_url;
-    });
-
-    const dates = Object.keys(byDate).sort().reverse();
-    if (!dates.length) throw new Error("no report files");
-    const latestDate = dates[0];
-    const [y, m, d] = latestDate.split("-");
-    const dateStr = `${d}.${m}.${y}`;
-
-    latestReportInfo = { urls: byDate[latestDate], dateStr };
-    renderReportStatus();
-  } catch (err) {
-    if (statusEl) {
-      const dict = translations[currentLang] || translations.ro;
-      statusEl.textContent = getNested(dict, "reports.unavailable") || "No report available yet.";
-      statusEl.classList.remove("is-ready");
-      statusEl.classList.add("is-error");
-    }
-    const linkEl = document.getElementById("reportDownloadLink");
-    if (linkEl) linkEl.classList.remove("is-loading");
-  }
-}
-
-applyLanguage(detectInitialLang());
+function loadCabinetIdeas(sessionToken) { if (!sessionToken) return; fetch("/api/account-ideas", { headers: { Authorization: "Bearer " + sessionToken } }).then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); }).then(function (res) { if (res.ok && res.data && res.data.success && Array.isArray(res.data.ideas)) { unlockedIdeas = res.data.ideas; renderIdeaCards(res.data.ideas); } }).catch(function () {}); } 
+function cabinetDownloadReport() { const sessionToken = (function () { try { return localStorage.getItem("tsb_session_token"); } catch (e) { return null; } })(); if (!sessionToken) return; const button = document.getElementById("cabinetReportButton"); const statusEl = document.getElementById("cabinetReportStatus"); const dict = translations[currentLang] || translations.ro; if (button) button.disabled = true; if (statusEl) { statusEl.textContent = getNested(dict, "reports.loading") || "Se cauta cel mai recent raport..."; statusEl.classList.remove("is-error"); } fetch("/api/download-report?lang=" + encodeURIComponent(currentLang), { headers: { Authorization: "Bearer " + sessionToken } }).then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); }).then(function (res) { if (res.ok && res.data && res.data.success && res.data.url) { if (statusEl) { statusEl.textContent = (getNested(dict, "reports.latestLabel") || "Ultimul raport:") + " " + (res.data.dateStr || ""); statusEl.classList.remove("is-error"); } window.open(res.data.url, "_blank", "noopener"); } else { if (statusEl) { statusEl.textContent = getNested(dict, "reports.unavailable") || "Niciun raport disponibil momentan."; statusEl.classList.add("is-error"); } } }).catch(function () { if (statusEl) { statusEl.textContent = getNested(dict, "reports.unavailable") || "Niciun raport disponibil momentan."; statusEl.classList.add("is-error"); } }).finally(function () { if (button) button.disabled = false; }); } const cabinetReportButtonEl = document.getElementById("cabinetReportButton"); if (cabinetReportButtonEl) { cabinetReportButtonEl.addEventListener("click", cabinetDownloadReport); } applyLanguage(detectInitialLang());
          
 /* ==================== Cont / Cabinet abonat ==================== */
 const ACCOUNT_STORAGE_KEY = "tsb_session_token";
