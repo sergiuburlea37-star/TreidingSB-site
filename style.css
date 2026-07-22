@@ -32,7 +32,7 @@
 .cabinet-stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:14px}
 .cabinet-stat span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
 .cabinet-stat strong{font-size:16px;color:var(--cyan)}
-.cabinet-reports{background:rgba(24,217,139,.06);border:1px solid rgba(24,217,139,.25);border-radius:12px;padding:18px}
+.cabinet-ideas{background:rgba(31,111,255,.06);border:1px solid rgba(31,111,255,.25);border-radius:12px;padding:18px}.cabinet-ideas h3{margin:0 0 14px;color:var(--blue);font-size:16px}.cabinet-ideas .ideas-grid{grid-template-columns:1fr;gap:14px}.cabinet-ideas .ideas-grid:empty::after{content:"Nu sunt idei active momentan.";display:block;color:var(--muted);font-size:13px;text-align:center;padding:10px 0}.cabinet-reports{background:rgba(24,217,139,.06);border:1px solid rgba(24,217,139,.25);border-radius:12px;padding:18px}
 .cabinet-reports h3{margin:0 0 8px;color:var(--green);font-size:16px}
 .cabinet-reports p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
 .cabinet-logout{align-self:flex-start;padding:10px 18px;border-radius:10px;border:1px solid var(--red);background:transparent;color:var(--red);font-weight:600;cursor:pointer;font-size:14px}
