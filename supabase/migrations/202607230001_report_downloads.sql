@@ -49,4 +49,15 @@ create policy report_downloads_admin_select on public.report_downloads
 -- folosit EXCLUSIV server-side in api/_lib/report-downloads.js, dupa ce
 -- serverul a validat deja sesiunea, rolul/abonamentul si a generat cu
 -- succes URL-ul semnat al raportului (vezi api/download-report.js).
-grant select on public.report_downloads to authenticated;
+--
+-- Privilegii explicite (redundante fata de RLS, dar declarate direct ca a
+-- doua bariera independenta): anon nu are niciun privilegiu pe tabel;
+-- authenticated poate doar citi (SELECT), iar cine vede efectiv randurile
+-- ramane decis de policy-ul de mai sus (is_admin()); insert/update/delete
+-- raman revocate explicit de la authenticated; service_role primeste toate
+-- privilegiile, pentru ca el e singura cale de inserare (server-side, dupa
+-- validarile din api/download-report.js).
+revoke all on table public.report_downloads from anon;
+revoke insert, update, delete on table public.report_downloads from authenticated;
+grant select on table public.report_downloads to authenticated;
+grant all on table public.report_downloads to service_role;
