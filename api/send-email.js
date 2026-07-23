@@ -3,7 +3,7 @@
 // Suporta 4 limbi: ro (implicit), en, ru, pl — parametrul "lang"
 // Cheia API este citita din Environment Variable (RESEND_API_KEY), NU din cod.
 
-import { personalizeReportPdf } from './lib/personalize-report.js';
+import { personalizeReportPdf } from './_lib/personalize-report.js';
 
 // ---------- Rate limiting simplu (in-memory, per instanta) ----------
 // Endpoint-ul e public (oricine poate trimite email catre orice adresa prin
