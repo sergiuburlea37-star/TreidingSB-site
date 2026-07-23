@@ -2347,8 +2347,8 @@ let unlockedIdeas = null; function renderIdeaCards(ideas) {
 
   grid.innerHTML = ideas.map((idea) => {
     const sideClass = idea.side === "BUY" ? "buy" : "sell";
-    const riskValue = getNested(dict, idea.riskKey) || "";
-    const note = getNested(dict, idea.noteKey) || "";
+    const riskValue = (idea.riskKey ? getNested(dict, idea.riskKey) : "") || idea.risk || "";
+    const note = (idea.noteKey ? getNested(dict, idea.noteKey) : "") || idea.note || "";
     return "<article class=\"idea-card\"><div class=\"idea-top\"><strong>" + idea.ticker + "</strong><span class=\"" + sideClass + "\">" + idea.side + "</span></div><ul><li><b>" + entryLabel + "</b> " + idea.entry + "</li><li><b>" + slLabel + "</b> " + idea.sl + "</li><li><b>" + tpLabel + "</b> " + idea.tp + "</li><li><b>" + riskLabel + "</b> <span>" + riskValue + "</span></li></ul><p>" + note + "</p></article>";
   }).join("");
 }
