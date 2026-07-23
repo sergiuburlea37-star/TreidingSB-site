@@ -27,24 +27,35 @@ function adminGetToken() {
   }
 }
 
-/* ==================== Descărcări (neschimbat) ==================== */
+/* ==================== Descărcări (evidență Supabase) ====================
+   O înregistrare = un URL semnat generat cu succes de server, nu neapărat un
+   PDF descărcat efectiv de browser - de-aia etichetăm valoarea ca "descărcări
+   inițiate", nu "descărcări confirmate". */
 
-function adminRenderTable(downloads) {
+function adminRenderTable(downloads, total) {
   var tableBox = document.getElementById("adminTableBox");
   var body = document.getElementById("adminTableBody");
   var summary = document.getElementById("adminSummary");
   tableBox.hidden = false;
 
+  var count = typeof total === "number" ? total : downloads.length;
+
   if (!downloads.length) {
-    summary.textContent = "Nicio descărcare înregistrată încă.";
+    summary.textContent = "Nicio descărcare inițiată încă.";
     body.innerHTML = "";
     return;
   }
 
-  summary.textContent = downloads.length + " descărcări înregistrate.";
+  var summaryText = count + " descărcări inițiate.";
+  if (downloads.length < count) {
+    summaryText += " (se afișează cele mai recente " + downloads.length + ")";
+  }
+  summary.textContent = summaryText;
+
   body.innerHTML = downloads.map(function (d) {
-    var date = d.timestamp ? new Date(d.timestamp).toLocaleString("ro-RO") : "-";
-    return "<tr><td>" + (d.email || "-") + "</td><td>" + (d.memberId || "-") + "</td><td>" + date + "</td><td>" + (d.reportDate || "-") + "</td><td>" + (d.lang || "-").toUpperCase() + "</td></tr>";
+    var date = d.downloadedAt ? new Date(d.downloadedAt).toLocaleString("ro-RO") : "-";
+    var report = d.reportTitle || d.reportDate || "-";
+    return "<tr><td>" + (d.email || "-") + "</td><td>" + (d.memberId || "-") + "</td><td>" + date + "</td><td>" + report + "</td><td>" + (d.lang || "-").toUpperCase() + "</td></tr>";
   }).join("");
 }
 
@@ -53,7 +64,7 @@ function adminLoadDownloads(token) {
     .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
     .then(function (res) {
       if (res.ok && res.data && res.data.success) {
-        adminRenderTable(res.data.downloads || []);
+        adminRenderTable(res.data.downloads || [], res.data.total);
       } else if (res.status === 403) {
         adminSetMessage("Acest cont nu are drepturi de administrator.", "error");
         localStorage.removeItem(ADMIN_TOKEN_KEY);
