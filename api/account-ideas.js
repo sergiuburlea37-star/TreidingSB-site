@@ -1,34 +1,10 @@
 // api/account-ideas.js
-// Returneaza ideile de tranzactionare pentru membrii autentificati prin cont
-// real (email/parola), pe baza tokenului de sesiune (Authorization: Bearer <token>).
-// Folosit de Cabinetul personal - spre deosebire de api/ideas.js (sistemul
-// vechi cu parola comuna), aici fiecare client vede ideile doar daca are o
-// sesiune valida legata de contul lui.
+// Returneaza ideile de tranzactionare publicate, doar pentru membri cu
+// abonament activ (sau admin). Ideile nu mai sunt hardcodate in acest fisier
+// - traiesc in tabela public.trading_ideas (Supabase), editabile din panoul
+// de administrare (api/admin/ideas.js).
 
-import { getUser } from './_lib/store.js';
-import { verifySessionToken } from './_lib/session.js';
-
-// Continutul real al ideilor de tranzactionare traieste doar aici, pe server.
-const IDEAS = [
-  {
-        ticker: "XAU/USD",
-        side: "SELL",
-        entry: "4040–4050",
-        sl: "4097",
-        tp: "4000 / 3975",
-        riskKey: "ideas.card1.riskValue",
-        noteKey: "ideas.card1.note"
-  },
-  {
-        ticker: "EUR/USD",
-        side: "BUY",
-        entry: "1.0870",
-        sl: "1.0820",
-        tp: "1.0950",
-        riskKey: "ideas.card2.riskValue",
-        noteKey: "ideas.card2.note"
-  }
-  ];
+import { getAccessInfo } from './_lib/access.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
@@ -38,19 +14,37 @@ export default async function handler(req, res) {
 
   const authHeader = req.headers.authorization || '';
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-    const email = verifySessionToken(token);
 
-  if (!email) {
-        return res.status(401).json({ error: 'Sesiune invalida sau expirata' });
-  }
+  const access = await getAccessInfo(token);
+    if (!access.authenticated) {
+          return res.status(401).json({ error: 'Sesiune invalida sau expirata' });
+    }
+    if (!access.isAdmin && !access.hasActiveSub) {
+          return res.status(403).json({ error: 'Necesita abonament activ', requiresSubscription: true });
+    }
 
   try {
-        const user = await getUser(email);
-        if (!user) {
-                return res.status(401).json({ error: 'Cont inexistent' });
-        }
+        const { data, error } = await access.client
+          .from('trading_ideas')
+          .select('ticker, side, entry, stop_loss, take_profit, risk_text, note')
+          .eq('published', true)
+          .order('created_at', { ascending: false });
 
-      return res.status(200).json({ success: true, ideas: IDEAS });
+      if (error) {
+              return res.status(500).json({ error: 'Server error: ' + error.message });
+      }
+
+      const ideas = (data || []).map((i) => ({
+              ticker: i.ticker,
+              side: i.side,
+              entry: i.entry,
+              sl: i.stop_loss,
+              tp: i.take_profit,
+              risk: i.risk_text || '',
+              note: i.note || ''
+      }));
+
+      return res.status(200).json({ success: true, ideas });
   } catch (err) {
         return res.status(500).json({ error: 'Server error: ' + err.message });
   }
