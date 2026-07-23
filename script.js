@@ -2353,8 +2353,87 @@ let unlockedIdeas = null; function renderIdeaCards(ideas) {
   }).join("");
 }
 
-function loadCabinetIdeas(sessionToken) { if (!sessionToken) return; fetch("/api/account-ideas", { headers: { Authorization: "Bearer " + sessionToken } }).then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); }).then(function (res) { if (res.ok && res.data && res.data.success && Array.isArray(res.data.ideas)) { unlockedIdeas = res.data.ideas; renderIdeaCards(res.data.ideas); } }).catch(function () {}); } 
-function cabinetDownloadReport() { const sessionToken = (function () { try { return localStorage.getItem("tsb_session_token"); } catch (e) { return null; } })(); if (!sessionToken) return; const button = document.getElementById("cabinetReportButton"); const statusEl = document.getElementById("cabinetReportStatus"); const dict = translations[currentLang] || translations.ro; if (button) button.disabled = true; if (statusEl) { statusEl.textContent = getNested(dict, "reports.loading") || "Se cauta cel mai recent raport..."; statusEl.classList.remove("is-error"); } fetch("/api/download-report?lang=" + encodeURIComponent(currentLang), { headers: { Authorization: "Bearer " + sessionToken } }).then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); }).then(function (res) { if (res.ok && res.data && res.data.success && res.data.url) { if (statusEl) { statusEl.textContent = (getNested(dict, "reports.latestLabel") || "Ultimul raport:") + " " + (res.data.dateStr || ""); statusEl.classList.remove("is-error"); } window.open(res.data.url, "_blank", "noopener"); } else { if (statusEl) { statusEl.textContent = getNested(dict, "reports.unavailable") || "Niciun raport disponibil momentan."; statusEl.classList.add("is-error"); } } }).catch(function () { if (statusEl) { statusEl.textContent = getNested(dict, "reports.unavailable") || "Niciun raport disponibil momentan."; statusEl.classList.add("is-error"); } }).finally(function () { if (button) button.disabled = false; }); } const cabinetReportButtonEl = document.getElementById("cabinetReportButton"); if (cabinetReportButtonEl) { cabinetReportButtonEl.addEventListener("click", cabinetDownloadReport); } applyLanguage(detectInitialLang());
+function loadCabinetIdeas(sessionToken) {
+  if (!sessionToken) return;
+  var grid = document.getElementById("ideasGrid");
+  fetch("/api/account-ideas", { headers: { Authorization: "Bearer " + sessionToken } })
+    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
+    .then(function (res) {
+      if (res.ok && res.data && res.data.success && Array.isArray(res.data.ideas)) {
+        unlockedIdeas = res.data.ideas;
+        renderIdeaCards(res.data.ideas);
+        return;
+      }
+      if (res.status === 401) {
+        accountHandleSessionExpired();
+        return;
+      }
+      if (res.status === 403 && res.data && res.data.requiresSubscription) {
+        if (grid) {
+          grid.innerHTML = "";
+          var msg = document.createElement("p");
+          msg.className = "ideas-locked-message";
+          msg.textContent = accountT("ideasSubscribeRequired");
+          var cta = document.createElement("a");
+          cta.className = "btn outline";
+          cta.href = "#subscribeForm";
+          cta.textContent = accountT("subscribeCta");
+          grid.appendChild(msg);
+          grid.appendChild(cta);
+        }
+      }
+    })
+    .catch(function () {});
+}
+function cabinetDownloadReport() {
+  const sessionToken = (function () { try { return localStorage.getItem("tsb_session_token"); } catch (e) { return null; } })();
+  if (!sessionToken) return;
+  const button = document.getElementById("cabinetReportButton");
+  const statusEl = document.getElementById("cabinetReportStatus");
+  const dict = translations[currentLang] || translations.ro;
+  if (button) button.disabled = true;
+  accountHideSubscribeCta("report");
+  if (statusEl) {
+    statusEl.textContent = getNested(dict, "reports.loading") || "Se cauta cel mai recent raport...";
+    statusEl.classList.remove("is-error");
+  }
+  fetch("/api/download-report?lang=" + encodeURIComponent(currentLang), { headers: { Authorization: "Bearer " + sessionToken } })
+    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
+    .then(function (res) {
+      if (res.ok && res.data && res.data.success && res.data.url) {
+        if (statusEl) {
+          statusEl.textContent = (getNested(dict, "reports.latestLabel") || "Ultimul raport:") + " " + (res.data.dateStr || "");
+          statusEl.classList.remove("is-error");
+        }
+        window.open(res.data.url, "_blank", "noopener");
+        return;
+      }
+      if (res.status === 401) {
+        accountHandleSessionExpired();
+        return;
+      }
+      if (res.status === 403 && res.data && res.data.requiresSubscription) {
+        if (statusEl) {
+          statusEl.textContent = accountT("reportsSubscribeRequired");
+          statusEl.classList.add("is-error");
+        }
+        if (statusEl && statusEl.parentNode) accountEnsureSubscribeCta(statusEl.parentNode, "report");
+        return;
+      }
+      if (statusEl) {
+        statusEl.textContent = getNested(dict, "reports.unavailable") || "Niciun raport disponibil momentan.";
+        statusEl.classList.add("is-error");
+      }
+    })
+    .catch(function () {
+      if (statusEl) {
+        statusEl.textContent = getNested(dict, "reports.unavailable") || "Niciun raport disponibil momentan.";
+        statusEl.classList.add("is-error");
+      }
+    })
+    .finally(function () { if (button) button.disabled = false; });
+}
+const cabinetReportButtonEl = document.getElementById("cabinetReportButton"); if (cabinetReportButtonEl) { cabinetReportButtonEl.addEventListener("click", cabinetDownloadReport); } applyLanguage(detectInitialLang());
          
 /* ==================== Cont / Cabinet abonat ==================== */
 const ACCOUNT_STORAGE_KEY = "tsb_session_token";
@@ -2385,7 +2464,8 @@ const ACCOUNT_I18N = {
     errRateLimited: "Prea multe încercări. Te rugăm să aștepți puțin și să încerci din nou.",
     errMissingFields: "Completează emailul și parola.",
     signupSuccess: "Cont creat cu succes! Bine ai venit.",
-    loginSuccess: "Autentificare reușită!", errPasswordMismatch: "Parolele nu coincid.", forgotLink: "Ai uitat parola?", forgotBack: "Înapoi la autentificare", forgotButton: "Trimite link de resetare", forgotSuccess: "Dacă există un cont cu acest email, vei primi în câteva minute un link pentru resetarea parolei.", resetPageTitle: "Setează o parolă nouă", resetPageSubtitle: "Alege o parolă nouă pentru contul tău TreidingSB.", newPasswordPlaceholder: "Parolă nouă (minim 8 caractere)", confirmPasswordPlaceholder: "Confirmă parola nouă", resetButton: "Salvează parola nouă", resetInvalidTitle: "Link invalid sau expirat", resetInvalidText: "Acest link de resetare nu mai este valabil. Poți solicita unul nou din pagina de autentificare.", resetInvalidLink: "Înapoi la autentificare", resetSuccessTitle: "Parolă actualizată", resetSuccessText: "Parola ta a fost schimbată cu succes și ai fost autentificat automat.", resetSuccessLink: "Continuă către cabinet"
+    loginSuccess: "Autentificare reușită!", errPasswordMismatch: "Parolele nu coincid.", forgotLink: "Ai uitat parola?", forgotBack: "Înapoi la autentificare", forgotButton: "Trimite link de resetare", forgotSuccess: "Dacă există un cont cu acest email, vei primi în câteva minute un link pentru resetarea parolei.", resetPageTitle: "Setează o parolă nouă", resetPageSubtitle: "Alege o parolă nouă pentru contul tău TreidingSB.", newPasswordPlaceholder: "Parolă nouă (minim 8 caractere)", confirmPasswordPlaceholder: "Confirmă parola nouă", resetButton: "Salvează parola nouă", resetInvalidTitle: "Link invalid sau expirat", resetInvalidText: "Acest link de resetare nu mai este valabil. Poți solicita unul nou din pagina de autentificare.", resetInvalidLink: "Înapoi la autentificare", resetSuccessTitle: "Parolă actualizată", resetSuccessText: "Parola ta a fost schimbată cu succes și ai fost autentificat automat.", resetSuccessLink: "Continuă către cabinet",
+    reportsSubscribeRequired: "Este necesar un abonament activ pentru accesarea rapoartelor premium.", ideasSubscribeRequired: "Este necesar un abonament activ pentru accesarea ideilor de tranzacționare premium.", subscribeCta: "Vezi abonamentele", sessionExpired: "Sesiunea a expirat. Te rugăm să te autentifici din nou."
   },
   en: {
     eyebrow: "Your account",
@@ -2410,7 +2490,8 @@ const ACCOUNT_I18N = {
     errRateLimited: "Too many attempts. Please wait a moment and try again.",
     errMissingFields: "Please fill in both email and password.",
     signupSuccess: "Account created successfully! Welcome.",
-    loginSuccess: "Logged in successfully!", errPasswordMismatch: "Passwords don't match.", forgotLink: "Forgot your password?", forgotBack: "Back to login", forgotButton: "Send reset link", forgotSuccess: "If an account exists for this email, you'll receive a password reset link within a few minutes.", resetPageTitle: "Set a new password", resetPageSubtitle: "Choose a new password for your TreidingSB account.", newPasswordPlaceholder: "New password (min. 8 characters)", confirmPasswordPlaceholder: "Confirm new password", resetButton: "Save new password", resetInvalidTitle: "Invalid or expired link", resetInvalidText: "This reset link is no longer valid. You can request a new one from the login page.", resetInvalidLink: "Back to login", resetSuccessTitle: "Password updated", resetSuccessText: "Your password has been changed successfully and you've been logged in automatically.", resetSuccessLink: "Continue to your account"
+    loginSuccess: "Logged in successfully!", errPasswordMismatch: "Passwords don't match.", forgotLink: "Forgot your password?", forgotBack: "Back to login", forgotButton: "Send reset link", forgotSuccess: "If an account exists for this email, you'll receive a password reset link within a few minutes.", resetPageTitle: "Set a new password", resetPageSubtitle: "Choose a new password for your TreidingSB account.", newPasswordPlaceholder: "New password (min. 8 characters)", confirmPasswordPlaceholder: "Confirm new password", resetButton: "Save new password", resetInvalidTitle: "Invalid or expired link", resetInvalidText: "This reset link is no longer valid. You can request a new one from the login page.", resetInvalidLink: "Back to login", resetSuccessTitle: "Password updated", resetSuccessText: "Your password has been changed successfully and you've been logged in automatically.", resetSuccessLink: "Continue to your account",
+    reportsSubscribeRequired: "An active subscription is required to access premium reports.", ideasSubscribeRequired: "An active subscription is required to access premium trading ideas.", subscribeCta: "View subscriptions", sessionExpired: "Your session has expired. Please log in again."
   },
   ru: {
     eyebrow: "Ваш кабинет",
@@ -2435,7 +2516,8 @@ const ACCOUNT_I18N = {
     errRateLimited: "Слишком много попыток. Подождите немного и попробуйте снова.",
     errMissingFields: "Заполните email и пароль.",
     signupSuccess: "Аккаунт успешно создан! Добро пожаловать.",
-    loginSuccess: "Вход выполнен успешно!", errPasswordMismatch: "Пароли не совпадают.", forgotLink: "Забыли пароль?", forgotBack: "Назад ко входу", forgotButton: "Отправить ссылку для сброса", forgotSuccess: "Если аккаунт с таким email существует, в течение нескольких минут вы получите ссылку для сброса пароля.", resetPageTitle: "Установите новый пароль", resetPageSubtitle: "Выберите новый пароль для вашего аккаунта TreidingSB.", newPasswordPlaceholder: "Новый пароль (минимум 8 символов)", confirmPasswordPlaceholder: "Подтвердите новый пароль", resetButton: "Сохранить новый пароль", resetInvalidTitle: "Ссылка недействительна или истекла", resetInvalidText: "Эта ссылка для сброса пароля больше не действительна. Вы можете запросить новую на странице входа.", resetInvalidLink: "Назад ко входу", resetSuccessTitle: "Пароль обновлён", resetSuccessText: "Ваш пароль успешно изменён, и вы автоматически вошли в аккаунт.", resetSuccessLink: "Перейти в кабинет"
+    loginSuccess: "Вход выполнен успешно!", errPasswordMismatch: "Пароли не совпадают.", forgotLink: "Забыли пароль?", forgotBack: "Назад ко входу", forgotButton: "Отправить ссылку для сброса", forgotSuccess: "Если аккаунт с таким email существует, в течение нескольких минут вы получите ссылку для сброса пароля.", resetPageTitle: "Установите новый пароль", resetPageSubtitle: "Выберите новый пароль для вашего аккаунта TreidingSB.", newPasswordPlaceholder: "Новый пароль (минимум 8 символов)", confirmPasswordPlaceholder: "Подтвердите новый пароль", resetButton: "Сохранить новый пароль", resetInvalidTitle: "Ссылка недействительна или истекла", resetInvalidText: "Эта ссылка для сброса пароля больше не действительна. Вы можете запросить новую на странице входа.", resetInvalidLink: "Назад ко входу", resetSuccessTitle: "Пароль обновлён", resetSuccessText: "Ваш пароль успешно изменён, и вы автоматически вошли в аккаунт.", resetSuccessLink: "Перейти в кабинет",
+    reportsSubscribeRequired: "Для доступа к премиум-отчётам необходима активная подписка.", ideasSubscribeRequired: "Для доступа к премиум торговым идеям необходима активная подписка.", subscribeCta: "Посмотреть подписки", sessionExpired: "Сессия истекла. Пожалуйста, войдите снова."
   },
   uk: {
     eyebrow: "Ваш кабінет",
@@ -2460,7 +2542,8 @@ const ACCOUNT_I18N = {
     errRateLimited: "Забагато спроб. Зачекайте трохи і спробуйте знову.",
     errMissingFields: "Заповніть email та пароль.",
     signupSuccess: "Акаунт успішно створено! Ласкаво просимо.",
-    loginSuccess: "Вхід виконано успішно!", errPasswordMismatch: "Паролі не збігаються.", forgotLink: "Забули пароль?", forgotBack: "Назад до входу", forgotButton: "Надіслати посилання для скидання", forgotSuccess: "Якщо акаунт із такою поштою існує, протягом кількох хвилин ви отримаєте посилання для скидання пароля.", resetPageTitle: "Встановіть новий пароль", resetPageSubtitle: "Оберіть новий пароль для свого акаунта TreidingSB.", newPasswordPlaceholder: "Новий пароль (мінімум 8 символів)", confirmPasswordPlaceholder: "Підтвердіть новий пароль", resetButton: "Зберегти новий пароль", resetInvalidTitle: "Посилання недійсне або застаріло", resetInvalidText: "Це посилання для скидання пароля більше не дійсне. Ви можете запросити нове на сторінці входу.", resetInvalidLink: "Назад до входу", resetSuccessTitle: "Пароль оновлено", resetSuccessText: "Ваш пароль успішно змінено, і ви автоматично увійшли в акаунт.", resetSuccessLink: "Перейти до кабінету"
+    loginSuccess: "Вхід виконано успішно!", errPasswordMismatch: "Паролі не збігаються.", forgotLink: "Забули пароль?", forgotBack: "Назад до входу", forgotButton: "Надіслати посилання для скидання", forgotSuccess: "Якщо акаунт із такою поштою існує, протягом кількох хвилин ви отримаєте посилання для скидання пароля.", resetPageTitle: "Встановіть новий пароль", resetPageSubtitle: "Оберіть новий пароль для свого акаунта TreidingSB.", newPasswordPlaceholder: "Новий пароль (мінімум 8 символів)", confirmPasswordPlaceholder: "Підтвердіть новий пароль", resetButton: "Зберегти новий пароль", resetInvalidTitle: "Посилання недійсне або застаріло", resetInvalidText: "Це посилання для скидання пароля більше не дійсне. Ви можете запросити нове на сторінці входу.", resetInvalidLink: "Назад до входу", resetSuccessTitle: "Пароль оновлено", resetSuccessText: "Ваш пароль успішно змінено, і ви автоматично увійшли в акаунт.", resetSuccessLink: "Перейти до кабінету",
+    reportsSubscribeRequired: "Для доступу до преміум-звітів потрібна активна підписка.", ideasSubscribeRequired: "Для доступу до преміум торгових ідей потрібна активна підписка.", subscribeCta: "Переглянути підписки", sessionExpired: "Сесія закінчилася. Будь ласка, увійдіть знову."
   },
   pl: {
     eyebrow: "Twoje konto",
@@ -2485,7 +2568,8 @@ const ACCOUNT_I18N = {
     errRateLimited: "Zbyt wiele prób. Poczekaj chwilę i spróbuj ponownie.",
     errMissingFields: "Uzupełnij e-mail i hasło.",
     signupSuccess: "Konto utworzone pomyślnie! Witamy.",
-    loginSuccess: "Zalogowano pomyślnie!", errPasswordMismatch: "Hasła się nie zgadzają.", forgotLink: "Nie pamiętasz hasła?", forgotBack: "Powrót do logowania", forgotButton: "Wyślij link resetujący", forgotSuccess: "Jeśli konto z tym adresem e-mail istnieje, w ciągu kilku minut otrzymasz link do zresetowania hasła.", resetPageTitle: "Ustaw nowe hasło", resetPageSubtitle: "Wybierz nowe hasło dla swojego konta TreidingSB.", newPasswordPlaceholder: "Nowe hasło (min. 8 znaków)", confirmPasswordPlaceholder: "Potwierdź nowe hasło", resetButton: "Zapisz nowe hasło", resetInvalidTitle: "Link jest nieprawidłowy lub wygasł", resetInvalidText: "Ten link resetujący hasło już nie jest ważny. Możesz poprosić o nowy na stronie logowania.", resetInvalidLink: "Powrót do logowania", resetSuccessTitle: "Hasło zaktualizowane", resetSuccessText: "Twoje hasło zostało pomyślnie zmienione, a Ty zostałeś automatycznie zalogowany.", resetSuccessLink: "Przejdź do konta"
+    loginSuccess: "Zalogowano pomyślnie!", errPasswordMismatch: "Hasła się nie zgadzają.", forgotLink: "Nie pamiętasz hasła?", forgotBack: "Powrót do logowania", forgotButton: "Wyślij link resetujący", forgotSuccess: "Jeśli konto z tym adresem e-mail istnieje, w ciągu kilku minut otrzymasz link do zresetowania hasła.", resetPageTitle: "Ustaw nowe hasło", resetPageSubtitle: "Wybierz nowe hasło dla swojego konta TreidingSB.", newPasswordPlaceholder: "Nowe hasło (min. 8 znaków)", confirmPasswordPlaceholder: "Potwierdź nowe hasło", resetButton: "Zapisz nowe hasło", resetInvalidTitle: "Link jest nieprawidłowy lub wygasł", resetInvalidText: "Ten link resetujący hasło już nie jest ważny. Możesz poprosić o nowy na stronie logowania.", resetInvalidLink: "Powrót do logowania", resetSuccessTitle: "Hasło zaktualizowane", resetSuccessText: "Twoje hasło zostało pomyślnie zmienione, a Ty zostałeś automatycznie zalogowany.", resetSuccessLink: "Przejdź do konta",
+    reportsSubscribeRequired: "Aby uzyskać dostęp do raportów premium, wymagana jest aktywna subskrypcja.", ideasSubscribeRequired: "Aby uzyskać dostęp do pomysłów transakcyjnych premium, wymagana jest aktywna subskrypcja.", subscribeCta: "Zobacz subskrypcje", sessionExpired: "Sesja wygasła. Zaloguj się ponownie."
   }
 };
 
@@ -2566,6 +2650,36 @@ function accountShowForgot() { var tabs = document.querySelector("#accountAuth .
   renderAccountTexts();
 }
 
+function accountHandleSessionExpired() {
+  try { localStorage.removeItem(ACCOUNT_STORAGE_KEY); } catch (e) {}
+  accountShowAuthView();
+  accountSetMessage(accountT("sessionExpired"), "error");
+}
+
+function accountEnsureSubscribeCta(containerEl, idSuffix) {
+  if (!containerEl) return null;
+  var id = "cabinetSubscribeCta_" + idSuffix;
+  var el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement("a");
+    el.id = id;
+    el.className = "btn outline cabinet-subscribe-cta";
+    el.href = "#subscribeForm";
+    el.style.marginTop = "10px";
+    el.style.display = "inline-block";
+    containerEl.appendChild(el);
+  }
+  el.textContent = accountT("subscribeCta");
+  el.hidden = false;
+  el.style.display = "inline-block";
+  return el;
+}
+
+function accountHideSubscribeCta(idSuffix) {
+  var el = document.getElementById("cabinetSubscribeCta_" + idSuffix);
+  if (el) { el.hidden = true; el.style.display = "none"; }
+}
+
 function accountShowCabinetView(data, sessionToken) {
   var auth = document.getElementById("accountAuth");
   var cabinet = document.getElementById("accountCabinet");
@@ -2576,7 +2690,22 @@ function accountShowCabinetView(data, sessionToken) {
   if (emailEl) emailEl.textContent = data.email || "";
 
   var memberIdEl = document.getElementById("cabinetMemberId");
-  if (memberIdEl) memberIdEl.textContent = data.memberId || "";
+  if (memberIdEl) {
+    memberIdEl.textContent = data.memberId || "";
+    if (!data.memberId && sessionToken) {
+      // Fallback defensiv: daca raspunsul initial nu contine memberId,
+      // reincearca o singura data via /api/auth-me si foloseste STRICT
+      // valoarea intoarsa de API (nu se genereaza si nu se modifica ID-ul).
+      fetch("/api/auth-me", { headers: { Authorization: "Bearer " + sessionToken } })
+        .then(function (r) { return r.json().then(function (fresh) { return { ok: r.ok, data: fresh }; }); })
+        .then(function (res) {
+          if (res.ok && res.data && res.data.success && res.data.memberId) {
+            memberIdEl.textContent = res.data.memberId;
+          }
+        })
+        .catch(function () {});
+    }
+  }
 
   loadCabinetIdeas(sessionToken); var sinceEl = document.getElementById("cabinetSince");
   if (sinceEl) {
