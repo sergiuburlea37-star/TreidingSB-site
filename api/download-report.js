@@ -1,117 +1,75 @@
 // api/download-report.js
-// Livreaza raportul saptamanal curent membrilor autentificati prin cont real
-// (email/parola). Inlocuieste vechiul mecanism cu parola comuna: acum orice
-// descarcare trece prin sesiunea utilizatorului si este inregistrata in
-// jurnalul de descarcari (vezi api/admin/downloads.js).
+// Livreaza cel mai recent raport publicat, in limba ceruta, doar membrilor cu
+// abonament activ (sau admin). Fisierele PDF nu mai stau intr-un repo GitHub
+// public - traiesc in bucket-ul privat Supabase Storage "reports-private" -
+// iar linkul returnat catre client e un semnat, valabil doar 60 de secunde
+// (createSignedUrl), niciodata un URL public permanent.
 
-import { getUser, logDownload } from './_lib/store.js';
-import { verifySessionToken } from './_lib/session.js';
+import { getAccessInfo } from './_lib/access.js';
+import { logDownload } from './_lib/store.js';
 
-const REPORTS_REPO_API = "https://api.github.com/repos/sergiuburlea37-star/treidingsb-reports/contents/reports";
-const REPORT_LANGS = ["ro", "en", "ru", "uk", "pl"];
-
-function pickReportUrl(urls, lang) {
-    if (!urls) return null;
-    if (lang && urls[lang]) return urls[lang];
-    if (urls.ro) return urls.ro;
-    const firstKey = Object.keys(urls)[0];
-    return firstKey ? urls[firstKey] : null;
-}
-
-async function findLatestReport() {
-    const quarterRes = await fetch(REPORTS_REPO_API);
-    if (!quarterRes.ok) throw new Error("quarters fetch failed");
-    const quarters = await quarterRes.json();
-    const quarterDirs = (Array.isArray(quarters) ? quarters : []).filter(
-          (it) => it.type === "dir" && /^Q[1-4]_\d{4}$/.test(it.name)
-        );
-    if (!quarterDirs.length) return null;
-
-  quarterDirs.sort((a, b) => {
-        const ma = a.name.match(/^Q([1-4])_(\d{4})$/);
-        const mb = b.name.match(/^Q([1-4])_(\d{4})$/);
-        if (mb[2] !== ma[2]) return Number(mb[2]) - Number(ma[2]);
-        return Number(mb[1]) - Number(ma[1]);
-  });
-    const latestQuarter = quarterDirs[0].name;
-
-  const filesRes = await fetch(`${REPORTS_REPO_API}/${latestQuarter}`);
-    if (!filesRes.ok) throw new Error("files fetch failed");
-    const files = await filesRes.json();
-
-  const langPattern = /^raport-(\d{4}-\d{2}-\d{2})-(ro|en|ru|uk|pl)\.pdf$/;
-    const legacyPattern = /^raport-(\d{4}-\d{2}-\d{2})\.pdf$/;
-
-  const byDate = {};
-    (Array.isArray(files) ? files : []).forEach((it) => {
-          if (it.type !== "file") return;
-          let date = null;
-          let lang = null;
-          const langMatch = it.name.match(langPattern);
-          if (langMatch) {
-                  date = langMatch[1];
-                  lang = langMatch[2];
-          } else {
-                  const legacyMatch = it.name.match(legacyPattern);
-                  if (legacyMatch) {
-                            date = legacyMatch[1];
-                            lang = "ro";
-                  }
-          }
-          if (!date || !lang) return;
-          if (!byDate[date]) byDate[date] = {};
-          byDate[date][lang] = it.download_url;
-    });
-
-  const dates = Object.keys(byDate).sort().reverse();
-    if (!dates.length) return null;
-    const latestDate = dates[0];
-    const [y, m, d] = latestDate.split("-");
-    return { urls: byDate[latestDate], dateStr: `${d}.${m}.${y}`, isoDate: latestDate };
-}
+const REPORT_LANGS = ['ro', 'en', 'ru', 'uk', 'pl'];
 
 export default async function handler(req, res) {
-    if (req.method !== "GET") {
-          res.setHeader("Allow", "GET");
-          return res.status(405).json({ error: "Method not allowed" });
-    }
+      if (req.method !== 'GET') {
+              res.setHeader('Allow', 'GET');
+              return res.status(405).json({ error: 'Method not allowed' });
+      }
 
-  const authHeader = req.headers.authorization || "";
-    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-    const email = verifySessionToken(token);
+  const authHeader = req.headers.authorization || '';
+      const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
 
-  if (!email) {
-        return res.status(401).json({ error: "Sesiune invalida sau expirata" });
-  }
+  const access = await getAccessInfo(token);
+      if (!access.authenticated) {
+              return res.status(401).json({ error: 'Sesiune invalida sau expirata' });
+      }
+      if (!access.isAdmin && !access.hasActiveSub) {
+              return res.status(403).json({ error: 'Necesita abonament activ', requiresSubscription: true });
+      }
 
   try {
-        const user = await getUser(email);
-        if (!user) {
-                return res.status(401).json({ error: "Cont inexistent" });
+          const requestedLang = req.query && req.query.lang;
+          const lang = REPORT_LANGS.includes(requestedLang) ? requestedLang : (access.profile && access.profile.lang) || 'ro';
+
+        const { data: report, error } = await access.client
+            .from('reports')
+            .select('id, title, report_date, file_path')
+            .eq('lang', lang)
+            .eq('published', true)
+            .order('report_date', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (error || !report) {
+                  return res.status(200).json({ success: false });
         }
 
-      const requestedLang = req.query && req.query.lang;
-        const lang = REPORT_LANGS.includes(requestedLang) ? requestedLang : (user.lang || "ro");
+        const { data: signed, error: signErr } = await access.client
+            .storage
+            .from('reports-private')
+            .createSignedUrl(report.file_path, 60);
 
-      const latest = await findLatestReport();
-        if (!latest) {
-                return res.status(200).json({ success: false });
-        }
-        const url = pickReportUrl(latest.urls, lang);
-        if (!url) {
-                return res.status(200).json({ success: false });
+        if (signErr || !signed) {
+                  return res.status(200).json({ success: false });
         }
 
-      await logDownload({
-              email: user.email,
-              memberId: user.memberId,
-              timestamp: Date.now(),
-              reportDate: latest.isoDate,
-              lang
-      });
+        const [y, m, d] = String(report.report_date).split('-');
 
-      return res.status(200).json({ success: true, url, dateStr: latest.dateStr });
+        try {
+                  await logDownload({
+                              email: access.email,
+                              memberId: access.profile ? access.profile.member_id : null,
+                              timestamp: Date.now(),
+                              reportDate: report.report_date,
+                              lang
+                  });
+        } catch (e) {
+                  // jurnalul de descarcari e best-effort, nu blocam livrarea raportului
+            console.error('logDownload failed:', e.message);
+        }
+
+        return res.status(200).json({ success: true, url: signed.signedUrl, dateStr: `${d}.${m}.${y}` });
   } catch (err) {
-        return res.status(500).json({ error: "Server error: " + err.message });
+          return res.status(500).json({ error: 'Server error: ' + err.message });
   }
 }
