@@ -1,29 +1,25 @@
 // api/admin/downloads.js
-// Returneaza jurnalul complet de descarcari de rapoarte. Accesibil doar
-// conturilor din lista de administratori (vezi api/lib/admin.js).
+// Returneaza jurnalul complet de descarcari de rapoarte (Upstash - neschimbat).
+// Accesul e verificat acum prin Supabase (rolul 'admin' din public.profiles),
+// nu mai prin verifySessionToken (tokenul emis la login e acum JWT-ul
+// Supabase, nu mai are formatul HMAC vechi).
 
 import { getDownloadLog } from '../_lib/store.js';
-import { verifySessionToken } from '../_lib/session.js';
-import { isAdminEmail } from '../_lib/admin.js';
+import { requireAdmin } from '../_lib/require-admin.js';
 
 export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-          res.setHeader('Allow', 'GET');
-          return res.status(405).json({ error: 'Method not allowed' });
-    }
+      if (req.method !== 'GET') {
+              res.setHeader('Allow', 'GET');
+              return res.status(405).json({ error: 'Method not allowed' });
+      }
 
-  const authHeader = req.headers.authorization || '';
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-    const email = verifySessionToken(token);
-
-  if (!email || !isAdminEmail(email)) {
-        return res.status(403).json({ error: 'Acces interzis' });
-  }
+  const access = await requireAdmin(req, res);
+      if (!access) return;
 
   try {
-        const downloads = await getDownloadLog(1000);
-        return res.status(200).json({ success: true, downloads });
+          const downloads = await getDownloadLog(1000);
+          return res.status(200).json({ success: true, downloads });
   } catch (err) {
-        return res.status(500).json({ error: 'Server error: ' + err.message });
+          return res.status(500).json({ error: 'Server error: ' + err.message });
   }
 }
