@@ -280,15 +280,24 @@ async function handleSubscriptions(req, res) {
   const access = await requireAdmin(req, res);
   if (!access) return;
 
+  // De aici incolo folosim exclusiv clientul cu service role (bypass RLS),
+  // niciodata access.client (tokenul admin-ului): policy-ul profiles_select_own
+  // permite fiecarui cont sa vada/modifice doar propriul rand din profiles, deci
+  // access.client nu poate lista sau actualiza alti utilizatori. Accesul la
+  // aceasta ruta e deja garantat exclusiv pentru admini de requireAdmin mai sus,
+  // deci folosirea service role e sigura si necesara pentru operatiunile
+  // administrative de mai jos (nu e expusa niciodata catre client).
+  const admin = getSupabaseAdmin();
+
   try {
     if (req.method === 'GET') {
-      const { data: profiles, error: pErr } = await access.client
+      const { data: profiles, error: pErr } = await admin
         .from('profiles')
         .select('id, email, member_id, role, created_at')
         .order('created_at', { ascending: false });
       if (pErr) return res.status(500).json({ error: pErr.message });
 
-      const { data: subs, error: sErr } = await access.client
+      const { data: subs, error: sErr } = await admin
         .from('subscriptions')
         .select('user_id, status, expires_at, provider_customer_id');
       if (sErr) return res.status(500).json({ error: sErr.message });
@@ -327,12 +336,11 @@ async function handleSubscriptions(req, res) {
         const patch = { updated_at: new Date().toISOString() };
         if (status !== undefined) patch.status = status;
         if (expiresAt !== undefined) patch.expires_at = expiresAt;
-        const { error } = await access.client.from('subscriptions').update(patch).eq('user_id', userId);
+        const { error } = await admin.from('subscriptions').update(patch).eq('user_id', userId);
         if (error) return res.status(500).json({ error: error.message });
       }
 
       if (role !== undefined) {
-        const admin = getSupabaseAdmin();
         const { error } = await admin
           .from('profiles')
           .update({ role, updated_at: new Date().toISOString() })
