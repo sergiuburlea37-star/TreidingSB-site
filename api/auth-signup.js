@@ -54,6 +54,7 @@ export default async function handler(req, res) {
       });
 
       if (createErr) {
+              console.error('auth-signup createUser error:', { status: createErr.status, code: createErr.code, message: createErr.message });
               const msg = String(createErr.message || '').toLowerCase();
               if (msg.includes('already') || msg.includes('exist')) {
                         return res.status(409).json({ error: 'Exista deja un cont cu acest email' });
