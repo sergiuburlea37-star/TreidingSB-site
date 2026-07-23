@@ -1,62 +1,89 @@
 // api/auth-signup.js
-// Creeaza un cont nou (email + parola). Member ID e derivat determinist din
-// email (aceeasi functie folosita si la personalizarea rapoartelor PDF), deci
-// ID-ul din cabinet coincide mereu cu cel de pe rapoartele trimise prin email.
+// Creeaza un cont nou in Supabase Auth (email + parola). La creare, un
+// trigger din baza de date (handle_new_user) creeaza automat randul
+// corespunzator in public.profiles (cu member_id derivat din user id) si in
+// public.subscriptions (status 'inactive'). Contractul raspunsului ramane
+// identic cu versiunea veche (Upstash), ca sa nu fie nevoie de nicio
+// modificare in script.js.
 
-import { getUser, createUser } from './_lib/store.js';
-import { createSessionToken } from './_lib/session.js';
-import { hashPassword } from './_lib/password.js';
-import { deriveMemberId } from './_lib/personalize-report.js';
+import { createClient } from '@supabase/supabase-js';
+import { getSupabaseAdmin } from './_lib/supabase.js';
 import { createRateLimiter, getClientIp } from './_lib/ratelimit.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5 });
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+    if (req.method !== 'POST') {
+          res.setHeader('Allow', 'POST');
+          return res.status(405).json({ error: 'Method not allowed' });
+    }
 
   if (isRateLimited(getClientIp(req))) {
-    return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+        return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
 
   let body = req.body;
-  if (typeof body === 'string') {
-    try {
-      body = JSON.parse(body);
-    } catch (e) {
-      return res.status(400).json({ error: 'Invalid request body' });
+    if (typeof body === 'string') {
+          try {
+                  body = JSON.parse(body);
+          } catch (e) {
+                  return res.status(400).json({ error: 'Invalid request body' });
+          }
     }
-  }
 
   const email = body && typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
-  const password = body && typeof body.password === 'string' ? body.password : '';
-  const lang = body && typeof body.lang === 'string' ? body.lang : 'ro';
+    const password = body && typeof body.password === 'string' ? body.password : '';
+    const lang = body && typeof body.lang === 'string' ? body.lang : 'ro';
 
   if (!EMAIL_RE.test(email)) {
-    return res.status(400).json({ error: 'Adresă de email invalidă' });
+        return res.status(400).json({ error: 'Adresa de email invalida' });
   }
-  if (password.length < 8) {
-    return res.status(400).json({ error: 'Parola trebuie să aibă minim 8 caractere' });
-  }
-
-  try {
-    const existing = await getUser(email);
-    if (existing) {
-      return res.status(409).json({ error: 'Există deja un cont cu acest email' });
+    if (password.length < 8) {
+          return res.status(400).json({ error: 'Parola trebuie sa aiba minim 8 caractere' });
     }
 
-    const memberId = deriveMemberId(email);
-    const passwordHash = hashPassword(password);
-    const createdAt = new Date().toISOString();
+  try {
+        const admin = getSupabaseAdmin();
 
-    await createUser({ email, passwordHash, memberId, lang, createdAt });
+      const { data: created, error: createErr } = await admin.auth.admin.createUser({
+              email,
+              password,
+              email_confirm: true,
+              user_metadata: { lang }
+      });
 
-    const token = createSessionToken(email);
-    return res.status(200).json({ success: true, token, email, memberId, lang, createdAt });
+      if (createErr) {
+              const msg = String(createErr.message || '').toLowerCase();
+              if (msg.includes('already') || msg.includes('exist')) {
+                        return res.status(409).json({ error: 'Exista deja un cont cu acest email' });
+              }
+              return res.status(400).json({ error: createErr.message || 'Nu am putut crea contul' });
+      }
+
+      const anon = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {
+              auth: { autoRefreshToken: false, persistSession: false }
+      });
+        const { data: signedIn, error: signInErr } = await anon.auth.signInWithPassword({ email, password });
+        if (signInErr || !signedIn.session) {
+                return res.status(500).json({ error: 'Cont creat, dar autentificarea automata a esuat. Incearca sa te loghezi.' });
+        }
+
+      const { data: profile } = await admin
+          .from('profiles')
+          .select('member_id, lang, created_at')
+          .eq('id', created.user.id)
+          .maybeSingle();
+
+      return res.status(200).json({
+              success: true,
+              token: signedIn.session.access_token,
+              email,
+              memberId: profile ? profile.member_id : null,
+              lang: profile ? profile.lang : lang,
+              createdAt: profile ? profile.created_at : created.user.created_at
+      });
   } catch (err) {
-    return res.status(500).json({ error: 'Server error: ' + err.message });
+        return res.status(500).json({ error: 'Server error: ' + err.message });
   }
 }
