@@ -3,7 +3,7 @@
   <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Admin – TreidingSB</title>
+      <title>Admin - TreidingSB</title>
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
     <style>
-          .admin-wrap{max-width:960px;margin:0 auto;padding:60px 20px 80px}
+          .admin-wrap{max-width:1100px;margin:0 auto;padding:60px 20px 80px}
           .admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
           .admin-header h1{font-size:26px;margin:0}
           .admin-header a{font-size:13px;color:var(--muted)}
@@ -22,48 +22,149 @@
           .admin-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:rgba(6,13,24,.42)}
           table.admin-table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
           table.admin-table th{padding:12px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line);background:rgba(255,255,255,.03)}
-          table.admin-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);color:#dce6f5}
+          table.admin-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);color:#dce6f5;white-space:normal}
           .admin-empty{padding:30px;text-align:center;color:var(--muted)}
           .admin-summary{margin:0 0 18px;color:var(--muted);font-size:14px}
           [hidden]{display:none !important}
+          .admin-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+          .admin-tab{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);padding:9px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer}
+          .admin-tab.is-active{background:var(--accent, #D4AF37);border-color:transparent;color:#111}
+          .admin-panel{display:none}
+          .admin-panel.is-active{display:block}
+          .admin-formcard{border:1px solid var(--line);border-radius:16px;background:rgba(6,13,24,.42);padding:18px;margin-bottom:20px}
+          .admin-formcard h3{margin:0 0 14px;font-size:15px}
+          .admin-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:12px}
+          .admin-form-grid label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
+          .admin-form-grid input, .admin-form-grid select, .admin-form-grid textarea{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;font-family:inherit}
+          .admin-form-grid textarea{grid-column:1 / -1;min-height:60px;resize:vertical}
+          .admin-checkbox{flex-direction:row !important;align-items:center;gap:8px !important}
+          .admin-checkbox input{width:auto}
+          .admin-btn{background:var(--accent,#D4AF37);color:#111;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer}
+          .admin-btn.outline{background:transparent;border:1px solid var(--line);color:#dce6f5}
+          .admin-btn.small{padding:5px 10px;font-size:12px}
+          .admin-row-actions{display:flex;gap:6px;flex-wrap:wrap}
+          .admin-inline-select{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:6px;color:#fff;padding:4px 6px;font-size:12px}
+          .admin-inline-input{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:6px;color:#fff;padding:4px 6px;font-size:12px;width:140px}
         </style>
   </head>
   <body style="background:var(--bg)">
       <div class="admin-wrap">
             <div class="admin-header">
-                    <h1>Panou Admin — Descărcări rapoarte</h1>
-                  <a href="/">← Înapoi la site</a>
+                    <h1>Panou Admin - TreidingSB</h1>
+                  <a href="/">&larr; Inapoi la site</a>
             </div>
-      
+
           <div class="account-box" id="adminLoginBox" style="max-width:420px">
                 <form class="account-form" id="adminLoginForm" novalidate>
                         <input type="email" id="adminEmail" placeholder="adresa@email.com" autocomplete="email" required>
-                        <input type="password" id="adminPassword" placeholder="Parolă" autocomplete="current-password" required>
-                        <button type="submit" id="adminLoginButton">Intră în cont</button>
+                        <input type="password" id="adminPassword" placeholder="Parola" autocomplete="current-password" required>
+                        <button type="submit" id="adminLoginButton">Intra in cont</button>
                 </form>
                 <p class="admin-message" id="adminMessage" role="status" aria-live="polite"></p>
           </div>
-      
-          <div id="adminTableBox" hidden>
-                <p class="admin-summary" id="adminSummary"></p>
+
+          <div class="admin-tabs" id="adminTabs" hidden>
+                <button type="button" class="admin-tab is-active" data-tab="downloads">Descarcari</button>
+                <button type="button" class="admin-tab" data-tab="ideas">Idei</button>
+                <button type="button" class="admin-tab" data-tab="reports">Rapoarte</button>
+                <button type="button" class="admin-tab" data-tab="subs">Abonamente</button>
+          </div>
+
+          <div id="adminPanelDownloads" class="admin-panel is-active">
+                <div id="adminTableBox" hidden>
+                      <p class="admin-summary" id="adminSummary"></p>
+                      <div class="admin-table-wrap">
+                              <table class="admin-table" id="adminTable">
+                                        <thead>
+                                                      <tr>
+                                                                      <th>Email</th>
+                                                      <th>ID Membru</th>
+                                                      <th>Data / Ora</th>
+                                                      <th>Raport</th>
+                                                      <th>Limba</th>
+                                                      </tr>
+                                        </thead>
+                                        <tbody id="adminTableBody"></tbody>
+                              </table>
+                      </div>
+                </div>
+          </div>
+
+          <div id="adminPanelIdeas" class="admin-panel">
+                <div class="admin-formcard">
+                      <h3 id="ideaFormTitle">Idee noua</h3>
+                      <form id="ideaForm" novalidate>
+                            <input type="hidden" id="ideaId" value="">
+                            <div class="admin-form-grid">
+                                  <label>Ticker<input type="text" id="ideaTicker" required></label>
+                                  <label>Directie
+                                        <select id="ideaSide">
+                                              <option value="BUY">BUY</option>
+                                              <option value="SELL">SELL</option>
+                                        </select>
+                                  </label>
+                                  <label>Entry<input type="text" id="ideaEntry" required></label>
+                                  <label>Stop Loss<input type="text" id="ideaSl" required></label>
+                                  <label>Take Profit<input type="text" id="ideaTp" required></label>
+                                  <label class="admin-checkbox"><input type="checkbox" id="ideaPublished"> Publicata</label>
+                                  <label style="grid-column:1/-1">Risc<textarea id="ideaRisk"></textarea></label>
+                                  <label style="grid-column:1/-1">Nota<textarea id="ideaNote"></textarea></label>
+                            </div>
+                            <button type="submit" class="admin-btn" id="ideaSubmitButton">Salveaza idea</button>
+                            <button type="button" class="admin-btn outline" id="ideaCancelEdit" hidden>Anuleaza editarea</button>
+                      </form>
+                      <p class="admin-message" id="ideaFormMessage" role="status" aria-live="polite"></p>
+                </div>
                 <div class="admin-table-wrap">
-                        <table class="admin-table" id="adminTable">
-                                  <thead>
-                                                <tr>
-                                                                <th>Email</th>
-                                                <th>ID Membru</th>
-                                                <th>Data / Ora</th>
-                                                <th>Raport</th>
-                                                <th>Limbă</th>
-                                                </tr>
-                                  </thead>
-                                  <tbody id="adminTableBody"></tbody>
-                        </table>
+                      <table class="admin-table" id="ideasTable">
+                            <thead><tr><th>Ticker</th><th>Directie</th><th>Entry</th><th>SL</th><th>TP</th><th>Publicata</th><th>Actiuni</th></tr></thead>
+                            <tbody id="ideasTableBody"></tbody>
+                      </table>
+                </div>
+          </div>
+
+          <div id="adminPanelReports" class="admin-panel">
+                <div class="admin-formcard">
+                      <h3>Raport nou</h3>
+                      <form id="reportForm" novalidate>
+                            <div class="admin-form-grid">
+                                  <label>Titlu<input type="text" id="reportTitle" required></label>
+                                  <label>Data raportului<input type="date" id="reportDate" required></label>
+                                  <label>Limba
+                                        <select id="reportLang">
+                                              <option value="ro">Romana</option>
+                                              <option value="en">Engleza</option>
+                                              <option value="ru">Rusa</option>
+                                              <option value="uk">Ucraineana</option>
+                                              <option value="pl">Poloneza</option>
+                                        </select>
+                                  </label>
+                                  <label>Fisier PDF<input type="file" id="reportFile" accept="application/pdf" required></label>
+                                  <label class="admin-checkbox"><input type="checkbox" id="reportPublished"> Publicat</label>
+                            </div>
+                            <button type="submit" class="admin-btn" id="reportSubmitButton">Incarca raport</button>
+                      </form>
+                      <p class="admin-message" id="reportFormMessage" role="status" aria-live="polite"></p>
+                </div>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="reportsTable">
+                            <thead><tr><th>Titlu</th><th>Data</th><th>Limba</th><th>Publicat</th><th>Actiuni</th></tr></thead>
+                            <tbody id="reportsTableBody"></tbody>
+                      </table>
+                </div>
+          </div>
+
+          <div id="adminPanelSubs" class="admin-panel">
+                <p class="admin-summary">Rol "member" + status "active" + data expirare in viitor = acces la idei si rapoarte.</p>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="subsTable">
+                            <thead><tr><th>Email</th><th>ID Membru</th><th>Rol</th><th>Status abonament</th><th>Expira la</th><th>Actiuni</th></tr></thead>
+                            <tbody id="subsTableBody"></tbody>
+                      </table>
                 </div>
           </div>
       </div>
-  
+
     <script src="admin.js"></script>
   </body>
 </html>
-    
