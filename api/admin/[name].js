@@ -13,6 +13,7 @@
 
 import { requireAdmin } from '../_lib/require-admin.js';
 import { getSupabaseAdmin } from '../_lib/supabase.js';
+import { listSubscribersForAdmin } from '../_lib/newsletter.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '20mb' } } };
 
@@ -27,6 +28,7 @@ export default async function handler(req, res) {
   if (name === 'ideas') return handleIdeas(req, res);
   if (name === 'reports') return handleReports(req, res);
   if (name === 'subscriptions') return handleSubscriptions(req, res);
+  if (name === 'newsletter') return handleNewsletter(req, res);
 
   return res.status(404).json({ error: 'Not found' });
 }
@@ -375,6 +377,32 @@ async function handleSubscriptions(req, res) {
 
     res.setHeader('Allow', 'GET, PATCH');
     return res.status(405).json({ error: 'Method not allowed' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Server error: ' + err.message });
+  }
+}
+
+// Rubrica "Abonati" - lista PERMANENTA de abonati la notificari prin email
+// (rapoarte/update-uri), distincta de abonamentul premium (handleSubscriptions
+// de mai sus, rolurile free/member/admin). Doar citire (GET) - niciun admin nu
+// poate modifica manual acest tabel din aplicatie. Foloseste exclusiv
+// getSupabaseAdmin() (service_role, vezi api/_lib/newsletter.js) pentru ca
+// public.newsletter_subscribers nu acorda niciun privilegiu SQL sau RLS
+// rolului authenticated - access.client (tokenul admin-ului) nu ar putea citi
+// nimic din acest tabel. requireAdmin() ramane insa singura poarta care
+// decide DACA cererea are voie sa ajunga aici.
+async function handleNewsletter(req, res) {
+  const access = await requireAdmin(req, res);
+  if (!access) return;
+
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const subscribers = await listSubscribersForAdmin();
+    return res.status(200).json({ success: true, subscribers });
   } catch (err) {
     return res.status(500).json({ error: 'Server error: ' + err.message });
   }
