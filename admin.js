@@ -416,6 +416,46 @@ function adminSaveSub(userId, role, status, expiresAt) {
     .catch(function () {});
 }
 
+/* ==================== Abonati (notificari email) ====================
+   Lista PERMANENTA de abonati la notificari prin email (rapoarte/update-uri),
+   distincta de "Abonamente" (rolul premium free/member/admin) de mai sus -
+   citita read-only din public.newsletter_subscribers prin
+   /api/admin/newsletter. Nu se afiseaza niciodata hash-ul tokenului de
+   dezabonare, doar coloanele necesare unei liste de vizualizare. */
+
+function adminRenderNewsletter(subscribers) {
+  var body = document.getElementById("newsletterTableBody");
+  if (!subscribers.length) {
+    body.innerHTML = "<tr><td colspan=\"5\" class=\"admin-empty\">Niciun abonat încă.</td></tr>";
+    return;
+  }
+  body.innerHTML = subscribers.map(function (s) {
+    var subscribedAt = s.subscribed_at ? new Date(s.subscribed_at).toLocaleString("ro-RO") : "-";
+    var unsubscribedAt = s.unsubscribed_at ? new Date(s.unsubscribed_at).toLocaleString("ro-RO") : "-";
+    return "<tr>" +
+      "<td>" + (s.email || "-") + "</td>" +
+      "<td>" + (s.lang || "-").toUpperCase() + "</td>" +
+      "<td>" + (s.status || "-") + "</td>" +
+      "<td>" + subscribedAt + "</td>" +
+      "<td>" + unsubscribedAt + "</td>" +
+    "</tr>";
+  }).join("");
+}
+
+function adminLoadNewsletter(token) {
+  fetch("/api/admin/newsletter", { headers: { Authorization: "Bearer " + token } })
+    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
+    .then(function (res) {
+      if (res.ok && res.data && res.data.success) {
+        adminRenderNewsletter(res.data.subscribers || []);
+      } else if (res.status === 403) {
+        adminSetMessage("Acest cont nu are drepturi de administrator.", "error");
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+      }
+    })
+    .catch(function () {});
+}
+
 /* ==================== Panou + taburi ==================== */
 
 function adminShowPanel(token) {
@@ -442,6 +482,7 @@ function adminSwitchTab(name) {
   else if (name === "ideas") adminLoadIdeas(token);
   else if (name === "reports") adminLoadReports(token);
   else if (name === "subs") adminLoadSubs(token);
+  else if (name === "newsletter") adminLoadNewsletter(token);
 }
 
 function adminInitTabs() {

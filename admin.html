@@ -68,6 +68,7 @@
                 <button type="button" class="admin-tab" data-tab="ideas">Idei</button>
                 <button type="button" class="admin-tab" data-tab="reports">Rapoarte</button>
                 <button type="button" class="admin-tab" data-tab="subs">Abonamente</button>
+                <button type="button" class="admin-tab" data-tab="newsletter">Abonati</button>
           </div>
 
           <div id="adminPanelDownloads" class="admin-panel is-active">
@@ -160,6 +161,16 @@
                       <table class="admin-table" id="subsTable">
                             <thead><tr><th>Email</th><th>ID Membru</th><th>Rol</th><th>Status abonament</th><th>Expira la</th><th>Actiuni</th></tr></thead>
                             <tbody id="subsTableBody"></tbody>
+                      </table>
+                </div>
+          </div>
+
+          <div id="adminPanelNewsletter" class="admin-panel">
+                <p class="admin-summary">Lista permanenta de abonati la notificari prin email (rapoarte/update-uri) - separata de abonamentul premium de mai sus.</p>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="newsletterTable">
+                            <thead><tr><th>Email</th><th>Limba</th><th>Status</th><th>Data abonarii</th><th>Data dezabonarii</th></tr></thead>
+                            <tbody id="newsletterTableBody"></tbody>
                       </table>
                 </div>
           </div>
