@@ -75,6 +75,8 @@ const HERO_VIDEOS = { ro: "assets/tsb-promo-ro.mp4", en: "assets/tsb-promo-en.mp
 const LANG_VIDEOS = [
   { videoId: "heroVideo", sourceId: "heroVideoSource", map: HERO_VIDEOS },
 ];
+
+const SUBSCRIBE_BANNERS = { ro: "assets/subscribe-banner.jpg", en: "assets/subscribe-banner-en.jpg", ru: "assets/subscribe-banner-ru.jpg", uk: "assets/subscribe-banner-uk.jpg", pl: "assets/subscribe-banner-pl.jpg" };
 const SUPPORTED_LANGS = Object.keys(FLAGS);
 let currentLang = "ro";
 
@@ -2173,6 +2175,12 @@ function applyLanguage(lang) {
     videoEl.load();
     if (wasPlaying) videoEl.play().catch(() => {});
   });
+
+  const subscribeBannerImg = document.getElementById("subscribeBannerImg");
+  const subscribeBannerSrc = SUBSCRIBE_BANNERS[lang];
+  if (subscribeBannerImg && subscribeBannerSrc && !subscribeBannerImg.getAttribute("src").endsWith(subscribeBannerSrc)) {
+    subscribeBannerImg.setAttribute("src", subscribeBannerSrc);
+  }
 
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const val = getNested(dict, el.getAttribute("data-i18n"));
