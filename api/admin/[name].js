@@ -295,12 +295,34 @@ async function handleSubscriptions(req, res) {
         .from('profiles')
         .select('id, email, member_id, role, created_at')
         .order('created_at', { ascending: false });
-      if (pErr) return res.status(500).json({ error: pErr.message });
+      if (pErr) {
+        // Jurnalizare controlata, doar campurile de diagnostic ale erorii
+        // Postgres/PostgREST - niciodata tokenul, cheia, headerele, obiectul
+        // client sau date personale (email etc.) si niciodata raspunsul
+        // brut nefiltrat.
+        console.error('[admin/subscriptions] eroare citire profiles:', {
+          message: pErr.message,
+          code: pErr.code,
+          details: pErr.details,
+          hint: pErr.hint,
+          status: pErr.status
+        });
+        return res.status(500).json({ error: pErr.message });
+      }
 
       const { data: subs, error: sErr } = await admin
         .from('subscriptions')
         .select('user_id, status, expires_at, provider_customer_id');
-      if (sErr) return res.status(500).json({ error: sErr.message });
+      if (sErr) {
+        console.error('[admin/subscriptions] eroare citire subscriptions:', {
+          message: sErr.message,
+          code: sErr.code,
+          details: sErr.details,
+          hint: sErr.hint,
+          status: sErr.status
+        });
+        return res.status(500).json({ error: sErr.message });
+      }
 
       const subsByUser = {};
       (subs || []).forEach((s) => {
