@@ -362,11 +362,20 @@
         }
       }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initUnsubscribePage);
-      } else {
+      // Acest bloc de script e ultimul element din body, deci tot HTML-ul de
+      // mai sus (inclusiv unsubscribeBox si cele 4 stari) e deja parsat si
+      // disponibil in DOM in momentul in care ajungem aici - rulam direct,
+      // fara sa mai astepte DOMContentLoaded. Pastram totusi un listener de
+      // rezerva (cu flag anti-dublare) pentru siguranta, in caz ca ordinea
+      // reala de incarcare difera fata de cea asteptata.
+      var unsubscribeInitRan = false;
+      function initUnsubscribePageOnce() {
+        if (unsubscribeInitRan) return;
+        unsubscribeInitRan = true;
         initUnsubscribePage();
       }
+      initUnsubscribePageOnce();
+      document.addEventListener('DOMContentLoaded', initUnsubscribePageOnce);
     })();
   </script>
 </body>
