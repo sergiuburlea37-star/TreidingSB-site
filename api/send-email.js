@@ -1,19 +1,40 @@
 // api/send-email.js
 // Functie serverless Vercel — trimite emailuri prin Resend
-// Suporta 4 limbi: ro (implicit), en, ru, pl — parametrul "lang"
+// Suporta 5 limbi: ro (implicit), en, ru, uk, pl — parametrul "lang"
 // Cheia API este citita din Environment Variable (RESEND_API_KEY), NU din cod.
+//
+// Acelasi endpoint gestioneaza si lista permanenta de abonati la notificari
+// (public.newsletter_subscribers, vezi api/_lib/newsletter.js):
+//   - la orice trimitere normala (welcome/report/update) catre o adresa,
+//     abonatul e creat sau reactivat automat si primeste un link de
+//     dezabonare valabil in footer-ul emailului (best-effort - o eroare aici
+//     nu opreste niciodata trimiterea efectiva a emailului);
+//   - cu { action: "unsubscribe", token } primeste cererea de dezabonare
+//     trimisa din pagina publica unsubscribe.html.
+// Cheia service-role folosita pentru persistenta abonatilor nu este niciodata
+// expusa in frontend, raspunsuri sau loguri - vezi api/_lib/supabase.js si
+// api/_lib/newsletter.js.
 
 import { personalizeReportPdf } from './_lib/personalize-report.js';
+import {
+  upsertSubscriberAndIssueToken,
+  markUnsubscribedByTokenHash,
+  hashUnsubscribeToken,
+  isValidTokenFormat
+} from './_lib/newsletter.js';
 
 // ---------- Rate limiting simplu (in-memory, per instanta) ----------
 // Endpoint-ul e public (oricine poate trimite email catre orice adresa prin
-// formularul de abonare), deci fara limitare putea fi folosit ca releu de spam.
-// Nu e un rate-limiter distribuit — se reseteaza la fiecare cold start si nu e
-// partajat intre instante/regiuni Vercel — dar opreste rafalele simple de pe
-// aceeasi conexiune. Pentru protectie robusta pe termen lung, urmatorul pas ar
-// fi Vercel KV / Upstash Redis.
+// formularul de abonare, sau poate incerca dezabonari), deci fara limitare
+// putea fi folosit ca releu de spam sau pentru brute-force pe tokenul de
+// dezabonare. Nu e un rate-limiter distribuit — se reseteaza la fiecare cold
+// start si nu e partajat intre instante/regiuni Vercel — dar opreste
+// rafalele simple de pe aceeasi conexiune. Cheile sunt namespace-uite pe
+// actiune ("send:<ip>" / "unsub:<ip>") ca abonarea si dezabonarea sa aiba
+// fiecare propria limita, independenta una de cealalta. Pentru protectie
+// robusta pe termen lung, urmatorul pas ar fi Vercel KV / Upstash Redis.
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minute
-const RATE_LIMIT_MAX = 5; // max 5 cereri / IP / fereastra
+const RATE_LIMIT_MAX = 5; // max 5 cereri / cheie (actiune+IP) / fereastra
 const rateLimitStore = new Map();
 
 function getClientIp(req) {
@@ -24,12 +45,12 @@ function getClientIp(req) {
   return (req.socket && req.socket.remoteAddress) || 'unknown';
 }
 
-function isRateLimited(ip) {
+function isRateLimited(key) {
   const now = Date.now();
-  const entry = rateLimitStore.get(ip);
+  const entry = rateLimitStore.get(key);
 
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    rateLimitStore.set(ip, { windowStart: now, count: 1 });
+    rateLimitStore.set(key, { windowStart: now, count: 1 });
     return false;
   }
 
@@ -41,14 +62,14 @@ function isRateLimited(ip) {
 // instanta warm de lunga durata.
 function cleanupRateLimitStore() {
   const now = Date.now();
-  for (const [ip, entry] of rateLimitStore.entries()) {
+  for (const [key, entry] of rateLimitStore.entries()) {
     if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-      rateLimitStore.delete(ip);
+      rateLimitStore.delete(key);
     }
   }
 }
 
-// ---------- Texte in cele 4 limbi ----------
+// ---------- Texte in cele 5 limbi ----------
 const i18n = {
   ro: {
     welcomeSubject: 'Bine ai venit la TreidingSB!',
@@ -66,7 +87,8 @@ const i18n = {
     btnUpdate: 'Vezi ce e nou',
     btnSite: 'Viziteaza site-ul',
     btnReport: 'Citeste raportul',
-    disclaimer: 'TreidingSB &middot; Analiza educationala &middot; Nu constituie sfat de investitii'
+    disclaimer: 'TreidingSB &middot; Analiza educationala &middot; Nu constituie sfat de investitii',
+    unsubscribeLinkText: 'Dezaboneaza-te'
   },
   en: {
     welcomeSubject: 'Welcome to TreidingSB!',
@@ -84,7 +106,8 @@ const i18n = {
     btnUpdate: 'See what is new',
     btnSite: 'Visit the website',
     btnReport: 'Read the report',
-    disclaimer: 'TreidingSB &middot; Educational analysis &middot; Not investment advice'
+    disclaimer: 'TreidingSB &middot; Educational analysis &middot; Not investment advice',
+    unsubscribeLinkText: 'Unsubscribe'
   },
   ru: {
     welcomeSubject: 'Добро пожаловать в TreidingSB!',
@@ -102,7 +125,27 @@ const i18n = {
     btnUpdate: 'Посмотреть новинки',
     btnSite: 'Перейти на сайт',
     btnReport: 'Читать отчёт',
-    disclaimer: 'TreidingSB &middot; Образовательная аналитика &middot; Не является инвестиционной рекомендацией'
+    disclaimer: 'TreidingSB &middot; Образовательная аналитика &middot; Не является инвестиционной рекомендацией',
+    unsubscribeLinkText: 'Отписаться'
+  },
+  uk: {
+    welcomeSubject: 'Ласкаво просимо до TreidingSB!',
+    welcomeTitle: (name) => `Ласкаво просимо${name ? ', ' + name : ''}!`,
+    welcomeText1: 'Ви успішно підписалися на TreidingSB.',
+    welcomeText2: 'Ви отримуватимете аналітику та звіти по XAU/USD, XAG/USD, EUR/USD та GBP/USD на основі методології Smart Money Concepts.',
+    reportSubject: 'Новий звіт доступний на TreidingSB',
+    reportTitle: 'Доступний новий звіт!',
+    reportText: 'Новий аналітичний звіт опубліковано на сайті, у розділі «Звіти». Він доданий до цього листа у форматі PDF.',
+    reportTextNoAttachment: 'Новий аналітичний звіт опубліковано на сайті, у розділі «Звіти».',
+    updateSubject: 'TreidingSB оновлено - нові розділи для вас',
+    updateTitle: 'Сайт TreidingSB оновлено!',
+    updateText1: 'Ми додали нові розділи на сайт для вашої зручності.',
+    updateText2: 'Дізнайтеся, що нового, та ознайомтеся з оновленим сайтом, включно з новим Особистим кабінетом.',
+    btnUpdate: 'Переглянути новини',
+    btnSite: 'Відвідати сайт',
+    btnReport: 'Читати звіт',
+    disclaimer: 'TreidingSB &middot; Освітня аналітика &middot; Не є інвестиційною порадою',
+    unsubscribeLinkText: 'Відписатися'
   },
   pl: {
     welcomeSubject: 'Witamy w TreidingSB!',
@@ -120,12 +163,13 @@ const i18n = {
     btnUpdate: 'Zobacz co nowego',
     btnSite: 'Odwiedz strone',
     btnReport: 'Przeczytaj raport',
-    disclaimer: 'TreidingSB &middot; Analiza edukacyjna &middot; To nie jest porada inwestycyjna'
+    disclaimer: 'TreidingSB &middot; Analiza edukacyjna &middot; To nie jest porada inwestycyjna',
+    unsubscribeLinkText: 'Wypisz sie'
   }
 };
 
 // ---------- Constructor HTML comun (logo + buton + disclaimer) ----------
-function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer) {
+function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer, unsubscribeHtml) {
   const paras = paragraphs.map(p => `
       <p style="margin:0 0 18px 0;font-size:18px;line-height:1.6;color:#E6E6E6;">
         ${p}
@@ -179,6 +223,7 @@ function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer) {
                    line-height:1.6;">
           ${disclaimer}<br>
           <strong>TreidingSB AI</strong> &middot; AI Trading Intelligence
+          ${unsubscribeHtml ? `<br>${unsubscribeHtml}` : ''}
         </td>
       </tr>
 
@@ -240,28 +285,68 @@ async function fetchLatestReportAttachment(lang, email) {
   }
 }
 
-export default async function handler(req, res) {
-  // Acceptam doar cereri POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
+// ---------- Dezabonare ----------
+// Primeste { action: "unsubscribe", token } din pagina publica
+// unsubscribe.html. Raspunsul nu contine niciodata tokenul sau emailul
+// asociat, iar erorile nu sunt niciodata jurnalizate cu detalii sensibile -
+// doar succes/esec generic, exact cat ii trebuie paginii sa afiseze una din
+// cele 3 stari (succes / link invalid ori expirat / eroare temporara).
+async function handleUnsubscribe(req, res, body) {
+  const clientIp = getClientIp(req);
+  if (isRateLimited(`unsub:${clientIp}`)) {
+    return res.status(429).json({ success: false, reason: 'rate_limited' });
   }
 
-  // Rate limiting: max RATE_LIMIT_MAX cereri per IP la fiecare RATE_LIMIT_WINDOW_MS
+  const { token } = body;
+  if (!isValidTokenFormat(token)) {
+    return res.status(400).json({ success: false, reason: 'invalid' });
+  }
+
+  try {
+    const tokenHash = hashUnsubscribeToken(token);
+    const unsubscribed = await markUnsubscribedByTokenHash(tokenHash);
+    if (!unsubscribed) {
+      return res.status(404).json({ success: false, reason: 'invalid' });
+    }
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ success: false, reason: 'error' });
+  }
+}
+
+// ---------- Trimitere email (welcome / report / update) ----------
+async function handleSend(req, res, body) {
   const clientIp = getClientIp(req);
-  if (isRateLimited(clientIp)) {
+  if (isRateLimited(`send:${clientIp}`)) {
     return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
-  if (Math.random() < 0.02) cleanupRateLimitStore();
 
-  const { to, type, name, lang } = req.body || {};
+  const { to, type, name, lang } = body;
 
   // Validare simpla a adresei de email
   if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
     return res.status(400).json({ error: 'Missing or invalid email address.' });
   }
 
-  // Limba: ro / en / ru / pl — implicit ro
+  // Limba: ro / en / ru / uk / pl — implicit ro
   const t = i18n[lang] || i18n.ro;
+
+  // Lista permanenta de abonati (best-effort): creeaza sau reactiveaza
+  // abonatul si emite un token nou de dezabonare pentru linkul din acest
+  // email. O eroare aici (Supabase indisponibil, configurare lipsa etc.) NU
+  // trebuie sa opreasca trimiterea efectiva a emailului - notificarile
+  // existente raman functionale indiferent de starea persistentei.
+  let unsubscribeUrl = null;
+  try {
+    const rawToken = await upsertSubscriberAndIssueToken({ email: to, lang });
+    unsubscribeUrl = `https://treidingsb.com/unsubscribe.html?token=${rawToken}`;
+  } catch (e) {
+    unsubscribeUrl = null;
+  }
+
+  const unsubscribeHtml = unsubscribeUrl
+    ? `<a href="${unsubscribeUrl}" style="color:#8C8C8C;text-decoration:underline;">${t.unsubscribeLinkText}</a>`
+    : '';
 
   // Template-uri predefinite (serverul decide continutul, nu vizitatorul)
   let subject, html;
@@ -276,7 +361,8 @@ export default async function handler(req, res) {
       [attachments ? t.reportText : t.reportTextNoAttachment],
       t.btnReport,
       'https://treidingsb.com',
-      t.disclaimer
+      t.disclaimer,
+      unsubscribeHtml
     );
   } else if (type === 'update') {
     subject = t.updateSubject;
@@ -285,7 +371,8 @@ export default async function handler(req, res) {
       [t.updateText1, t.updateText2],
       t.btnUpdate,
       'https://treidingsb.com/#account',
-      t.disclaimer
+      t.disclaimer,
+      unsubscribeHtml
     );
   } else {
     // implicit: welcome
@@ -295,7 +382,8 @@ export default async function handler(req, res) {
       [t.welcomeText1, t.welcomeText2],
       t.btnSite,
       'https://treidingsb.com',
-      t.disclaimer
+      t.disclaimer,
+      unsubscribeHtml
     );
   }
 
@@ -348,4 +436,21 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ error: 'Server error: ' + err.message });
   }
+}
+
+export default async function handler(req, res) {
+  // Acceptam doar cereri POST
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
+  }
+
+  if (Math.random() < 0.02) cleanupRateLimitStore();
+
+  const body = req.body || {};
+
+  if (body.action === 'unsubscribe') {
+    return handleUnsubscribe(req, res, body);
+  }
+
+  return handleSend(req, res, body);
 }
