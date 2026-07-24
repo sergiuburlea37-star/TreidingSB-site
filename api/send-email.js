@@ -7,8 +7,15 @@
 // (public.newsletter_subscribers, vezi api/_lib/newsletter.js):
 //   - la orice trimitere normala (welcome/report/update) catre o adresa,
 //     abonatul e creat sau reactivat automat si primeste un link de
-//     dezabonare valabil in footer-ul emailului (best-effort - o eroare aici
-//     nu opreste niciodata trimiterea efectiva a emailului);
+//     dezabonare valabil in footer-ul emailului. Persistenta abonatului
+//     ramane best-effort (o eroare Supabase aici nu opreste niciodata
+//     trimiterea efectiva a emailului) - dar daca persistenta REUSESTE (deci
+//     exista un token real, activ, in baza de date), originea folosita
+//     pentru linkul de dezabonare trebuie sa fie de incredere (vezi
+//     api/_lib/site-origin.js: doar variabile de sistem Vercel, niciodata
+//     headere de cerere); daca originea nu poate fi validata, trimiterea se
+//     opreste cu o eroare sigura, in loc sa iasa un email cu link gresit sau
+//     lipsa pentru un abonat deja activ;
 //   - cu { action: "unsubscribe", token } primeste cererea de dezabonare
 //     trimisa din pagina publica unsubscribe.html.
 // Cheia service-role folosita pentru persistenta abonatilor nu este niciodata
@@ -22,6 +29,7 @@ import {
   hashUnsubscribeToken,
   isValidTokenFormat
 } from './_lib/newsletter.js';
+import { buildTrustedUnsubscribeUrl } from './_lib/site-origin.js';
 
 // ---------- Rate limiting simplu (in-memory, per instanta) ----------
 // Endpoint-ul e public (oricine poate trimite email catre orice adresa prin
@@ -336,12 +344,30 @@ async function handleSend(req, res, body) {
   // email. O eroare aici (Supabase indisponibil, configurare lipsa etc.) NU
   // trebuie sa opreasca trimiterea efectiva a emailului - notificarile
   // existente raman functionale indiferent de starea persistentei.
-  let unsubscribeUrl = null;
+  let rawSubscriberToken = null;
   try {
-    const rawToken = await upsertSubscriberAndIssueToken({ email: to, lang });
-    unsubscribeUrl = `https://treidingsb.com/unsubscribe.html?token=${rawToken}`;
+    rawSubscriberToken = await upsertSubscriberAndIssueToken({ email: to, lang });
   } catch (e) {
-    unsubscribeUrl = null;
+    rawSubscriberToken = null;
+  }
+
+  // Daca abonatul a fost persistat cu succes (exista un token real, activ,
+  // in baza de date), linkul de dezabonare TREBUIE sa foloseasca o origine de
+  // incredere (vezi api/_lib/site-origin.js - doar variabile de sistem
+  // Vercel, niciodata req.headers.host/origin/referer, care sunt
+  // controlabile de client). Daca originea nu poate fi determinata/validata
+  // in siguranta, nu trimitem deloc emailul, ca sa nu iasa o notificare cu
+  // link de dezabonare gresit sau lipsa pentru un abonat deja activ. Acest
+  // lucru e independent de persistenta best-effort de mai sus: daca
+  // persistenta insasi a esuat (rawSubscriberToken ramane null), nu exista
+  // niciun token de pus intr-un link, iar trimiterea emailului continua
+  // normal, fara link de dezabonare - comportament neschimbat.
+  let unsubscribeUrl = null;
+  if (rawSubscriberToken) {
+    unsubscribeUrl = buildTrustedUnsubscribeUrl(rawSubscriberToken);
+    if (!unsubscribeUrl) {
+      return res.status(500).json({ error: 'Server error: unable to determine a trusted link origin.' });
+    }
   }
 
   const unsubscribeHtml = unsubscribeUrl
