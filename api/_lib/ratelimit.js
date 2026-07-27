@@ -1,18 +1,44 @@
 // api/lib/ratelimit.js
-// Acelasi model simplu, in-memory per instanta, ca in api/send-email.js —
-// nu e distribuit, dar opreste rafalele simple pe aceeasi conexiune.
+// Rate limiting pe Upstash Redis (REST, acelasi client ca in _lib/store.js) -
+// partajat intre toate instantele/regiunile Vercel, spre deosebire de un Map
+// in memorie care se reseteaza la fiecare cold start si nu e vazut de alte
+// instante. Fereastra e fixa: o cheie "ratelimit:<namespace>:<ip>" cu INCR +
+// expirare setata o singura data, la primul hit din fereastra.
+// Daca Redis nu e configurat sau raspunde cu eroare, esuam deschis (nu
+// blocam cererea) - rate limiting-ul e o masura suplimentara, nu singura
+// aparare (parola/tokenul tot trebuie sa fie corecte).
 
-export function createRateLimiter({ windowMs, max }) {
-  const store = new Map();
-  return function isRateLimited(ip) {
-    const now = Date.now();
-    const entry = store.get(ip);
-    if (!entry || now - entry.windowStart > windowMs) {
-      store.set(ip, { windowStart: now, count: 1 });
+import { Redis } from '@upstash/redis';
+
+let redisClient;
+
+function getRedis() {
+  if (!redisClient) {
+    const url = process.env.KV_REST_API_URL;
+    const token = process.env.KV_REST_API_TOKEN;
+    if (!url || !token) return null;
+    redisClient = new Redis({ url, token });
+  }
+  return redisClient;
+}
+
+export function createRateLimiter({ windowMs, max, namespace }) {
+  const windowSec = Math.ceil(windowMs / 1000);
+
+  return async function isRateLimited(ip) {
+    const redis = getRedis();
+    if (!redis) return false;
+
+    const key = `ratelimit:${namespace}:${ip}`;
+    try {
+      const count = await redis.incr(key);
+      if (count === 1) {
+        await redis.expire(key, windowSec);
+      }
+      return count > max;
+    } catch (e) {
       return false;
     }
-    entry.count += 1;
-    return entry.count > max;
   };
 }
 

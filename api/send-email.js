@@ -30,53 +30,17 @@ import {
   isValidTokenFormat
 } from './_lib/newsletter.js';
 import { buildTrustedUnsubscribeUrl } from './_lib/site-origin.js';
+import { createRateLimiter, getClientIp } from './_lib/ratelimit.js';
 import { getSupabaseAdmin } from './_lib/supabase.js';
 
-// ---------- Rate limiting simplu (in-memory, per instanta) ----------
+// ---------- Rate limiting (Upstash Redis, partajat intre instante) ----------
 // Endpoint-ul e public (oricine poate trimite email catre orice adresa prin
 // formularul de abonare, sau poate incerca dezabonari), deci fara limitare
 // putea fi folosit ca releu de spam sau pentru brute-force pe tokenul de
-// dezabonare. Nu e un rate-limiter distribuit — se reseteaza la fiecare cold
-// start si nu e partajat intre instante/regiuni Vercel — dar opreste
-// rafalele simple de pe aceeasi conexiune. Cheile sunt namespace-uite pe
-// actiune ("send:<ip>" / "unsub:<ip>") ca abonarea si dezabonarea sa aiba
-// fiecare propria limita, independenta una de cealalta. Pentru protectie
-// robusta pe termen lung, urmatorul pas ar fi Vercel KV / Upstash Redis.
-const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minute
-const RATE_LIMIT_MAX = 5; // max 5 cereri / cheie (actiune+IP) / fereastra
-const rateLimitStore = new Map();
-
-function getClientIp(req) {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-  return (req.socket && req.socket.remoteAddress) || 'unknown';
-}
-
-function isRateLimited(key) {
-  const now = Date.now();
-  const entry = rateLimitStore.get(key);
-
-  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    rateLimitStore.set(key, { windowStart: now, count: 1 });
-    return false;
-  }
-
-  entry.count += 1;
-  return entry.count > RATE_LIMIT_MAX;
-}
-
-// Curata periodic intrarile vechi ca Map-ul sa nu creasca la nesfarsit intr-o
-// instanta warm de lunga durata.
-function cleanupRateLimitStore() {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-      rateLimitStore.delete(key);
-    }
-  }
-}
+// dezabonare. Abonarea si dezabonarea au namespace-uri separate, ca sa aiba
+// fiecare propria limita, independenta una de cealalta.
+const isSendRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5, namespace: 'send' });
+const isUnsubRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5, namespace: 'unsub' });
 
 // ---------- Texte in cele 5 limbi ----------
 const i18n = {
@@ -313,7 +277,7 @@ async function fetchLatestReportAttachment(lang, email) {
 // cele 3 stari (succes / link invalid ori expirat / eroare temporara).
 async function handleUnsubscribe(req, res, body) {
   const clientIp = getClientIp(req);
-  if (isRateLimited(`unsub:${clientIp}`)) {
+  if (await isUnsubRateLimited(clientIp)) {
     return res.status(429).json({ success: false, reason: 'rate_limited' });
   }
 
@@ -337,7 +301,7 @@ async function handleUnsubscribe(req, res, body) {
 // ---------- Trimitere email (welcome / report / update) ----------
 async function handleSend(req, res, body) {
   const clientIp = getClientIp(req);
-  if (isRateLimited(`send:${clientIp}`)) {
+  if (await isSendRateLimited(clientIp)) {
     return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
 
@@ -481,8 +445,6 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
-
-  if (Math.random() < 0.02) cleanupRateLimitStore();
 
   const body = req.body || {};
 
