@@ -7,7 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 import { getSupabaseAdmin } from './_lib/supabase.js';
 import { createRateLimiter, getClientIp } from './_lib/ratelimit.js';
 
-const isRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 10 });
+const isRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 10, namespace: 'login' });
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
           return res.status(405).json({ error: 'Method not allowed' });
     }
 
-  if (isRateLimited(getClientIp(req))) {
+  if (await isRateLimited(getClientIp(req))) {
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
 

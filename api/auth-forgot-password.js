@@ -12,7 +12,7 @@ import { sendPasswordResetEmail } from './_lib/mailer.js';
 import { createRateLimiter, getClientIp } from './_lib/ratelimit.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const isRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5 });
+const isRateLimited = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5, namespace: 'forgot-password' });
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
           return res.status(405).json({ error: 'Method not allowed' });
     }
 
-  if (isRateLimited(getClientIp(req))) {
+  if (await isRateLimited(getClientIp(req))) {
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
 
