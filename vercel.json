@@ -14,5 +14,8 @@
         }
       ]
     }
+  ],
+  "crons": [
+    { "path": "/api/cron-check-reports", "schedule": "0 20 * * 1" }
   ]
 }

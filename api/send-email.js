@@ -31,6 +31,7 @@ import {
 } from './_lib/newsletter.js';
 import { buildTrustedUnsubscribeUrl } from './_lib/site-origin.js';
 import { createRateLimiter, getClientIp } from './_lib/ratelimit.js';
+import { getSupabaseAdmin } from './_lib/supabase.js';
 
 // ---------- Rate limiting (Upstash Redis, partajat intre instante) ----------
 // Endpoint-ul e public (oricine poate trimite email catre orice adresa prin
@@ -204,24 +205,35 @@ function buildHtml(title, paragraphs, btnText, btnUrl, disclaimer, unsubscribeHt
 }
 
 // ---------- Descarca ultimul raport PDF brut (best-effort) ----------
+// Sursa unica: tabelul public.reports + bucket-ul privat Supabase Storage
+// "reports-private" - aceeasi sursa din care citeste si /api/download-report
+// (butonul din Cabinet). Inainte exista o sursa separata (index.json dintr-un
+// repo public GitHub), care putea ramane neactualizata independent de ce era
+// publicat pe site - un admin care publica raportul doar din admin.html
+// (Supabase) nu actualiza si acel index, asa ca emailurile trimiteau
+// raportul vechi desi site-ul arata deja unul nou. Cu o singura sursa,
+// publicarea din admin.html actualizeaza automat ambele canale.
 async function fetchLatestReportRaw(lang) {
   try {
-    const idxRes = await fetch('https://raw.githubusercontent.com/sergiuburlea37-star/treidingsb-reports/main/reports/index.json');
-    if (!idxRes.ok) return null;
-    const idxData = await idxRes.json();
-    const latest = idxData && idxData.rapoarte && idxData.rapoarte[0];
-    if (!latest) return null;
+    const admin = getSupabaseAdmin();
+    const { data: report, error } = await admin
+      .from('reports')
+      .select('report_date, file_path')
+      .eq('lang', lang)
+      .eq('published', true)
+      .order('report_date', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error || !report) return null;
 
-    const relPath =
-      (latest.fisiere && (latest.fisiere[lang] || latest.fisiere.ro)) ||
-      latest.fisier;
-    if (!relPath) return null;
+    const { data: file, error: downloadErr } = await admin
+      .storage
+      .from('reports-private')
+      .download(report.file_path);
+    if (downloadErr || !file) return null;
 
-    const pdfRes = await fetch(`https://raw.githubusercontent.com/sergiuburlea37-star/treidingsb-reports/main/reports/${relPath}`);
-    if (!pdfRes.ok) return null;
-
-    const buf = Buffer.from(await pdfRes.arrayBuffer());
-    return { buf, reportDate: latest.data };
+    const buf = Buffer.from(await file.arrayBuffer());
+    return { buf, reportDate: report.report_date };
   } catch (e) {
     return null;
   }
