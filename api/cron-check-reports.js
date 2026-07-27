@@ -1,11 +1,21 @@
 // api/cron-check-reports.js
-// Declansat de Vercel Cron (vezi vercel.json, "crons") in fiecare luni
-// dimineata. Verifica daca exista deja, pentru fiecare limba, un raport
+// Declansat de Vercel Cron (vezi vercel.json, "crons") in fiecare luni la
+// 20:00 UTC. Verifica daca exista deja, pentru fiecare limba, un raport
 // publicat cu report_date = azi in public.reports (Supabase) - daca lipseste
 // macar una, trimite un email de alerta catre echipa, ca lipsa sa fie
 // observata imediat, nu abia cand intreaba un membru. Nu genereaza sau
 // publica niciun raport - continutul (analiza de piata) ramane intotdeauna
 // o decizie umana, facuta manual din admin.html.
+//
+// De ce 20:00 UTC si nu dimineata: raportul e generat automat de un GitHub
+// Action separat (repo treidingsb-reports, cron '0 6 * * 1'), dar GitHub nu
+// garanteaza ora exacta pentru rulari programate - in ultimele saptamani
+// Action-ul a pornit efectiv intre 13:22 si 17:17 UTC (intarziere de 7-11h
+// fata de ora programata), desi rateaza succes de fiecare data. Verificand
+// prea devreme (ex. 09:00 UTC) alerta ar declansa fals aproape in fiecare
+// saptamana, inainte ca raportul sa existe macar in sursa, necum sa fi fost
+// urcat manual in Supabase dupa aceea. 20:00 UTC lasa o marja de siguranta
+// dupa cea mai tarzie rulare observata pana acum.
 //
 // Protejat cu CRON_SECRET (daca e setat in Vercel): Vercel Cron trimite
 // automat header-ul Authorization: Bearer <CRON_SECRET> la fiecare apel
