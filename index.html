@@ -75,6 +75,19 @@
     </div>
   </div>
 
+  <svg class="icon-sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <symbol id="nav-icon-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5M6 10.2V19a1 1 0 0 0 1 1h3.5v-5h2.5v5H17a1 1 0 0 0 1-1v-8.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="nav-icon-about" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7.7" r="1" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="nav-icon-portfolios" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="11" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 8V6.3A1.8 1.8 0 0 1 10.3 4.5h3.4A1.8 1.8 0 0 1 15.5 6.3V8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 13h17" stroke="currentColor" stroke-width="1.8"/></symbol>
+      <symbol id="nav-icon-education" viewBox="0 0 24 24"><path d="M2.5 9.5 12 5l9.5 4.5-9.5 4.5-9.5-4.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M6.5 11.6v4.3c0 1.3 2.5 2.4 5.5 2.4s5.5-1.1 5.5-2.4v-4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M21 10v5.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="nav-icon-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5h17M8 3.3v3M16 3.3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7.5 13h2M11 13h2M14.5 13h2M7.5 16.2h2M11 16.2h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+      <symbol id="nav-icon-faq" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.6 9.4a2.4 2.4 0 1 1 3.4 2.2c-.9.5-1.2 1-1.2 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11.8" cy="16.3" r="1" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="nav-icon-contact" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="nav-icon-account" viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.8 19.2c1.4-3.1 4-4.7 7.2-4.7s5.8 1.6 7.2 4.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+
   <header class="site-header">
     <a class="brand" href="#home" aria-label="TreidingSB home">
       <img src="assets/logo.png" class="brand-logo" alt="TreidingSB logo">
@@ -100,20 +113,20 @@
     <button class="mobile-toggle" type="button" data-i18n-aria="mobileToggle" aria-label="Deschide meniul" aria-expanded="false"><span></span><span></span><span></span></button>
 
     <nav class="main-nav" aria-label="Navigație principală">
-      <a href="#home" class="active" data-i18n="nav.home">⌂ Home</a>
-      <a href="#about" data-i18n="nav.about">◎ Despre noi</a>
-      <div class="nav-dropdown" id="portfoliosDropdown"><button class="nav-link-btn nav-dropdown-btn" id="portfoliosBtn" type="button" aria-haspopup="true" aria-expanded="false"><span data-i18n="nav.portfolios">$ Portofolii</span><span class="dd-caret">▾</span></button><ul class="nav-dropdown-menu" id="portfoliosMenu" role="menu"><li role="none"><a href="#portfolio-us" role="menuitem" data-i18n="nav.portfolioUs">$ Portofoliu US</a></li><li role="none"><a href="#portfolio-eu" role="menuitem" data-i18n="nav.portfolioEu">€ Portofoliu EU</a></li></ul></div>
-      
-      
-      
-      <a href="#education" data-i18n="nav.education">◈ Educație</a>
-      <a href="#calendar" data-i18n="nav.calendar">▦ Calendar economic</a>
-      <a href="#faq" data-i18n="nav.faq">❓ FAQ</a>
-      <a href="#contact" data-i18n="nav.contact">✉ Contact</a>
-      
+      <a href="#home" class="active"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-home"></use></svg><span data-i18n="nav.home">Home</span></a>
+      <a href="#about"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-about"></use></svg><span data-i18n="nav.about">Despre noi</span></a>
+      <div class="nav-dropdown" id="portfoliosDropdown"><button class="nav-link-btn nav-dropdown-btn" id="portfoliosBtn" type="button" aria-haspopup="true" aria-expanded="false"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-portfolios"></use></svg><span data-i18n="nav.portfolios">Portofolii</span><span class="dd-caret">▾</span></button><ul class="nav-dropdown-menu" id="portfoliosMenu" role="menu"><li role="none"><a href="#portfolio-us" role="menuitem" data-i18n="nav.portfolioUs">$ Portofoliu US</a></li><li role="none"><a href="#portfolio-eu" role="menuitem" data-i18n="nav.portfolioEu">€ Portofoliu EU</a></li></ul></div>
+
+
+
+      <a href="#education"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-education"></use></svg><span data-i18n="nav.education">Educație</span></a>
+      <a href="#calendar"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-calendar"></use></svg><span data-i18n="nav.calendar">Calendar economic</span></a>
+      <a href="#faq"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-faq"></use></svg><span data-i18n="nav.faq">FAQ</span></a>
+      <a href="#contact"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-contact"></use></svg><span data-i18n="nav.contact">Contact</span></a>
+
     </nav>
 
-    <div class="nav-dropdown account-dropdown" id="accountDropdown"><button class="member-button nav-dropdown-btn" id="memberButton" type="button" aria-haspopup="true" aria-expanded="false"><span data-i18n="memberButton">♙ Contul meu</span><span class="dd-caret">▾</span></button><ul class="nav-dropdown-menu" id="accountMenu" role="menu"><li role="none"><a href="#account" id="navAccountLink" role="menuitem">👤 Cabinet</a></li></ul></div>
+    <div class="nav-dropdown account-dropdown" id="accountDropdown"><button class="member-button nav-dropdown-btn" id="memberButton" type="button" aria-haspopup="true" aria-expanded="false"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-account"></use></svg><span data-i18n="memberButton">Contul meu</span><span class="dd-caret">▾</span></button><ul class="nav-dropdown-menu" id="accountMenu" role="menu"><li role="none"><a href="#account" id="navAccountLink" role="menuitem"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#nav-icon-account"></use></svg><span>Cabinet</span></a></li></ul></div>
   </header>
 
   <main>
