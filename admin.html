@@ -69,6 +69,7 @@
                 <button type="button" class="admin-tab" data-tab="reports">Rapoarte</button>
                 <button type="button" class="admin-tab" data-tab="subs">Abonamente</button>
                 <button type="button" class="admin-tab" data-tab="newsletter">Abonati</button>
+                <button type="button" class="admin-tab" data-tab="portfolios">Portofolii</button>
           </div>
 
           <div id="adminPanelDownloads" class="admin-panel is-active">
@@ -171,6 +172,162 @@
                       <table class="admin-table" id="newsletterTable">
                             <thead><tr><th>Email</th><th>Limba</th><th>Status</th><th>Data abonarii</th><th>Data dezabonarii</th></tr></thead>
                             <tbody id="newsletterTableBody"></tbody>
+                      </table>
+                </div>
+          </div>
+
+          <div id="adminPanelPortfolios" class="admin-panel">
+                <p class="admin-summary">Doar administratorii pot crea/modifica/sterge date de portofoliu. Membrii activi vad datele exclusiv in Cabinet, doar citire (RLS). Vezi supabase/migrations/202607290001_member_portfolios.sql.</p>
+
+                <div class="admin-formcard">
+                      <h3>Portofoliu (metadate)</h3>
+                      <form id="portfolioForm" novalidate>
+                            <input type="hidden" id="portfolioId" value="">
+                            <div class="admin-form-grid">
+                                  <label>Cod<select id="portfolioCode"><option value="US">US</option><option value="EU">EU</option></select></label>
+                                  <label>Nume<input type="text" id="portfolioName" required></label>
+                                  <label>Moneda de baza<select id="portfolioBaseCurrency"><option value="GBP">GBP</option><option value="EUR">EUR</option><option value="USD">USD</option></select></label>
+                                  <label>Data fondarii<input type="date" id="portfolioFoundedDate"></label>
+                                  <label>Capital initial<input type="number" step="0.01" id="portfolioInitialCapital"></label>
+                                  <label>Randament tinta (text)<input type="text" id="portfolioTargetReturn"></label>
+                                  <label>Nivel risc<input type="text" id="portfolioRiskLevel"></label>
+                                  <label class="admin-checkbox"><input type="checkbox" id="portfolioPublished"> Publicat</label>
+                                  <label style="grid-column:1/-1">Descriere<textarea id="portfolioDescription"></textarea></label>
+                            </div>
+                            <button type="submit" class="admin-btn" id="portfolioSubmitButton">Salveaza portofoliu</button>
+                            <button type="button" class="admin-btn outline" id="portfolioCancelEdit" hidden>Anuleaza editarea</button>
+                      </form>
+                      <p class="admin-message" id="portfolioFormMessage" role="status" aria-live="polite"></p>
+                </div>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="portfoliosTable">
+                            <thead><tr><th>Cod</th><th>Nume</th><th>Moneda</th><th>Capital initial</th><th>Publicat</th><th>Actiuni</th></tr></thead>
+                            <tbody id="portfoliosTableBody"></tbody>
+                      </table>
+                </div>
+
+                <div class="admin-formcard">
+                      <h3>Pozitie noua</h3>
+                      <form id="positionForm" novalidate>
+                            <input type="hidden" id="positionId" value="">
+                            <div class="admin-form-grid">
+                                  <label>Portofoliu<select id="positionPortfolioCode"><option value="US">US</option><option value="EU">EU</option></select></label>
+                                  <label>Ticker<input type="text" id="positionTicker" required></label>
+                                  <label>Nume<input type="text" id="positionName" required></label>
+                                  <label>Categorie<input type="text" id="positionCategory" placeholder="ETF / Actiune"></label>
+                                  <label>Sector / Piata<input type="text" id="positionSector"></label>
+                                  <label>Moneda instrument<select id="positionCurrency"><option value="GBP">GBP</option><option value="EUR">EUR</option><option value="USD">USD</option><option value="CHF">CHF</option></select></label>
+                                  <label>Cantitate<input type="number" step="0.000001" id="positionQuantity"></label>
+                                  <label>Pret mediu<input type="number" step="0.0001" id="positionAvgPrice"></label>
+                                  <label>Pret curent<input type="number" step="0.0001" id="positionCurrentPrice"></label>
+                                  <label>Nivel risc<input type="text" id="positionRiskLevel" placeholder="low / med / high"></label>
+                                  <label>Eticheta grup<input type="text" id="positionGroupLabel"></label>
+                                  <label>Ordine<input type="number" id="positionSortOrder" value="0"></label>
+                                  <label class="admin-checkbox"><input type="checkbox" id="positionActive" checked> Activa</label>
+                            </div>
+                            <button type="submit" class="admin-btn" id="positionSubmitButton">Salveaza pozitia</button>
+                            <button type="button" class="admin-btn outline" id="positionCancelEdit" hidden>Anuleaza editarea</button>
+                      </form>
+                      <p class="admin-message" id="positionFormMessage" role="status" aria-live="polite"></p>
+                </div>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="positionsTable">
+                            <thead><tr><th>Portofoliu</th><th>Ticker</th><th>Cant.</th><th>Pret mediu</th><th>Pret curent</th><th>Activa</th><th>Actiuni</th></tr></thead>
+                            <tbody id="positionsTableBody"></tbody>
+                      </table>
+                </div>
+
+                <div class="admin-formcard">
+                      <h3>Tranzactie noua</h3>
+                      <form id="transactionForm" novalidate>
+                            <input type="hidden" id="transactionId" value="">
+                            <div class="admin-form-grid">
+                                  <label>Portofoliu<select id="transactionPortfolioCode"><option value="US">US</option><option value="EU">EU</option></select></label>
+                                  <label>Tip<select id="transactionType"><option value="BUY">BUY</option><option value="SELL">SELL</option><option value="FEE">FEE</option><option value="DEPOSIT">DEPOSIT</option><option value="WITHDRAWAL">WITHDRAWAL</option></select></label>
+                                  <label>Ticker<input type="text" id="transactionTicker"></label>
+                                  <label>Cantitate<input type="number" step="0.000001" id="transactionQuantity"></label>
+                                  <label>Pret<input type="number" step="0.0001" id="transactionPrice"></label>
+                                  <label>Suma<input type="number" step="0.01" id="transactionAmount" required></label>
+                                  <label>Comision<input type="number" step="0.01" id="transactionFee" value="0"></label>
+                                  <label>Moneda<select id="transactionCurrency"><option value="GBP">GBP</option><option value="EUR">EUR</option><option value="USD">USD</option><option value="CHF">CHF</option></select></label>
+                                  <label>Data executie<input type="datetime-local" id="transactionExecutedAt"></label>
+                                  <label style="grid-column:1/-1">Nota<input type="text" id="transactionNote"></label>
+                            </div>
+                            <button type="submit" class="admin-btn" id="transactionSubmitButton">Salveaza tranzactia</button>
+                      </form>
+                      <p class="admin-message" id="transactionFormMessage" role="status" aria-live="polite"></p>
+                </div>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="transactionsTable">
+                            <thead><tr><th>Portofoliu</th><th>Tip</th><th>Ticker</th><th>Suma</th><th>Data</th><th>Actiuni</th></tr></thead>
+                            <tbody id="transactionsTableBody"></tbody>
+                      </table>
+                </div>
+
+                <div class="admin-formcard">
+                      <h3>Dividend nou</h3>
+                      <form id="dividendForm" novalidate>
+                            <input type="hidden" id="dividendId" value="">
+                            <div class="admin-form-grid">
+                                  <label>Portofoliu<select id="dividendPortfolioCode"><option value="US">US</option><option value="EU">EU</option></select></label>
+                                  <label>Ticker<input type="text" id="dividendTicker" required></label>
+                                  <label>Suma<input type="number" step="0.01" id="dividendAmount" required></label>
+                                  <label>Moneda<select id="dividendCurrency"><option value="GBP">GBP</option><option value="EUR">EUR</option><option value="USD">USD</option><option value="CHF">CHF</option></select></label>
+                                  <label>Data ex-dividend<input type="date" id="dividendExDate"></label>
+                                  <label>Data plata<input type="date" id="dividendPayDate" required></label>
+                                  <label style="grid-column:1/-1">Nota<input type="text" id="dividendNote"></label>
+                            </div>
+                            <button type="submit" class="admin-btn" id="dividendSubmitButton">Salveaza dividendul</button>
+                      </form>
+                      <p class="admin-message" id="dividendFormMessage" role="status" aria-live="polite"></p>
+                </div>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="dividendsTable">
+                            <thead><tr><th>Portofoliu</th><th>Ticker</th><th>Suma</th><th>Data plata</th><th>Actiuni</th></tr></thead>
+                            <tbody id="dividendsTableBody"></tbody>
+                      </table>
+                </div>
+
+                <div class="admin-formcard">
+                      <h3>Instantaneu performanta (pt. graficul 1L/3L/1A/MAX)</h3>
+                      <form id="performanceForm" novalidate>
+                            <input type="hidden" id="performanceId" value="">
+                            <div class="admin-form-grid">
+                                  <label>Portofoliu<select id="performancePortfolioCode"><option value="US">US</option><option value="EU">EU</option></select></label>
+                                  <label>Data<input type="date" id="performanceAsOfDate" required></label>
+                                  <label>Valoare NAV<input type="number" step="0.01" id="performanceNav" required></label>
+                                  <label>Capital depus (net)<input type="number" step="0.01" id="performanceCapital" required></label>
+                                  <label>Randament cumulat %<input type="number" step="0.01" id="performanceReturnPct"></label>
+                                  <label>Moneda<select id="performanceCurrency"><option value="GBP">GBP</option><option value="EUR">EUR</option><option value="USD">USD</option></select></label>
+                            </div>
+                            <button type="submit" class="admin-btn" id="performanceSubmitButton">Salveaza instantaneul</button>
+                      </form>
+                      <p class="admin-message" id="performanceFormMessage" role="status" aria-live="polite"></p>
+                </div>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="performanceTable">
+                            <thead><tr><th>Portofoliu</th><th>Data</th><th>NAV</th><th>Capital depus</th><th>Randament %</th><th>Actiuni</th></tr></thead>
+                            <tbody id="performanceTableBody"></tbody>
+                      </table>
+                </div>
+
+                <div class="admin-formcard">
+                      <h3>Curs valutar (fx_rates) - intretinut manual pana la aprobarea unui furnizor live</h3>
+                      <form id="fxRateForm" novalidate>
+                            <div class="admin-form-grid">
+                                  <label>Din<select id="fxBaseCurrency"><option value="GBP">GBP</option><option value="EUR">EUR</option><option value="USD">USD</option><option value="CHF">CHF</option></select></label>
+                                  <label>In<select id="fxQuoteCurrency"><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="USD">USD</option><option value="CHF">CHF</option></select></label>
+                                  <label>Curs<input type="number" step="0.000001" id="fxRateValue" required></label>
+                                  <label>Data<input type="date" id="fxAsOfDate"></label>
+                            </div>
+                            <button type="submit" class="admin-btn" id="fxRateSubmitButton">Salveaza cursul</button>
+                      </form>
+                      <p class="admin-message" id="fxRateFormMessage" role="status" aria-live="polite"></p>
+                </div>
+                <div class="admin-table-wrap">
+                      <table class="admin-table" id="fxRatesTable">
+                            <thead><tr><th>Din</th><th>In</th><th>Curs</th><th>Data</th><th>Actiuni</th></tr></thead>
+                            <tbody id="fxRatesTableBody"></tbody>
                       </table>
                 </div>
           </div>

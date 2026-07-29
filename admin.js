@@ -458,6 +458,290 @@ function adminLoadNewsletter(token) {
 
 /* ==================== Panou + taburi ==================== */
 
+
+/* ==================== Portofolii (US/EU) ====================
+   Sectiune generica de CRUD, reutilizata pentru cele 6 sub-resurse noi
+   (portfolios, portfolio-positions, portfolio-transactions,
+   portfolio-dividends, portfolio-performance, fx-rates), toate expuse prin
+   acelasi api/admin/[name].js (handleCrudTable) - vezi acel fisier pt. detalii.
+   Evita 6 copii aproape identice ale tiparului deja folosit mai sus pentru
+   Idei/Rapoarte. */
+
+var ADMIN_PORTFOLIO_ID_BY_CODE = {};
+
+function adminLoadPortfolioIdMap(token, cb) {
+  fetch("/api/admin/portfolios", { headers: { Authorization: "Bearer " + token } })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      ADMIN_PORTFOLIO_ID_BY_CODE = {};
+      if (data && data.success) {
+        (data.rows || []).forEach(function (p) { ADMIN_PORTFOLIO_ID_BY_CODE[p.code] = p.id; });
+      }
+      if (cb) cb();
+    })
+    .catch(function () { if (cb) cb(); });
+}
+
+function adminCodeForPortfolioId(id) {
+  var codes = Object.keys(ADMIN_PORTFOLIO_ID_BY_CODE);
+  for (var i = 0; i < codes.length; i++) {
+    if (ADMIN_PORTFOLIO_ID_BY_CODE[codes[i]] === id) return codes[i];
+  }
+  return null;
+}
+
+function adminMakeCrudSection(opts) {
+  var editingId = null;
+
+  function readForm() {
+    var payload = {};
+    opts.fields.forEach(function (f) {
+      var el = document.getElementById(f.id);
+      if (!el) return;
+      var v;
+      if (f.type === "checkbox") v = el.checked;
+      else if (f.type === "number") v = el.value === "" ? null : Number(el.value);
+      else v = el.value;
+      payload[f.key] = v;
+    });
+    if (opts.portfolioCodeFieldId) {
+      var codeEl = document.getElementById(opts.portfolioCodeFieldId);
+      payload.portfolio_id = codeEl ? (ADMIN_PORTFOLIO_ID_BY_CODE[codeEl.value] || null) : null;
+    }
+    return payload;
+  }
+
+  function fillForm(row) {
+    editingId = row.id;
+    opts.fields.forEach(function (f) {
+      var el = document.getElementById(f.id);
+      if (!el) return;
+      var v = row[f.key];
+      if (f.type === "checkbox") el.checked = !!v;
+      else el.value = (v === null || v === undefined) ? "" : v;
+    });
+    if (opts.portfolioCodeFieldId && row.portfolio_id) {
+      var code = adminCodeForPortfolioId(row.portfolio_id);
+      var codeEl = document.getElementById(opts.portfolioCodeFieldId);
+      if (code && codeEl) codeEl.value = code;
+    }
+    if (opts.idFieldId) {
+      var idEl = document.getElementById(opts.idFieldId);
+      if (idEl) idEl.value = row.id;
+    }
+    if (opts.cancelBtnId) {
+      var cancelEl = document.getElementById(opts.cancelBtnId);
+      if (cancelEl) cancelEl.hidden = false;
+    }
+  }
+
+  function resetForm() {
+    editingId = null;
+    var form = document.getElementById(opts.formId);
+    if (form) form.reset();
+    if (opts.idFieldId) {
+      var idEl = document.getElementById(opts.idFieldId);
+      if (idEl) idEl.value = "";
+    }
+    if (opts.cancelBtnId) {
+      var cancelEl = document.getElementById(opts.cancelBtnId);
+      if (cancelEl) cancelEl.hidden = true;
+    }
+  }
+
+  function render(rows) {
+    var body = document.getElementById(opts.tableBodyId);
+    if (!body) return;
+    if (!rows.length) {
+      body.innerHTML = "<tr><td colspan=\"" + (opts.columns.length + 1) + "\" class=\"admin-empty\">Nicio înregistrare încă.</td></tr>";
+      return;
+    }
+    body.innerHTML = rows.map(function (row) {
+      var cells = opts.columns.map(function (c) {
+        var val = row[c.key];
+        if (c.key === "portfolio_id") val = adminCodeForPortfolioId(val) || "-";
+        else if (c.format) val = c.format(val);
+        return "<td>" + (val === null || val === undefined || val === "" ? "-" : val) + "</td>";
+      }).join("");
+      var actions = "<button type=\"button\" class=\"admin-btn small outline\" data-delete-row=\"" + row.id + "\">Șterge</button>";
+      if (opts.allowEdit !== false) {
+        actions = "<button type=\"button\" class=\"admin-btn small outline\" data-edit-row=\"" + row.id + "\">Editează</button>" + actions;
+      }
+      return "<tr>" + cells + "<td class=\"admin-row-actions\">" + actions + "</td></tr>";
+    }).join("");
+
+    if (opts.allowEdit !== false) {
+      Array.prototype.forEach.call(body.querySelectorAll("[data-edit-row]"), function (btn) {
+        btn.addEventListener("click", function () {
+          var row = rows.filter(function (r) { return String(r.id) === btn.getAttribute("data-edit-row"); })[0];
+          if (row) fillForm(row);
+        });
+      });
+    }
+    Array.prototype.forEach.call(body.querySelectorAll("[data-delete-row]"), function (btn) {
+      btn.addEventListener("click", function () {
+        if (!window.confirm("Ștergi definitiv această înregistrare?")) return;
+        var token = adminGetToken();
+        if (!token) return;
+        fetch("/api/admin/" + opts.apiName + "?id=" + encodeURIComponent(btn.getAttribute("data-delete-row")), {
+          method: "DELETE", headers: adminAuthHeaders(token)
+        })
+          .then(function (r) { return r.json(); })
+          .then(function () { load(token); })
+          .catch(function () { adminSetFormMessage(opts.formMessageId, "Ștergerea a eșuat.", "error"); });
+      });
+    });
+  }
+
+  function load(token) {
+    fetch("/api/admin/" + opts.apiName, { headers: { Authorization: "Bearer " + token } })
+      .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+      .then(function (res) {
+        if (res.ok && res.data && res.data.success) render(res.data.rows || []);
+        else adminSetFormMessage(opts.formMessageId, (res.data && res.data.error) || "Nu am putut încărca datele.", "error");
+      })
+      .catch(function () { adminSetFormMessage(opts.formMessageId, "A apărut o eroare de rețea.", "error"); });
+  }
+
+  function init() {
+    var form = document.getElementById(opts.formId);
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var token = adminGetToken();
+      if (!token) return;
+      var payload = readForm();
+      var isEdit = !!editingId;
+      if (isEdit) payload.id = editingId;
+      fetch("/api/admin/" + opts.apiName, {
+        method: isEdit ? "PATCH" : "POST",
+        headers: adminAuthHeaders(token),
+        body: JSON.stringify(payload)
+      })
+        .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+        .then(function (res) {
+          if (res.ok && res.data && res.data.success) {
+            adminSetFormMessage(opts.formMessageId, "Salvat.", "success");
+            resetForm();
+            load(token);
+          } else {
+            adminSetFormMessage(opts.formMessageId, (res.data && res.data.error) || "Salvarea a eșuat.", "error");
+          }
+        })
+        .catch(function () { adminSetFormMessage(opts.formMessageId, "A apărut o eroare de rețea.", "error"); });
+    });
+    if (opts.cancelBtnId) {
+      var cancelEl = document.getElementById(opts.cancelBtnId);
+      if (cancelEl) cancelEl.addEventListener("click", resetForm);
+    }
+  }
+
+  return { load: load, init: init };
+}
+
+var adminPortfoliosSection = adminMakeCrudSection({
+  apiName: "portfolios", formId: "portfolioForm", idFieldId: "portfolioId", cancelBtnId: "portfolioCancelEdit",
+  formMessageId: "portfolioFormMessage", tableBodyId: "portfoliosTableBody",
+  fields: [
+    { id: "portfolioCode", key: "code" }, { id: "portfolioName", key: "name" },
+    { id: "portfolioBaseCurrency", key: "base_currency" }, { id: "portfolioFoundedDate", key: "founded_date" },
+    { id: "portfolioInitialCapital", key: "initial_capital", type: "number" },
+    { id: "portfolioTargetReturn", key: "target_return_text" }, { id: "portfolioRiskLevel", key: "risk_level" },
+    { id: "portfolioPublished", key: "published", type: "checkbox" }, { id: "portfolioDescription", key: "description" }
+  ],
+  columns: [
+    { key: "code", label: "Cod" }, { key: "name" }, { key: "base_currency" },
+    { key: "initial_capital" }, { key: "published", format: function (v) { return v ? "Da" : "Nu"; } }
+  ]
+});
+
+var adminPositionsSection = adminMakeCrudSection({
+  apiName: "portfolio-positions", formId: "positionForm", idFieldId: "positionId", cancelBtnId: "positionCancelEdit",
+  formMessageId: "positionFormMessage", tableBodyId: "positionsTableBody", portfolioCodeFieldId: "positionPortfolioCode",
+  fields: [
+    { id: "positionTicker", key: "ticker" }, { id: "positionName", key: "name" },
+    { id: "positionCategory", key: "category" }, { id: "positionSector", key: "sector_or_market" },
+    { id: "positionCurrency", key: "instrument_currency" }, { id: "positionQuantity", key: "quantity", type: "number" },
+    { id: "positionAvgPrice", key: "avg_price", type: "number" }, { id: "positionCurrentPrice", key: "current_price", type: "number" },
+    { id: "positionRiskLevel", key: "risk_level" }, { id: "positionGroupLabel", key: "group_label" },
+    { id: "positionSortOrder", key: "sort_order", type: "number" }, { id: "positionActive", key: "active", type: "checkbox" }
+  ],
+  columns: [
+    { key: "portfolio_id", label: "Portofoliu" }, { key: "ticker" }, { key: "quantity" },
+    { key: "avg_price" }, { key: "current_price" }, { key: "active", format: function (v) { return v ? "Da" : "Nu"; } }
+  ]
+});
+
+var adminTransactionsSection = adminMakeCrudSection({
+  apiName: "portfolio-transactions", formId: "transactionForm", idFieldId: "transactionId",
+  formMessageId: "transactionFormMessage", tableBodyId: "transactionsTableBody", portfolioCodeFieldId: "transactionPortfolioCode",
+  fields: [
+    { id: "transactionType", key: "type" }, { id: "transactionTicker", key: "ticker" },
+    { id: "transactionQuantity", key: "quantity", type: "number" }, { id: "transactionPrice", key: "price", type: "number" },
+    { id: "transactionAmount", key: "amount", type: "number" }, { id: "transactionFee", key: "fee_amount", type: "number" },
+    { id: "transactionCurrency", key: "currency" }, { id: "transactionExecutedAt", key: "executed_at" },
+    { id: "transactionNote", key: "note" }
+  ],
+  columns: [
+    { key: "portfolio_id", label: "Portofoliu" }, { key: "type" }, { key: "ticker" }, { key: "amount" }, { key: "executed_at" }
+  ]
+});
+
+var adminDividendsSection = adminMakeCrudSection({
+  apiName: "portfolio-dividends", formId: "dividendForm", idFieldId: "dividendId",
+  formMessageId: "dividendFormMessage", tableBodyId: "dividendsTableBody", portfolioCodeFieldId: "dividendPortfolioCode",
+  fields: [
+    { id: "dividendTicker", key: "ticker" }, { id: "dividendAmount", key: "amount", type: "number" },
+    { id: "dividendCurrency", key: "currency" }, { id: "dividendExDate", key: "ex_date" },
+    { id: "dividendPayDate", key: "pay_date" }, { id: "dividendNote", key: "note" }
+  ],
+  columns: [{ key: "portfolio_id", label: "Portofoliu" }, { key: "ticker" }, { key: "amount" }, { key: "pay_date" }]
+});
+
+var adminPerformanceSection = adminMakeCrudSection({
+  apiName: "portfolio-performance", formId: "performanceForm", idFieldId: "performanceId",
+  formMessageId: "performanceFormMessage", tableBodyId: "performanceTableBody", portfolioCodeFieldId: "performancePortfolioCode",
+  fields: [
+    { id: "performanceAsOfDate", key: "as_of_date" }, { id: "performanceNav", key: "nav_value", type: "number" },
+    { id: "performanceCapital", key: "capital_contributed", type: "number" },
+    { id: "performanceReturnPct", key: "cumulative_return_pct", type: "number" }, { id: "performanceCurrency", key: "currency" }
+  ],
+  columns: [
+    { key: "portfolio_id", label: "Portofoliu" }, { key: "as_of_date" }, { key: "nav_value" },
+    { key: "capital_contributed" }, { key: "cumulative_return_pct" }
+  ]
+});
+
+var adminFxRatesSection = adminMakeCrudSection({
+  apiName: "fx-rates", formId: "fxRateForm", formMessageId: "fxRateFormMessage", tableBodyId: "fxRatesTableBody",
+  allowEdit: false,
+  fields: [
+    { id: "fxBaseCurrency", key: "base_currency" }, { id: "fxQuoteCurrency", key: "quote_currency" },
+    { id: "fxRateValue", key: "rate", type: "number" }, { id: "fxAsOfDate", key: "as_of_date" }
+  ],
+  columns: [{ key: "base_currency", label: "Din" }, { key: "quote_currency", label: "In" }, { key: "rate" }, { key: "as_of_date" }]
+});
+
+function adminLoadPortfolios(token) {
+  adminLoadPortfolioIdMap(token, function () {
+    adminPortfoliosSection.load(token);
+    adminPositionsSection.load(token);
+    adminTransactionsSection.load(token);
+    adminDividendsSection.load(token);
+    adminPerformanceSection.load(token);
+    adminFxRatesSection.load(token);
+  });
+}
+
+function adminInitPortfoliosForms() {
+  adminPortfoliosSection.init();
+  adminPositionsSection.init();
+  adminTransactionsSection.init();
+  adminDividendsSection.init();
+  adminPerformanceSection.init();
+  adminFxRatesSection.init();
+}
+
 function adminShowPanel(token) {
   var loginBox = document.getElementById("adminLoginBox");
   var tabs = document.getElementById("adminTabs");
@@ -483,6 +767,7 @@ function adminSwitchTab(name) {
   else if (name === "reports") adminLoadReports(token);
   else if (name === "subs") adminLoadSubs(token);
   else if (name === "newsletter") adminLoadNewsletter(token);
+  else if (name === "portfolios") adminLoadPortfolios(token);
 }
 
 function adminInitTabs() {
@@ -529,6 +814,7 @@ document.getElementById("adminLoginForm").addEventListener("submit", function (e
 adminInitTabs();
 adminInitIdeasForm();
 adminInitReportsForm();
+adminInitPortfoliosForms();
 
 (function initAdmin() {
   var token = null;
