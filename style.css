@@ -25,3 +25,7 @@
 .portfolio-disclaimer-small{margin:14px 0 0;font-size:11px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:12px}
 @media(max-width:700px){.portfolio-subgrid{grid-template-columns:1fr}.portfolio-chart-wrap{height:150px}}
 @media(max-width:480px){.portfolio-tabs{flex-direction:column}.portfolio-delayed-note{flex-direction:column;align-items:flex-start}.portfolio-interval-switch{width:100%;justify-content:space-between}}
+
+/* --- Cabinet personal in meniul mobil (link nou, doar mobil) --- */
+.main-nav a.nav-account-mobile{display:none}
+@media(max-width:900px){.main-nav a.nav-account-mobile{display:inline-flex}}
