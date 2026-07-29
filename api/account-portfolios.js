@@ -2,7 +2,7 @@
 // Returneaza portofoliile (US/EU) cu pozitii, tranzactii recente, dividende si
 // istoric de performanta - doar pentru membri cu abonament activ (sau admin).
 // Aceleasi coduri de eroare si acelasi tipar ca api/account-ideas.js:
-//   401 - fara sesiune valida
+//   401 - fara sesiune valida (token lipsa, invalid, expirat sau malformat)
 //   403 { requiresSubscription: true } - autentificat, dar fara abonament activ
 //   200 { success: true, portfolios: [...] } - altfel
 //
@@ -14,12 +14,28 @@
 //
 // Nu contine si nu poate contine cheia service_role - vezi api/_lib/supabase.js:
 // access.client foloseste doar anon key + Authorization: Bearer <tokenul userului>.
+//
+// Nota (2026-07-29): getAccessInfo() poate arunca o exceptie in loc sa
+// returneze { authenticated: false } atunci cand tokenul e sintactic invalid
+// / malformat (nu doar "lipsa" sau "expirat curat") - comportament mostenit
+// din libraria Supabase Auth la decodarea unui JWT care nu e nici macar
+// structurat corect. Fara try/catch in jurul apelului, exceptia respectiva
+// ajunge neprinsa la runtime-ul Vercel si rezulta intr-un 500 generic
+// (FUNCTION_INVOCATION_FAILED), nu intr-un 401 curat. Acelasi comportament
+// exista si in api/account-ideas.js, api/auth-me.js, api/subscription-status.js
+// (toate folosesc getAccessInfo() neprotejat) - NU a fost modificat aici,
+// fiind in afara scopului acestui PR (necesita aprobare separata inainte de
+// a atinge cod folosit de rute existente). Fixul de mai jos e strict local
+// acestui endpoint nou: orice eroare la rezolvarea accesului (token lipsa,
+// invalid, expirat sau malformat) e tratata uniform ca "sesiune invalida",
+// cu un mesaj generic - fara sa expuna cauza interna (Supabase/JWT/stack).
 
 import { getAccessInfo } from './_lib/access.js';
 
 const RECENT_TRANSACTIONS_LIMIT = 15;
 const RECENT_DIVIDENDS_LIMIT = 15;
 const DELAYED_DATA_MINUTES = 15;
+const INVALID_SESSION_RESPONSE = { error: 'Sesiune invalida sau expirata' };
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -30,9 +46,18 @@ export default async function handler(req, res) {
   const authHeader = req.headers.authorization || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
 
-  const access = await getAccessInfo(token);
-  if (!access.authenticated) {
-    return res.status(401).json({ error: 'Sesiune invalida sau expirata' });
+  let access;
+  try {
+    access = await getAccessInfo(token);
+  } catch (err) {
+    // Token malformat / expirat intr-un mod care face libraria Supabase Auth
+    // sa arunce in loc sa returneze o eroare "curata". Raspuns uniform 401,
+    // fara detalii interne (nu includem err.message sau stack-ul aici).
+    return res.status(401).json(INVALID_SESSION_RESPONSE);
+  }
+
+  if (!access || !access.authenticated) {
+    return res.status(401).json(INVALID_SESSION_RESPONSE);
   }
   if (!access.isAdmin && !access.hasActiveSub) {
     return res.status(403).json({ error: 'Necesita abonament activ', requiresSubscription: true });
