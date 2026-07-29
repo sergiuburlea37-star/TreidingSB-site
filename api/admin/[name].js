@@ -10,6 +10,16 @@
 // vezi supabase/migrations/202607230001_report_downloads.sql), nu din vechiul
 // jurnal Redis (api/_lib/store.js - lasat neschimbat, datele vechi raman acolo,
 // pur si simplu nu mai sunt citite de aceasta ruta).
+//
+// Rutele portfolios / portfolio-positions / portfolio-transactions /
+// portfolio-dividends / portfolio-performance / fx-rates (adaugate pentru
+// mutarea portofoliilor US/EU in Cabinet) urmeaza acelasi tipar CRUD ca
+// handleIdeas: GET listeaza tot (inclusiv nepublicat, pentru admin), POST
+// creeaza, PATCH actualizeaza dupa id, DELETE sterge dupa id (query sau body).
+// Toate folosesc access.client (legat de tokenul admin-ului) - nu service_role -
+// astfel incat politicile *_admin_all din
+// supabase/migrations/202607290001_member_portfolios.sql raman ultimul strat
+// de control, nu doar requireAdmin() din cod.
 
 import { requireAdmin } from '../_lib/require-admin.js';
 import { getSupabaseAdmin } from '../_lib/supabase.js';
@@ -29,8 +39,141 @@ export default async function handler(req, res) {
   if (name === 'reports') return handleReports(req, res);
   if (name === 'subscriptions') return handleSubscriptions(req, res);
   if (name === 'newsletter') return handleNewsletter(req, res);
+  if (name === 'portfolios') return handleCrudTable(req, res, {
+    table: 'portfolios',
+    requiredFields: ['code', 'name', 'base_currency'],
+    validate: (body) => {
+      if (!['US', 'EU'].includes(body.code)) return 'code trebuie sa fie US sau EU';
+      if (!['GBP', 'EUR', 'USD'].includes(body.base_currency)) return 'base_currency invalida';
+      return null;
+    },
+    order: { column: 'code', ascending: true }
+  });
+  if (name === 'portfolio-positions') return handleCrudTable(req, res, {
+    table: 'portfolio_positions',
+    requiredFields: ['portfolio_id', 'ticker', 'name', 'instrument_currency'],
+    validate: (body) => {
+      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.instrument_currency)) return 'instrument_currency invalida';
+      return null;
+    },
+    order: { column: 'sort_order', ascending: true }
+  });
+  if (name === 'portfolio-transactions') return handleCrudTable(req, res, {
+    table: 'portfolio_transactions',
+    requiredFields: ['portfolio_id', 'type', 'amount', 'currency'],
+    validate: (body) => {
+      if (!['BUY', 'SELL', 'FEE', 'DEPOSIT', 'WITHDRAWAL'].includes(body.type)) return 'type invalid';
+      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.currency)) return 'currency invalida';
+      return null;
+    },
+    order: { column: 'executed_at', ascending: false }
+  });
+  if (name === 'portfolio-dividends') return handleCrudTable(req, res, {
+    table: 'portfolio_dividends',
+    requiredFields: ['portfolio_id', 'ticker', 'amount', 'currency', 'pay_date'],
+    validate: (body) => {
+      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.currency)) return 'currency invalida';
+      return null;
+    },
+    order: { column: 'pay_date', ascending: false }
+  });
+  if (name === 'portfolio-performance') return handleCrudTable(req, res, {
+    table: 'portfolio_performance_history',
+    requiredFields: ['portfolio_id', 'as_of_date', 'nav_value', 'capital_contributed', 'currency'],
+    validate: (body) => {
+      if (!['GBP', 'EUR', 'USD'].includes(body.currency)) return 'currency invalida';
+      return null;
+    },
+    order: { column: 'as_of_date', ascending: true }
+  });
+  if (name === 'fx-rates') return handleCrudTable(req, res, {
+    table: 'fx_rates',
+    requiredFields: ['base_currency', 'quote_currency', 'rate'],
+    validate: (body) => {
+      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.base_currency)) return 'base_currency invalida';
+      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.quote_currency)) return 'quote_currency invalida';
+      return null;
+    },
+    order: { column: 'as_of_date', ascending: false }
+  });
 
   return res.status(404).json({ error: 'Not found' });
+}
+
+// Handler CRUD generic, folosit de toate rutele noi legate de portofolii -
+// evita 6 copii aproape identice ale tiparului deja folosit de handleIdeas.
+// Fiecare tabela isi ramane complet izolata (RLS pe tabela reala din Postgres,
+// nu doar filtrare in cod); acest handler doar evita duplicarea codului de
+// rutare/validare de baza.
+async function handleCrudTable(req, res, opts) {
+  const access = await requireAdmin(req, res);
+  if (!access) return;
+
+  try {
+    if (req.method === 'GET') {
+      let query = access.client.from(opts.table).select('*');
+      if (req.query.portfolio_id) query = query.eq('portfolio_id', req.query.portfolio_id);
+      query = query.order(opts.order.column, { ascending: opts.order.ascending });
+      const { data, error } = await query;
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ success: true, rows: data || [] });
+    }
+
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid request body' });
+      }
+    }
+    body = body || {};
+
+    if (req.method === 'POST') {
+      const missing = opts.requiredFields.filter((f) => body[f] === undefined || body[f] === null || body[f] === '');
+      if (missing.length) {
+        return res.status(400).json({ error: 'Campuri obligatorii lipsa: ' + missing.join(', ') });
+      }
+      const validationError = opts.validate ? opts.validate(body) : null;
+      if (validationError) return res.status(400).json({ error: validationError });
+
+      const insertBody = { ...body };
+      delete insertBody.id;
+      const { data, error } = await access.client.from(opts.table).insert(insertBody).select().single();
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ success: true, row: data });
+    }
+
+    if (req.method === 'PATCH') {
+      const { id, ...patch } = body;
+      if (!id) return res.status(400).json({ error: 'ID lipsa' });
+      if (opts.validate) {
+        const validationError = opts.validate({ ...patch });
+        if (validationError && Object.keys(patch).some((k) => opts.requiredFields.includes(k))) {
+          return res.status(400).json({ error: validationError });
+        }
+      }
+      if ('updated_at' in patch || opts.table === 'portfolios' || opts.table === 'portfolio_positions') {
+        patch.updated_at = new Date().toISOString();
+      }
+      const { data, error } = await access.client.from(opts.table).update(patch).eq('id', id).select().single();
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ success: true, row: data });
+    }
+
+    if (req.method === 'DELETE') {
+      const id = typeof req.query.id === 'string' ? req.query.id : body.id;
+      if (!id) return res.status(400).json({ error: 'ID lipsa' });
+      const { error } = await access.client.from(opts.table).delete().eq('id', id);
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ success: true });
+    }
+
+    res.setHeader('Allow', 'GET, POST, PATCH, DELETE');
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Server error: ' + err.message });
+  }
 }
 
 async function handleDownloads(req, res) {
