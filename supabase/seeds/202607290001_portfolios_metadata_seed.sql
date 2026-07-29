@@ -1,41 +1,60 @@
--- 202607290001_portfolios_metadata_seed.sql (v3)
+-- 202607290001_portfolios_metadata_seed.sql (v4)
 --
--- Fata de v2: corectat calculul pozitiilor EU. In v2 alocarea EU fusese
--- calculata gresit pe baza unui capital presupus de 10.000 GBP; capitalul EU
--- ramane, conform deciziei tale, 10.000 EUR (base_currency='EUR', neschimbat
--- fata de v1/v2 in tabelul portfolios - DOAR cantitatile pozitiilor EU se
--- schimba, pentru ca alocarea per pozitie se calculeaza acum din 10.000 EUR,
--- nu din 10.000 GBP). GBP ramane moneda de raportare/comparatie in Cabinet,
--- convertita din EUR cu cursul oficial BCE din 18 mai 2026 (afisaj, nu
--- baza de calcul).
+-- Fata de v3: NU s-a schimbat nicio cantitate/pret de pozitie (cele 6 pozitii
+-- US si cele 14 pozitii EU raman identice, verificate din nou mai jos).
+-- Corectie fata de v3: seed-ul v3 omitea complet o rezerva de numerar de
+-- GBP 500 din structura portofoliului US ("rezerva separata pentru amplificarea
+-- pozitiilor") - nu era nici in pozitii, nici in comentarii, nici in nicio
+-- alta reprezentare. Verificare aritmetica (v3, US):
+--   6 pozitii (GBP 6.700, neschimbat) + IWFV (GBP 800) + SpaceX (GBP 1.000) +
+--   CASH (GBP 1.000) = GBP 9.500  -> lipseau exact GBP 500 din GBP 10.000.
+-- v4 adauga aceasta suma ca inregistrare de cash, NU ca pozitie/actiune si
+-- NU adaugata la valoarea vreunei pozitii cumparate (pozitiile raman identic
+-- GBP 6.700 in v3 si v4).
 --
--- Fata de v2: Buffer Defensiv EU redus de la 12% la 6,5% (decizia ta) -
--- Nucleu European 77% + SUA/Tech 16,5% + Buffer 6,5% = 100% exact. Nu s-a
--- rescalat nimic altceva.
+-- Reprezentarea cash-ului: schema NU are un tabel/coloane dedicate pt.
+-- "categorii de cash rezervat" (doar portfolio_positions pt. holdings si
+-- portfolio_transactions pt. fluxuri de numerar/tranzactii) - nu a fost
+-- nevoie de nicio migrare noua: public.portfolio_transactions permite deja
+-- randuri fara pozitie asociata (position_id si ticker sunt nullable), deci
+-- cele 4 categorii de cash US se reprezinta ca 4 tranzactii tip 'DEPOSIT',
+-- separate prin `note`, fara pozitie/ticker atasat. Inserare idempotenta
+-- prin verificare explicita `where not exists` (nu necesita o constrangere
+-- UNIQUE noua pe portfolio_transactions).
 --
--- Pozitiile US raman neschimbate fata de v2 (nicio decizie noua pt. US).
+-- EU: verificat, totalurile raman corecte fara nicio modificare (investit
+-- EUR 8.100 + NOVO B EUR 650 rezervat + SpaceX EUR 600 rezervat + Buffer Defensiv
+-- EUR 650 = EUR 10.000 exact) - nu se schimba nimic la EU in v4 (nici pozitii,
+-- nici cash), ramane doar documentat in comentarii ca in v3.
+--
+-- Pozitiile US si EU: NESCHIMBATE fata de v3 (vezi v3 pentru istoricul
+-- deciziilor de calcul - capital, ponderi, curs BCE, conventii GBX etc.).
 --
 -- Preturile sunt marcate explicit drept "preturi de referinta la fondare",
--- NU executii confirmate de broker - price_source='manual',
--- price_updated_at = data pretului (diferita de founded_date pentru EU).
+-- NU executii confirmate de broker - price_source='manual'.
 --
 -- NU insereaza (deliberat, date lipsa/nesigure sau netranzactionabile):
---  - IWFV (US, 800 GBP): pret 7 mai 2026 negasit -> ramane numerar rezervat.
---  - NOVO B (EU, 650 EUR): pret 18 mai 2026 negasit -> ramane numerar rezervat.
---  - SPCX (US 1.000 GBP + EU 600 EUR): SpaceX inca privata la ambele date de
+--  - IWFV (US, GBP 800): pret 7 mai 2026 negasit -> ramane numerar rezervat
+--    (acum inregistrat explicit ca tranzactie DEPOSIT, vezi mai jos).
+--  - NOVO B (EU, EUR 650): pret 18 mai 2026 negasit -> ramane numerar rezervat
+--    (doar in comentarii, neschimbat fata de v3 - nu a fost cerut sa se
+--    adauge o tranzactie DEPOSIT si pentru EU in aceasta corectie).
+--  - SPCX (US GBP 1.000 + EU EUR 600): SpaceX inca privata la ambele date de
 --    referinta (IPO real 12 iunie 2026) -> ramane numerar rezervat separat,
 --    pt. o eventuala tranzactie ulterioara la data reala a IPO-ului
 --    (necesita raport si aprobare separata, NU face parte din acest seed).
---  - Randul "CASH" (US, 1.000 GBP) si "Buffer Defensiv" (EU, 650 EUR): numerar/
---    cvasi-numerar agregat, nu instrumente cu pret unic.
+--    Partea US (GBP 1.000) e acum inregistrata explicit ca tranzactie DEPOSIT.
+--  - Randul "CASH" (US, GBP 1.000, acum tranzactie DEPOSIT) si "Buffer
+--    Defensiv" (EU, EUR 650, doar comentariu, neschimbat): numerar/cvasi-
+--    numerar agregat, nu instrumente cu pret unic.
+--  - Rezerva de amplificare (US, GBP 500, acum tranzactie DEPOSIT, era complet
+--    omisa in v3 - vezi corectia de mai sus).
 --
 -- Idempotent: `on conflict (portfolio_id, ticker) do nothing` pentru
--- pozitii (necesita migrarea 202607290003 aplicata inainte, pt. cheia
--- unica); `on conflict (code) do update set founded_date` pentru portofolii.
---
--- Testat local intr-un sandbox Postgres aruncat (nu Supabase): rulare
--- initiala insereaza 2 portofolii + 6 pozitii US + 14 pozitii EU; a doua
--- rulare (idempotenta) insereaza 0 randuri noi.
+-- pozitii; `on conflict (code) do update set founded_date` pentru
+-- portofolii; `where not exists (...)` pentru cele 4 tranzactii de cash US
+-- (nu exista o constrangere UNIQUE pe portfolio_transactions - verificarea
+-- explicita evita duplicarea la o rulare repetata).
 
 begin;
 
@@ -68,7 +87,9 @@ on conflict (code) do update set
   founded_date = excluded.founded_date;
 
 -- ---------------------------------------------------------------------------
--- US - pret de referinta 7 mai 2026 (= data fondarii). NESCHIMBAT fata de v2.
+-- US pozitii - pret de referinta 7 mai 2026 (= data fondarii). NESCHIMBAT
+-- fata de v3. Total verificat: GBP 2.500 + GBP 1.000 + GBP 1.000 + GBP 700 + GBP 750 +
+-- GBP 750 = GBP 6.700 exact.
 -- ---------------------------------------------------------------------------
 insert into public.portfolio_positions
   (portfolio_id, position_no, ticker, name, category, sector_or_market, instrument_currency,
@@ -89,10 +110,30 @@ where p.code = 'US'
 on conflict (portfolio_id, ticker) do nothing;
 
 -- ---------------------------------------------------------------------------
--- EU - pret de referinta 18 mai 2026 (fondare 17 mai, duminica). Alocare
--- calculata din capitalul real EU: 10.000 EUR (NU 10.000 GBP ca in v2). Ponderi:
--- Nucleu European 77% (13 pozitii, neschimbate individual) + SUA/Tech 16,5%
--- (3 pozitii) + Buffer 6,5% (redus de la 12%) = 100%.
+-- US cash - 4 categorii, inregistrate ca tranzactii DEPOSIT (fara pozitie/
+-- ticker asociat), NU ca pozitii cumparate. Idempotent prin `not exists`.
+-- Total: GBP 800 + GBP 1.000 + GBP 1.000 + GBP 500 = GBP 3.300. Impreuna cu cele 6 pozitii
+-- (GBP 6.700) => GBP 10.000 exact, egal cu initial_capital.
+-- ---------------------------------------------------------------------------
+insert into public.portfolio_transactions
+  (portfolio_id, type, amount, currency, executed_at, note)
+select p.id, 'DEPOSIT', v.amount, 'GBP', '2026-05-07'::timestamptz, v.note
+from public.portfolios p
+join (values
+    (800::numeric,  'Numerar rezervat: IWFV (pret neconfirmat la 7 mai 2026, nu este cumparat inca)'),
+    (1000::numeric, 'Numerar rezervat: SpaceX/SPCX (netranzactionabila la 7 mai 2026; tranzactie separata dupa 12 iunie 2026, necesita raport si aprobare separata)'),
+    (1000::numeric, 'Cash si echivalente de numerar (agregat, nu este o pozitie cu pret unic)'),
+    (500::numeric,  'Rezerva separata pentru amplificarea pozitiilor existente (neinvestita inca; omisa din greseala in seed v3)')
+  ) as v(amount, note) on true
+where p.code = 'US'
+and not exists (
+    select 1 from public.portfolio_transactions pt
+    where pt.portfolio_id = p.id and pt.type = 'DEPOSIT' and pt.note = v.note
+  );
+
+-- ---------------------------------------------------------------------------
+-- EU pozitii - pret de referinta 18 mai 2026. NESCHIMBATE fata de v3.
+-- Total verificat: EUR 8.100 exact (vezi v3 pentru detalii pe pozitie).
 -- ---------------------------------------------------------------------------
 insert into public.portfolio_positions
   (portfolio_id, position_no, ticker, name, category, sector_or_market, instrument_currency,
@@ -122,8 +163,9 @@ on conflict (portfolio_id, ticker) do nothing;
 
 commit;
 
--- Nota: NOVO B (EU, DKK, 6.5%, 650 EUR numerar rezervat), SPCX (US 1.000 GBP +
--- EU 600 EUR, numerar rezervat separat pt. tranzactie ulterioara 12 iun 2026),
--- IWFV (US, 800 GBP numerar rezervat), randul CASH (US, 1.000 GBP) si Buffer
--- Defensiv (EU, 650 EUR, redus de la 12%) raman deliberat neinserate ca
--- pozitii - vezi comentariile din antet si raportul insotitor.
+-- Nota: NOVO B (EU, DKK, 6.5%, 650 EUR numerar rezervat, doar comentariu),
+-- SPCX (EU 600 EUR numerar rezervat, doar comentariu - partea US e acum
+-- tranzactie DEPOSIT), Buffer Defensiv (EU, 650 EUR, doar comentariu) raman
+-- deliberat neinserate ca pozitii - vezi comentariile din antet si raportul
+-- insotitor. Categoriile de cash US sunt acum inregistrate explicit ca
+-- tranzactii DEPOSIT (vezi sectiunea "US cash" de mai sus).
