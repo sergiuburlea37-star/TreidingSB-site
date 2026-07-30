@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Portofoliile tale — TreidingSB</title>
+<link rel="icon" href="assets/favicon.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="member-portfolios.css">
+</head>
+<body class="mp-body">
+  <div class="risk-strip">⚠️ Risc: Tranzacționarea CFD implică risc ridicat de pierdere. Site informativ independent.</div>
+
+  <div class="market-ticker" aria-label="Market ticker">
+    <div class="ticker-track">
+      <span>🟡 XAU/USD <strong>4,074.73</strong> <b class="red">−0.06%</b></span>
+      <span>⚪ XAG/USD <strong>58.327</strong> <b class="green">+0.11%</b></span>
+      <span>💶 EUR/USD <strong>1.14239</strong> <b class="green">+0.07%</b></span>
+      <span>🇬🇧 GBP/USD <strong>1.33928</strong> <b class="green">+0.04%</b></span>
+      <span>₿ BTC/USD <strong>108,420</strong> <b class="red">−0.32%</b></span>
+      <span>🇺🇸 US100 <strong>22,150</strong> <b class="green">+0.42%</b></span>
+      <span>🚀 SpaceX <strong>148.30</strong> <b class="red">−0.78%</b></span>
+    </div>
+  </div>
+
+  <svg class="icon-sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <symbol id="mp-icon-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5M6 10.2V19a1 1 0 0 0 1 1h3.5v-5h2.5v5H17a1 1 0 0 0 1-1v-8.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="mp-icon-account" viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.8 19.2c1.4-3.1 4-4.7 7.2-4.7s5.8 1.6 7.2 4.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="mp-icon-cash" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+      <symbol id="mp-icon-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="site-header">
+    <a class="brand" href="index.html#home" aria-label="TreidingSB home">
+      <img src="assets/logo.png" class="brand-logo" alt="TreidingSB logo">
+      <div class="brand-copy">
+        <strong>Treiding<span>SB</span></strong>
+        <small>Smarter Decisions. Better Results.</small>
+      </div>
+    </a>
+
+    <div class="lang-switcher" id="mpLangSwitcher">
+      <button class="lang-current" id="mpLangCurrentBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Alege limba">
+        <img class="flag" id="mpLangCurrentFlag" src="https://flagcdn.com/ro.svg" alt="" width="20" height="15"><span class="lang-code" id="mpLangCurrentCode">RO</span><span class="lang-caret">▾</span>
+      </button>
+      <ul class="lang-menu" id="mpLangMenu" role="menu">
+        <li role="none"><button type="button" role="menuitem" data-lang="ro"><img class="flag" src="https://flagcdn.com/ro.svg" alt="" width="20" height="15"><span>RO</span></button></li>
+        <li role="none"><button type="button" role="menuitem" data-lang="en"><img class="flag" src="https://flagcdn.com/gb.svg" alt="" width="20" height="15"><span>EN</span></button></li>
+        <li role="none"><button type="button" role="menuitem" data-lang="ru"><img class="flag" src="https://flagcdn.com/ru.svg" alt="" width="20" height="15"><span>RU</span></button></li>
+        <li role="none"><button type="button" role="menuitem" data-lang="uk"><img class="flag" src="https://flagcdn.com/ua.svg" alt="" width="20" height="15"><span>UA</span></button></li>
+        <li role="none"><button type="button" role="menuitem" data-lang="pl"><img class="flag" src="https://flagcdn.com/pl.svg" alt="" width="20" height="15"><span>PL</span></button></li>
+      </ul>
+    </div>
+
+    <button class="mobile-toggle" id="mpMobileToggle" type="button" aria-label="Deschide meniul" aria-expanded="false"><span></span><span></span><span></span></button>
+
+    <nav class="main-nav" id="mpMainNav" aria-label="Navigație principală">
+      <a href="index.html#home"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mp-icon-home"></use></svg><span id="mpNavHome">Home</span></a>
+      <a href="index.html#account" class="active"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mp-icon-account"></use></svg><span id="mpNavCabinet">Cabinet</span></a>
+    </nav>
+
+    <div class="nav-dropdown account-dropdown" id="mpAccountDropdown">
+      <button class="member-button is-member" id="mpMemberButton" type="button" aria-haspopup="true" aria-expanded="false">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mp-icon-account"></use></svg><span id="mpMemberEmail">…</span><span class="dd-caret">▾</span>
+      </button>
+      <ul class="nav-dropdown-menu" id="mpAccountMenu" role="menu">
+        <li role="none"><a href="index.html#account" role="menuitem"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mp-icon-account"></use></svg><span id="mpNavCabinetMenu">Cabinet</span></a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    <div class="mp-shell">
+
+      <!-- STATE: loading -->
+      <div class="mp-state mp-state-loading" id="mpStateLoading">
+        <div class="mp-spinner" aria-hidden="true"></div>
+        <p id="mpLoadingText">Se încarcă portofoliile…</p>
+      </div>
+
+      <!-- STATE: locked (free / expired) -->
+      <div class="mp-state mp-state-locked" id="mpStateLocked" hidden>
+        <div class="mp-locked-card">
+          <svg class="mp-locked-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mp-icon-lock"></use></svg>
+          <h1 id="mpLockedTitle">Conținut premium</h1>
+          <p id="mpLockedText">Ai nevoie de un abonament activ pentru a vedea portofoliile complete.</p>
+          <a class="btn primary" href="index.html#account" id="mpLockedCta">Vezi abonamentele</a>
+        </div>
+      </div>
+
+      <!-- STATE: error -->
+      <div class="mp-state mp-state-error" id="mpStateError" hidden>
+        <div class="mp-locked-card">
+          <h1 id="mpErrorTitle">Eroare</h1>
+          <p id="mpErrorText">Nu am putut încărca portofoliile. Încearcă din nou.</p>
+          <button class="btn outline" id="mpRetryBtn" type="button">Reîncearcă</button>
+        </div>
+      </div>
+
+      <!-- STATE: dashboard -->
+      <div class="mp-state mp-dashboard" id="mpStateDashboard" hidden>
+
+        <div class="mp-head">
+          <div>
+            <span class="eyebrow orange" id="mpEyebrow">Cabinet</span>
+            <h1 id="mpTitle">Portofoliile tale</h1>
+          </div>
+          <div class="mp-head-meta">
+            <span class="portfolio-delayed-badge" id="mpDelayedBadge">Date întârziate ~15 minute</span>
+            <span class="mp-updated" id="mpUpdatedAt">—</span>
+          </div>
+        </div>
+
+        <div class="portfolio-tabs mp-tabs" id="mpTabs" role="tablist">
+          <button type="button" class="portfolio-tab is-active" data-mp-tab="US" role="tab" aria-selected="true" id="mpTabUsLabel">Portofoliu US</button>
+          <button type="button" class="portfolio-tab" data-mp-tab="EU" role="tab" aria-selected="false" id="mpTabEuLabel">Portofoliu EU</button>
+        </div>
+
+        <p class="mp-fx-note" id="mpFxNote"></p>
+        <p class="mp-incomplete-note" id="mpIncompleteNote" hidden></p>
+
+        <div class="mp-cards-row" id="mpStatsCards"></div>
+
+        <div class="mp-card mp-chart-card">
+          <div class="mp-card-head">
+            <span id="mpEvolutionLabel">Evoluție de la fondare</span>
+            <div class="portfolio-interval-switch" id="mpIntervalSwitch">
+              <button type="button" class="is-active" data-interval="1M" id="mpInt1M">1L</button>
+              <button type="button" data-interval="3M" id="mpInt3M">3L</button>
+              <button type="button" data-interval="1Y" id="mpInt1Y">1A</button>
+              <button type="button" data-interval="MAX" id="mpIntMax">MAX</button>
+            </div>
+          </div>
+          <div class="mp-chart-wrap" id="mpChartWrap"></div>
+          <div class="mp-chart-empty" id="mpChartEmpty" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l3-4 3 2.5L18 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg>
+            <p id="mpChartEmptyText">Istoricul performanței se construiește.</p>
+          </div>
+        </div>
+
+        <div class="mp-card mp-positions-card">
+          <div class="mp-card-head"><span id="mpPositionsHead">Poziții active</span></div>
+          <div class="table-swipe-hint" id="mpSwipeHint">← Glisează pentru mai multe →</div>
+          <div class="table-scroll">
+            <table class="portfolio-table has-index mp-table">
+              <thead>
+                <tr>
+                  <th id="mpColTicker">Ticker</th>
+                  <th id="mpColWeight">Pondere</th>
+                  <th id="mpColAvgPrice">Preț mediu</th>
+                  <th id="mpColCurrentPrice">Preț de referință</th>
+                  <th id="mpColPl">Profit/Pierdere</th>
+                  <th id="mpColRisk">Risc</th>
+                </tr>
+              </thead>
+              <tbody id="mpPositionsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mp-subgrid">
+          <div class="mp-card">
+            <div class="mp-card-head"><span id="mpCashHead">Rezerve cash</span></div>
+            <div class="table-scroll">
+              <table class="portfolio-table mp-table">
+                <thead><tr><th id="mpColCategory">Categorie</th><th id="mpColCashAmount">Sumă</th><th id="mpColCashStatus">Status</th></tr></thead>
+                <tbody id="mpCashBody"></tbody>
+              </table>
+            </div>
+            <p class="portfolio-empty-note" id="mpCashEmpty" hidden>Nicio rezervă cash înregistrată.</p>
+          </div>
+
+          <div class="mp-card">
+            <div class="mp-card-head"><span id="mpDividendsHead">Dividende</span></div>
+            <div class="table-scroll">
+              <table class="portfolio-table mp-table">
+                <thead><tr><th id="mpColTicker2">Ticker</th><th id="mpColAmount">Sumă</th><th id="mpColPayDate">Dată plată</th></tr></thead>
+                <tbody id="mpDividendsBody"></tbody>
+              </table>
+            </div>
+            <p class="portfolio-empty-note" id="mpDividendsEmpty" hidden>Niciun dividend înregistrat încă.</p>
+          </div>
+        </div>
+
+        <div class="mp-card mp-transactions-card">
+          <div class="mp-card-head"><span id="mpTransactionsHead">Tranzacții recente</span></div>
+          <div class="table-scroll">
+            <table class="portfolio-table mp-table">
+              <thead><tr><th id="mpColType">Tip</th><th id="mpColTicker3">Ticker</th><th id="mpColAmount2">Sumă</th><th id="mpColDate">Dată</th></tr></thead>
+              <tbody id="mpTransactionsBody"></tbody>
+            </table>
+          </div>
+          <p class="portfolio-empty-note" id="mpTransactionsEmpty" hidden>Nicio tranzacție înregistrată încă.</p>
+        </div>
+
+        <p class="portfolio-disclaimer-small" id="mpDisclaimer">Date educaționale/demonstrative. Nu constituie consiliere de investiții.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="member-portfolios.js"></script>
+</body>
+</html>
