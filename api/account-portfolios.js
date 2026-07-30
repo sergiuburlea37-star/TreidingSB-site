@@ -68,6 +68,34 @@
 // le afiseze ca valori "curente" catre membri cat timp price_source ramane
 // 'manual' pe toate pozitiile; UI-ul trebuie sa afiseze explicit "In asteptarea
 // datelor live" in loc, vezi campul priceSource / isReferencePrice.
+//
+// Nota (2026-07-30, hotfix): convert() stia doar sa caute un curs DIRECT
+// (from_to) sau un singur nivel de curs INVERS (to_from) - nimic altceva.
+// Pozitiile US in USD (IWDA, EIMI, WSML, AAPL - vezi seed v5, instrument_currency
+// = 'USD' desi portofoliul US e in GBP) nu aveau niciun curs direct sau invers
+// USD/GBP in fx_rates (seed-ul din 2026-07-30 a introdus doar perechi EUR/*),
+// deci convert() returna null si UI-ul afisa "curs indisponibil" pentru toate
+// cele 4 pozitii. Adaugat mai jos: triangulare printr-o moneda-punte (EUR),
+// ca fallback STRICT dupa ce cursul direct/invers lipseste - foloseste doar
+// cursuri EUR/X si EUR/Y deja existente in fx_rates, din ACEEASI as_of_date
+// (nu combina niciodata doua date diferite intr-un curs derivat - vezi
+// convertViaBridge). Nu introduce niciun curs nou si nu aproximeaza nimic:
+// e strict aritmetica pe cursuri reale deja introduse (EUR/USD, EUR/GBP etc).
+//
+// Limitare cunoscuta, NEREZOLVATA de acest fallback: fx_rates contine in
+// acest moment DOAR cursuri datate 2026-05-18 (data fondarii portofoliului
+// EU). Portofoliul US insa a fost fondat la 2026-05-07 - o data pentru care
+// NU exista niciun curs EUR/USD sau EUR/GBP in fx_rates. Triangularea de mai
+// jos tot foloseste cursurile din 2026-05-18 (cea mai recenta/singura data
+// disponibila), pentru ca altfel pozitiile USD din US ar ramane permanent
+// "curs indisponibil" - dar rezultatul e un curs real DECALAT cu 11 zile
+// fata de data tranzactiilor BUY ale portofoliului US, deci ponderile
+// rezultate pt. IWDA/EIMI/WSML/AAPL vor fi apropiate, dar NU identice cu
+// ponderile-tinta (25% / 10% / 7% / 7.5%) validate anterior - vezi raportul
+// hotfix-ului pentru cifrele exacte. Rezolvarea completa necesita cursuri
+// ECB reale pentru 2026-05-07, sursate si aprobate separat (acelasi tipar ca
+// seed-ul 202607300006) - NU a fost facuta aici, ca sa nu se inventeze un
+// curs istoric.
 
 import { getAccessInfo } from './_lib/access.js';
 
@@ -174,13 +202,58 @@ export default async function handler(req, res) {
       const key = r.base_currency + '_' + r.quote_currency;
       if (!latestFx[key]) latestFx[key] = r; // primul intalnit e cel mai recent (sortat desc)
     });
+
+    // Cursuri indexate si pe as_of_date (separat de latestFx) - necesar
+    // STRICT pentru triangulare (bridging printr-o moneda terta), ca sa nu
+    // se combine niciodata un curs EUR/X de la o data cu un curs EUR/Y de la
+    // alta data intr-un curs derivat artificial. Vezi convertViaBridge.
+    const fxByDate = {}; // as_of_date -> { 'BASE_QUOTE': rate }
+    (fxRes.data || []).forEach((r) => {
+      const d = r.as_of_date;
+      if (!fxByDate[d]) fxByDate[d] = {};
+      const key = r.base_currency + '_' + r.quote_currency;
+      if (!(key in fxByDate[d])) fxByDate[d][key] = r.rate; // un singur curs per pereche/data (unique constraint din schema)
+    });
+    const fxDatesDesc = Object.keys(fxByDate).sort().reverse(); // cea mai recenta data intai
+
+    function rateOnDate(from, to, ratesForDate) {
+      const direct = ratesForDate[from + '_' + to];
+      if (direct != null) return direct;
+      const inverse = ratesForDate[to + '_' + from];
+      if (inverse) return 1 / inverse;
+      return null;
+    }
+
+    // Triangulare printr-o moneda-punte (implicit EUR): amount (in "from")
+    // -> punte -> "to", folosind DOAR cele doua curse punte->from si
+    // punte->to citite din ACEEASI as_of_date. Incearca datele disponibile
+    // de la cea mai recenta la cea mai veche, foloseste prima data la care
+    // ambele curse exista. Nu aproximeaza si nu introduce niciun curs nou -
+    // e strict aritmetica pe curs deja existent in fx_rates.
+    function convertViaBridge(amount, from, to, bridge) {
+      for (const d of fxDatesDesc) {
+        const ratesForDate = fxByDate[d];
+        const bridgeToFrom = rateOnDate(bridge, from, ratesForDate); // 1 bridge = bridgeToFrom * from
+        const bridgeToTo = rateOnDate(bridge, to, ratesForDate);     // 1 bridge = bridgeToTo * to
+        if (bridgeToFrom != null && bridgeToTo != null) {
+          return (amount / bridgeToFrom) * bridgeToTo;
+        }
+      }
+      return null;
+    }
+
     function convert(amount, from, to) {
       if (from === to) return amount;
       const direct = latestFx[from + '_' + to];
       if (direct) return amount * direct.rate;
       const inverse = latestFx[to + '_' + from];
       if (inverse && inverse.rate) return amount / inverse.rate;
-      return null; // fara curs disponibil - UI trebuie sa afiseze explicit "curs indisponibil", nu 0 sau o valoare inventata
+      // Fallback: triangulare prin EUR, doar daca nu exista curs direct/invers.
+      // Ex.: USD -> GBP = (EUR/GBP) / (EUR/USD), cand fx_rates nu are nicio
+      // pereche USD/GBP sau GBP/USD directa (cazul pozitiilor US in USD).
+      const viaEur = convertViaBridge(amount, from, to, 'EUR');
+      if (viaEur != null) return viaEur;
+      return null; // fara curs disponibil (nici direct, nici invers, nici prin triangulare) - UI trebuie sa afiseze explicit "curs indisponibil", nu 0 sau o valoare inventata
     }
 
     const result = (portfolios || []).map((p) => {
