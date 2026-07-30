@@ -30,20 +30,44 @@
 // invalid, expirat sau malformat) e tratata uniform ca "sesiune invalida",
 // cu un mesaj generic - fara sa expuna cauza interna (Supabase/JWT/stack).
 //
-// Nota (2026-07-30): ponderile (weightPct) NU mai sunt calculate client-side.
-// Bug-ul raportat ("57,1% / 42,9%") venea din client (script.js) care (a)
-// trata o valoare de piata neconvertibila (marketValueBaseCcy == null, din
-// lipsa unui curs in fx_rates) ca 0 in loc sa o excluda/marcheze, si (b)
-// folosea ca numitor doar suma pozitiilor cu pret, ignorand cash-ul din
-// portfolio_cash_reserves - deci ponderile nu erau raportate la capitalul
-// total al portofoliului (pozitii + cash), asa cum a cerut explicit userul.
-// Fixul de mai jos muta calculul ponderii aici, pe server, unde e facut o
-// singura data si e onest: weightPct e null (nu 0 si nu o valoare inventata)
-// atunci cand fie pretul, fie cursul de conversie necesar lipsesc. UI-ul
-// trebuie sa afiseze explicit "curs indisponibil" pentru weightPct == null,
-// nu sa il trateze tacit ca 0%. Vezi si dataComplete/positionsDataComplete/
-// cashDataComplete de mai jos, expuse ca sa UI-ul poata afisa un banner
-// onest cand lipsesc curs(uri) din fx_rates.
+// Nota (2026-07-30, v2): ponderile (weightPct) NU mai sunt calculate
+// client-side. Bug-ul raportat initial ("57,1% / 42,9%") venea din client
+// (script.js) care (a) trata o valoare de piata neconvertibila
+// (marketValueBaseCcy == null, din lipsa unui curs in fx_rates) ca 0 in loc
+// sa o excluda/marcheze, si (b) folosea ca numitor doar suma pozitiilor cu
+// pret, ignorand cash-ul din portfolio_cash_reserves.
+//
+// Nota (2026-07-30, v3 - schimbare de directie ceruta explicit de user):
+// Pana cand un furnizor de preturi live e integrat, endpoint-ul NU mai
+// expune o "pondere curenta" bazata pe pret/curs de piata (currentWeightPct
+// e calculat mai jos strict pentru uz intern/admin, UI-ul membrilor NU
+// trebuie sa il afiseze - vezi member-portfolios.js). In loc, UI-ul afiseaza
+// "Pondere initiala" (initialWeightPct): suma tranzactiilor BUY ale
+// pozitiei, convertita in moneda de baza a portofoliului, impartita la
+// capitalul initial al portofoliului. Aceasta valoare e FIXA (istorica) -
+// nu se schimba odata cu pretul curent sau cu cursul valutar de azi, decat
+// daca admin corecteaza o tranzactie. Conversia foloseste acelasi convert()
+// (cel mai recent curs din fx_rates) - dar, spre deosebire de pretul curent,
+// BUY-urile din seed sunt toate din aceeasi fereastra de timp (fondare), deci
+// o singura conversie per pereche valutara e suficienta si nu se recalculeaza
+// des. initialWeightPct e null (nu 0, nu o valoare inventata) atunci cand fie
+// nu exista nicio tranzactie BUY pentru pozitie, fie cursul de conversie
+// necesar lipseste - vezi initialWeightDataComplete / initialWeightsComplete.
+// Interogarea tranzactiilor BUY e SEPARATA de txRes (lista "tranzactii
+// recente" afisata in UI, limitata la RECENT_TRANSACTIONS_LIMIT per
+// portofoliu) - in mod deliberat, ca sa nu depinda de acea limita: daca
+// numarul de tranzactii creste in timp, txRes ar putea sa nu mai contina
+// BUY-urile initiale (cele mai vechi), ceea ce ar corupe tacit calculul
+// ponderii initiale.
+//
+// Pretul curent / profitul curent / pondere curenta (bazate pe current_price)
+// raman calculate mai jos (currentPrice, isReferencePrice, marketValueBaseCcy,
+// plInstrumentCcy, plPct, currentWeightPct, currentValueBaseCcy,
+// profitSinceFoundedBaseCcy, totalReturnPct) - utile pentru admin si pentru
+// etapa 4 (integrare furnizor live) - dar member-portfolios.js NU trebuie sa
+// le afiseze ca valori "curente" catre membri cat timp price_source ramane
+// 'manual' pe toate pozitiile; UI-ul trebuie sa afiseze explicit "In asteptarea
+// datelor live" in loc, vezi campul priceSource / isReferencePrice.
 
 import { getAccessInfo } from './_lib/access.js';
 
@@ -90,7 +114,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, portfolios: [], delayedDataMinutes: DELAYED_DATA_MINUTES });
     }
 
-    const [positionsRes, txRes, divRes, perfRes, fxRes, cashRes] = await Promise.all([
+    const [positionsRes, txRes, buyTxRes, divRes, perfRes, fxRes, cashRes] = await Promise.all([
       access.client
         .from('portfolio_positions')
         .select('id, portfolio_id, position_no, ticker, name, category, sector_or_market, instrument_currency, quantity, avg_price, current_price, price_updated_at, price_source, risk_level, group_label, active, sort_order')
@@ -103,6 +127,15 @@ export default async function handler(req, res) {
         .in('portfolio_id', ids)
         .order('executed_at', { ascending: false })
         .limit(RECENT_TRANSACTIONS_LIMIT * ids.length),
+      // Toate tranzactiile BUY, NElimitate - sursa pentru "Pondere initiala".
+      // Interogare separata de txRes (care e doar pt. lista "recente" afisata
+      // in UI si e limitata) tocmai ca sa nu se piarda BUY-uri vechi daca
+      // volumul de tranzactii creste.
+      access.client
+        .from('portfolio_transactions')
+        .select('id, portfolio_id, position_id, amount, currency, executed_at')
+        .in('portfolio_id', ids)
+        .eq('type', 'BUY'),
       access.client
         .from('portfolio_dividends')
         .select('id, portfolio_id, position_id, ticker, amount, currency, ex_date, pay_date, note')
@@ -128,6 +161,7 @@ export default async function handler(req, res) {
 
     if (positionsRes.error) return res.status(500).json({ error: 'Server error: ' + positionsRes.error.message });
     if (txRes.error) return res.status(500).json({ error: 'Server error: ' + txRes.error.message });
+    if (buyTxRes.error) return res.status(500).json({ error: 'Server error: ' + buyTxRes.error.message });
     if (divRes.error) return res.status(500).json({ error: 'Server error: ' + divRes.error.message });
     if (perfRes.error) return res.status(500).json({ error: 'Server error: ' + perfRes.error.message });
     if (fxRes.error) return res.status(500).json({ error: 'Server error: ' + fxRes.error.message });
@@ -150,6 +184,8 @@ export default async function handler(req, res) {
     }
 
     const result = (portfolios || []).map((p) => {
+      const buysForPortfolio = (buyTxRes.data || []).filter((t) => t.portfolio_id === p.id);
+
       const positionsRaw = (positionsRes.data || [])
         .filter((x) => x.portfolio_id === p.id)
         .map((x) => {
@@ -160,6 +196,17 @@ export default async function handler(req, res) {
           const costBasis = x.quantity * x.avg_price;
           const plInstrumentCcy = marketValueInstrumentCcy != null ? marketValueInstrumentCcy - costBasis : null;
           const isReferencePrice = x.current_price != null && x.current_price === x.avg_price;
+
+          // Pondere initiala: suma tranzactiilor BUY ale acestei pozitii,
+          // convertita in moneda de baza a portofoliului. null (nu 0) daca
+          // nu exista nicio tranzactie BUY sau daca lipseste cursul necesar.
+          const buysForPosition = buysForPortfolio.filter((t) => t.position_id === x.id);
+          const convertedBuyAmounts = buysForPosition.map((t) => convert(t.amount, t.currency, p.base_currency));
+          const initialWeightDataComplete = buysForPosition.length > 0 && convertedBuyAmounts.every((v) => v != null);
+          const initialBuySumBaseCcy = initialWeightDataComplete
+            ? convertedBuyAmounts.reduce((sum, v) => sum + v, 0)
+            : null;
+
           return {
             ticker: x.ticker,
             name: x.name,
@@ -171,8 +218,8 @@ export default async function handler(req, res) {
             currentPrice: x.current_price,
             // true cand pretul curent afisat e de fapt pretul mediu de achizitie
             // (nicio integrare de piata live inca - vezi price_source = 'manual').
-            // UI-ul trebuie sa il eticheteze explicit "Pret de referinta", nu
-            // sa il prezinte ca pret de piata live.
+            // UI-ul trebuie sa afiseze "In asteptarea datelor live" cat timp
+            // priceSource !== 'live_feed', NICIODATA acest pret ca fiind live.
             isReferencePrice,
             priceUpdatedAt: x.price_updated_at,
             priceSource: x.price_source,
@@ -181,13 +228,16 @@ export default async function handler(req, res) {
             marketValueInstrumentCcy,
             marketValueBaseCcy,
             plInstrumentCcy,
-            plPct: costBasis ? (plInstrumentCcy / costBasis) * 100 : null
+            plPct: costBasis ? (plInstrumentCcy / costBasis) * 100 : null,
+            initialBuySumBaseCcy,
+            initialWeightDataComplete
           };
         });
 
       const totalMarketValueBaseCcy = positionsRaw.reduce((sum, x) => sum + (x.marketValueBaseCcy || 0), 0);
       const totalWithKnownValue = positionsRaw.filter((x) => x.marketValueBaseCcy != null).length;
       const positionsDataComplete = positionsRaw.length === 0 || totalWithKnownValue === positionsRaw.length;
+      const allPricesLive = positionsRaw.length > 0 && positionsRaw.every((x) => x.priceSource === 'live_feed');
 
       const cashReservesRaw = (cashRes.data || [])
         .filter((x) => x.portfolio_id === p.id)
@@ -207,25 +257,33 @@ export default async function handler(req, res) {
       const totalCashWithKnownValue = cashReservesRaw.filter((x) => x.amountBaseCcy != null).length;
       const cashDataComplete = cashReservesRaw.length === 0 || totalCashWithKnownValue === cashReservesRaw.length;
 
-      // Numitorul ponderii = capitalul TOTAL al portofoliului (pozitii cu
-      // valoare cunoscuta + cash cu valoare cunoscuta), in moneda de baza,
-      // NU doar suma pozitiilor cu pret (bug-ul raportat anterior excludea
-      // cash-ul si trata pozitiile fara curs disponibil ca fiind 0 in loc
-      // sa fie excluse din calcul).
+      // Numitorul ponderii CURENTE (uz intern/admin) = capitalul TOTAL al
+      // portofoliului (pozitii cu valoare cunoscuta + cash cu valoare
+      // cunoscuta), in moneda de baza. NU e folosit pentru pondere initiala
+      // (acolo numitorul e intotdeauna capitalul initial - fix, istoric).
       const hasAnyKnownValue = totalWithKnownValue > 0 || totalCashWithKnownValue > 0;
       const totalCapitalBaseCcy = hasAnyKnownValue ? (totalMarketValueBaseCcy + totalCashBaseCcy) : null;
       const dataComplete = positionsDataComplete && cashDataComplete;
 
       const positions = positionsRaw.map((x) => ({
         ...x,
-        // Pondere = valoarea pozitiei / capitalul total (pozitii + cash),
-        // in moneda de baza a portofoliului. null (nu 0) daca fie pretul,
-        // fie cursul de conversie necesar lipsesc - UI trebuie sa afiseze
-        // explicit "curs indisponibil", nu o pondere falsa.
-        weightPct: (x.marketValueBaseCcy != null && totalCapitalBaseCcy)
+        // currentWeightPct: pondere bazata pe pretul curent (de fapt pretul
+        // de referinta cat timp priceSource !== 'live_feed') - calculata
+        // strict pt. uz intern/admin. member-portfolios.js NU trebuie sa
+        // afiseze acest camp catre membri (vezi nota din antetul fisierului);
+        // afiseaza in loc initialWeightPct.
+        currentWeightPct: (x.marketValueBaseCcy != null && totalCapitalBaseCcy)
           ? (x.marketValueBaseCcy / totalCapitalBaseCcy) * 100
+          : null,
+        // initialWeightPct: suma BUY (in moneda de baza) / capitalul initial
+        // al portofoliului * 100. Fixa (istorica) - nu depinde de pretul
+        // curent. null (nu 0) daca initialWeightDataComplete e false.
+        initialWeightPct: (x.initialBuySumBaseCcy != null && p.initial_capital)
+          ? (x.initialBuySumBaseCcy / p.initial_capital) * 100
           : null
       }));
+
+      const initialWeightsComplete = positions.length === 0 || positions.every((x) => x.initialWeightDataComplete);
 
       const cashReserves = cashReservesRaw.map((x) => ({
         ...x,
@@ -275,6 +333,12 @@ export default async function handler(req, res) {
         targetReturnText: p.target_return_text,
         riskLevel: p.risk_level,
         description: p.description,
+        // true doar daca TOATE pozitiile au un furnizor de preturi live
+        // (price_source === 'live_feed'). Cat timp e false (cazul actual,
+        // intotdeauna 'manual'), UI-ul trebuie sa afiseze "In asteptarea
+        // datelor live" pentru valoare curenta / profit / randament - NU
+        // cifrele de mai jos, care raman calculate din pretul de referinta.
+        hasLivePriceData: allPricesLive,
         currentValueBaseCcy: totalWithKnownValue ? totalMarketValueBaseCcy : null,
         totalCashBaseCcy: totalCashWithKnownValue ? totalCashBaseCcy : null,
         totalCapitalBaseCcy,
@@ -282,10 +346,15 @@ export default async function handler(req, res) {
           ? totalMarketValueBaseCcy - p.initial_capital : null,
         totalReturnPct: latestPerf ? latestPerf.cumulativeReturnPct : null,
         // true doar daca TOATE pozitiile si TOATE rezervele cash au putut fi
-        // convertite in moneda de baza (adica fx_rates are toate perechile
-        // necesare). UI trebuie sa afiseze un banner cand e false, in loc sa
-        // prezinte tacit ponderi/valori partiale ca fiind complete.
+        // convertite in moneda de baza (pretul curent). Uz intern/admin -
+        // nu mai controleaza banner-ul din UI-ul membrilor (vezi
+        // initialWeightsComplete mai jos, care controleaza banner-ul nou).
         dataComplete,
+        // true doar daca TOATE pozitiile au putut sa isi calculeze
+        // "pondere initiala" (adica au cel putin o tranzactie BUY si
+        // cursul de conversie necesar exista in fx_rates). UI-ul membrilor
+        // trebuie sa afiseze un banner "curs indisponibil" cand e false.
+        initialWeightsComplete,
         positions,
         cashReserves,
         transactions,
