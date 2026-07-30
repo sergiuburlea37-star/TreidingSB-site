@@ -29,6 +29,21 @@
 // acestui endpoint nou: orice eroare la rezolvarea accesului (token lipsa,
 // invalid, expirat sau malformat) e tratata uniform ca "sesiune invalida",
 // cu un mesaj generic - fara sa expuna cauza interna (Supabase/JWT/stack).
+//
+// Nota (2026-07-30): ponderile (weightPct) NU mai sunt calculate client-side.
+// Bug-ul raportat ("57,1% / 42,9%") venea din client (script.js) care (a)
+// trata o valoare de piata neconvertibila (marketValueBaseCcy == null, din
+// lipsa unui curs in fx_rates) ca 0 in loc sa o excluda/marcheze, si (b)
+// folosea ca numitor doar suma pozitiilor cu pret, ignorand cash-ul din
+// portfolio_cash_reserves - deci ponderile nu erau raportate la capitalul
+// total al portofoliului (pozitii + cash), asa cum a cerut explicit userul.
+// Fixul de mai jos muta calculul ponderii aici, pe server, unde e facut o
+// singura data si e onest: weightPct e null (nu 0 si nu o valoare inventata)
+// atunci cand fie pretul, fie cursul de conversie necesar lipsesc. UI-ul
+// trebuie sa afiseze explicit "curs indisponibil" pentru weightPct == null,
+// nu sa il trateze tacit ca 0%. Vezi si dataComplete/positionsDataComplete/
+// cashDataComplete de mai jos, expuse ca sa UI-ul poata afisa un banner
+// onest cand lipsesc curs(uri) din fx_rates.
 
 import { getAccessInfo } from './_lib/access.js';
 
@@ -75,7 +90,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, portfolios: [], delayedDataMinutes: DELAYED_DATA_MINUTES });
     }
 
-    const [positionsRes, txRes, divRes, perfRes, fxRes] = await Promise.all([
+    const [positionsRes, txRes, divRes, perfRes, fxRes, cashRes] = await Promise.all([
       access.client
         .from('portfolio_positions')
         .select('id, portfolio_id, position_no, ticker, name, category, sector_or_market, instrument_currency, quantity, avg_price, current_price, price_updated_at, price_source, risk_level, group_label, active, sort_order')
@@ -102,7 +117,13 @@ export default async function handler(req, res) {
       access.client
         .from('fx_rates')
         .select('base_currency, quote_currency, rate, as_of_date')
-        .order('as_of_date', { ascending: false })
+        .order('as_of_date', { ascending: false }),
+      access.client
+        .from('portfolio_cash_reserves')
+        .select('id, portfolio_id, category, amount, currency, reserved_for_ticker, status, note')
+        .in('portfolio_id', ids)
+        .eq('status', 'reserved')
+        .order('category', { ascending: true })
     ]);
 
     if (positionsRes.error) return res.status(500).json({ error: 'Server error: ' + positionsRes.error.message });
@@ -110,6 +131,7 @@ export default async function handler(req, res) {
     if (divRes.error) return res.status(500).json({ error: 'Server error: ' + divRes.error.message });
     if (perfRes.error) return res.status(500).json({ error: 'Server error: ' + perfRes.error.message });
     if (fxRes.error) return res.status(500).json({ error: 'Server error: ' + fxRes.error.message });
+    if (cashRes.error) return res.status(500).json({ error: 'Server error: ' + cashRes.error.message });
 
     // Cel mai recent curs disponibil per pereche valutara (fx_rates e mic, se
     // poate reduce in memorie fara alt query).
@@ -128,7 +150,7 @@ export default async function handler(req, res) {
     }
 
     const result = (portfolios || []).map((p) => {
-      const positions = (positionsRes.data || [])
+      const positionsRaw = (positionsRes.data || [])
         .filter((x) => x.portfolio_id === p.id)
         .map((x) => {
           const marketValueInstrumentCcy = x.current_price != null ? x.quantity * x.current_price : null;
@@ -137,6 +159,7 @@ export default async function handler(req, res) {
             : null;
           const costBasis = x.quantity * x.avg_price;
           const plInstrumentCcy = marketValueInstrumentCcy != null ? marketValueInstrumentCcy - costBasis : null;
+          const isReferencePrice = x.current_price != null && x.current_price === x.avg_price;
           return {
             ticker: x.ticker,
             name: x.name,
@@ -146,6 +169,11 @@ export default async function handler(req, res) {
             quantity: x.quantity,
             avgPrice: x.avg_price,
             currentPrice: x.current_price,
+            // true cand pretul curent afisat e de fapt pretul mediu de achizitie
+            // (nicio integrare de piata live inca - vezi price_source = 'manual').
+            // UI-ul trebuie sa il eticheteze explicit "Pret de referinta", nu
+            // sa il prezinte ca pret de piata live.
+            isReferencePrice,
             priceUpdatedAt: x.price_updated_at,
             priceSource: x.price_source,
             riskLevel: x.risk_level,
@@ -157,8 +185,54 @@ export default async function handler(req, res) {
           };
         });
 
-      const totalMarketValueBaseCcy = positions.reduce((sum, x) => sum + (x.marketValueBaseCcy || 0), 0);
-      const totalWithKnownValue = positions.filter((x) => x.marketValueBaseCcy != null).length;
+      const totalMarketValueBaseCcy = positionsRaw.reduce((sum, x) => sum + (x.marketValueBaseCcy || 0), 0);
+      const totalWithKnownValue = positionsRaw.filter((x) => x.marketValueBaseCcy != null).length;
+      const positionsDataComplete = positionsRaw.length === 0 || totalWithKnownValue === positionsRaw.length;
+
+      const cashReservesRaw = (cashRes.data || [])
+        .filter((x) => x.portfolio_id === p.id)
+        .map((x) => {
+          const amountBaseCcy = convert(x.amount, x.currency, p.base_currency);
+          return {
+            category: x.category,
+            amount: x.amount,
+            currency: x.currency,
+            amountBaseCcy,
+            reservedForTicker: x.reserved_for_ticker,
+            status: x.status,
+            note: x.note
+          };
+        });
+      const totalCashBaseCcy = cashReservesRaw.reduce((sum, x) => sum + (x.amountBaseCcy || 0), 0);
+      const totalCashWithKnownValue = cashReservesRaw.filter((x) => x.amountBaseCcy != null).length;
+      const cashDataComplete = cashReservesRaw.length === 0 || totalCashWithKnownValue === cashReservesRaw.length;
+
+      // Numitorul ponderii = capitalul TOTAL al portofoliului (pozitii cu
+      // valoare cunoscuta + cash cu valoare cunoscuta), in moneda de baza,
+      // NU doar suma pozitiilor cu pret (bug-ul raportat anterior excludea
+      // cash-ul si trata pozitiile fara curs disponibil ca fiind 0 in loc
+      // sa fie excluse din calcul).
+      const hasAnyKnownValue = totalWithKnownValue > 0 || totalCashWithKnownValue > 0;
+      const totalCapitalBaseCcy = hasAnyKnownValue ? (totalMarketValueBaseCcy + totalCashBaseCcy) : null;
+      const dataComplete = positionsDataComplete && cashDataComplete;
+
+      const positions = positionsRaw.map((x) => ({
+        ...x,
+        // Pondere = valoarea pozitiei / capitalul total (pozitii + cash),
+        // in moneda de baza a portofoliului. null (nu 0) daca fie pretul,
+        // fie cursul de conversie necesar lipsesc - UI trebuie sa afiseze
+        // explicit "curs indisponibil", nu o pondere falsa.
+        weightPct: (x.marketValueBaseCcy != null && totalCapitalBaseCcy)
+          ? (x.marketValueBaseCcy / totalCapitalBaseCcy) * 100
+          : null
+      }));
+
+      const cashReserves = cashReservesRaw.map((x) => ({
+        ...x,
+        weightPct: (x.amountBaseCcy != null && totalCapitalBaseCcy)
+          ? (x.amountBaseCcy / totalCapitalBaseCcy) * 100
+          : null
+      }));
 
       const transactions = (txRes.data || [])
         .filter((x) => x.portfolio_id === p.id)
@@ -202,10 +276,18 @@ export default async function handler(req, res) {
         riskLevel: p.risk_level,
         description: p.description,
         currentValueBaseCcy: totalWithKnownValue ? totalMarketValueBaseCcy : null,
+        totalCashBaseCcy: totalCashWithKnownValue ? totalCashBaseCcy : null,
+        totalCapitalBaseCcy,
         profitSinceFoundedBaseCcy: (totalWithKnownValue && p.initial_capital != null)
           ? totalMarketValueBaseCcy - p.initial_capital : null,
         totalReturnPct: latestPerf ? latestPerf.cumulativeReturnPct : null,
+        // true doar daca TOATE pozitiile si TOATE rezervele cash au putut fi
+        // convertite in moneda de baza (adica fx_rates are toate perechile
+        // necesare). UI trebuie sa afiseze un banner cand e false, in loc sa
+        // prezinte tacit ponderi/valori partiale ca fiind complete.
+        dataComplete,
         positions,
+        cashReserves,
         transactions,
         dividends,
         performanceHistory,
