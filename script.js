@@ -84,7 +84,7 @@ const translations = {
   ro: {
     riskStrip: "⚠️ Risc: Tranzacționarea CFD implică risc ridicat de pierdere. Site informativ independent.",
     mobileToggle: "Deschide meniul",
-    nav: { home: "Home", about: "Despre noi", ideas: "⌁ Idei de tranzacționare", portfolios: "Portofolii", portfolioUs: "$ Portofoliu US", portfolioEu: "€ Portofoliu EU", reports: "▤ Rapoarte", education: "Educație", calendar: "Calendar economic", faq: "FAQ", contact: "Contact" },
+    nav: { home: "Home", about: "Despre noi", ideas: "⌁ Idei de tranzacționare", portfolios: "Portofolii", portfolioUs: "$ Portofoliu US", portfolioEu: "€ Portofoliu EU", reports: "▤ Rapoarte", education: "Educație", calendar: "Calendar economic", faq: "FAQ", contact: "Contact", account: "Cabinet personal" },
     memberButton: "Contul meu",
     hero: {
       pill: "Idei de tranzacționare active · Membri",
@@ -491,14 +491,15 @@ const translations = {
       q12: "Cum pot face parte din echipă?", a12: "Doar în urma unei discuții individuale și a unui statement pe cont real, urmărit timp de o lună. La aprobare, primești acces la un cont real și la serviciile noastre, cu rapoarte mai detaliate."
     },
 
-    portfolio: { statCapital: "Capital Total", statStocksEtf: "Acțiuni / ETF", statInstruments: "Instrumente", statReturn: "Randament anual", statVolatility: "Volatilitate", statHorizon: "Orizont", statBuffer: "Buffer Defensiv", tableHead: "Detalii complete — toate pozițiile", colTicker: "Ticker", colInstrument: "Instrument", colType: "Tip", colSector: "Sector", colRisk: "Risc", disclaimerLabel: "Disclaimer:", swipeHint: "← Glisează pentru mai multe →" },
-    portfolioUs: { eyebrow: "Portofoliu", title: "Portofoliu US", desc: "Portofoliu diversificat demonstrativ, risc moderat, orizont 3–5 ani · Fondat 17.06.2026", disclaimer: "Portofoliu demonstrativ cu scop educativ. Nu constituie consiliere de investiții. Consultă un advisor financiar autorizat FCA înainte de a investi. Performanțele trecute nu garantează rezultate viitoare." },
-    portfolioEu: { eyebrow: "Portofoliu", title: "Portofoliu European Moderat+", desc: "Strategie pe 3–5 ani, intrare în tranșe, control al riscului · Fondat 17.06.2026", statAssets: "Active Totale", statStocks: "Acțiuni Individuale", statMaxPos: "Max. per Poziție", regionEurope: "Europa (Core)", regionUs: "SUA / Tech Global", tableHead: "Toate pozițiile — privire de ansamblu", colCompany: "Companie", bufferHead: "Componente Buffer Defensiv", colComponent: "Componentă", colEstReturn: "Randament Est.", colLiquidity: "Lichiditate", tranche1: "Tranșa 1", tranche1Desc: "Intrare inițială în pozițiile core (ASML, SAP, L'Oréal, Apple, ETF buffer). Cumperi doar dacă setup-ul tehnic este acceptabil — fără grabă.", tranche2: "Tranșa 2", tranche2Desc: "După confirmări: trend peste mediile mobile, rezultate financiare bune, fără șocuri macro. Adaugi SPCX, Google, Safran, Prysmian.", tranche3: "Tranșa 3", tranche3Desc: "Rezervată pentru corecții, pullback-uri sau rotații sectoriale. Cea mai mare tranșă — pentru că piața îți va oferi oportunități mai bune decât astăzi.", disclaimer: "Document cu scop educațional și informativ — nu reprezintă recomandare de investiții personalizată. Verifică prețurile, comisioanele, taxele și riscurile înainte de orice decizie. Performanțele trecute nu garantează rezultate viitoare." }
+    portfolio: { statCapital: "Capital Total", statStocksEtf: "Acțiuni / ETF", statInstruments: "Instrumente", statReturn: "Randament anual", statVolatility: "Volatilitate", statHorizon: "Orizont", statBuffer: "Buffer Defensiv", tableHead: "Detalii complete — toate pozițiile", colTicker: "Ticker", colInstrument: "Instrument", colType: "Tip", colSector: "Sector", colRisk: "Risc", disclaimerLabel: "Disclaimer:", swipeHint: "← Glisează pentru mai multe →", teaserCta: "Vezi în Cabinet" },
+    portfolioUs: { eyebrow: "Portofoliu", title: "Portofoliu US", desc: "Portofoliu diversificat demonstrativ, risc moderat, orizont 3–5 ani · Fondat 17.06.2026", disclaimer: "Portofoliu demonstrativ cu scop educativ. Nu constituie consiliere de investiții. Consultă un advisor financiar autorizat FCA înainte de a investi. Performanțele trecute nu garantează rezultate viitoare.", teaserText: "Compoziția completă (fiecare instrument, pondere, preț mediu, preț curent, profit/pierdere pe poziție) este disponibilă exclusiv membrilor cu abonament activ, în Cabinetul tău." },
+    portfolioEu: { eyebrow: "Portofoliu", title: "Portofoliu European Moderat+", desc: "Strategie pe 3–5 ani, intrare în tranșe, control al riscului · Fondat 17.06.2026", statAssets: "Active Totale", statStocks: "Acțiuni Individuale", statMaxPos: "Max. per Poziție", regionEurope: "Europa (Core)", regionUs: "SUA / Tech Global", disclaimer: "Document cu scop educațional și informativ — nu reprezintă recomandare de investiții personalizată. Verifică prețurile, comisioanele, taxele și riscurile înainte de orice decizie. Performanțele trecute nu garantează rezultate viitoare.", teaserText: "Lista completă a companiilor, ponderea fiecăreia, bursa, moneda, prețul mediu și strategia de intrare în tranșe este disponibilă exclusiv membrilor cu abonament activ, în Cabinetul tău." },
+    cabinet: { portfolios: { title: "Portofoliile tale", tabUs: "Portofoliu SUA", tabEu: "Portofoliu Europa", locked: "Ai nevoie de un abonament activ pentru a vedea portofoliile. Contactează-ne pentru activare.", delayedBadge: "Date întârziate ~15 minute", evolution: "Evoluție de la fondare", interval1M: "1L", interval3M: "3L", interval1Y: "1A", intervalMax: "MAX", chartEmpty: "Date insuficiente pentru acest interval.", positionsHead: "Poziții active", colWeight: "Pondere", colAvgPrice: "Preț mediu", colCurrentPrice: "Preț actual", colPl: "Profit/Pierdere", dividendsHead: "Dividende", colAmount: "Sumă", colPayDate: "Dată plată", transactionsHead: "Tranzacții recente", colType: "Tip", colDate: "Dată", noDividends: "Niciun dividend înregistrat încă.", noTransactions: "Nicio tranzacție înregistrată încă.", disclaimer: "Date educaționale/demonstrative. Nu constituie consiliere de investiții.", initialCapital: "Capital inițial", currentValue: "Valoare actuală", profitSince: "Profit de la fondare", totalReturn: "Randament total", requiresSubscription: "Ai nevoie de un abonament activ pentru a vedea portofoliile. Contactează-ne pentru activare.", sessionExpired: "Sesiune expirată. Te rugăm să te reautentifici.", lastUpdated: "Ultima actualizare:", errorGeneric: "Nu am putut încărca portofoliile. Încearcă din nou.", noData: "Portofoliul nu are încă date publicate." } }
   },
   en: {
     riskStrip: "⚠️ Risk: CFD trading carries a high risk of loss. Independent informational site.",
     mobileToggle: "Open menu",
-    nav: { home: "Home", about: "About Us", ideas: "⌁ Trade Ideas", portfolios: "Portfolios", portfolioUs: "$ US Portfolio", portfolioEu: "€ EU Portfolio", reports: "▤ Reports", education: "Education", calendar: "Economic Calendar", faq: "FAQ", contact: "Contact" },
+    nav: { home: "Home", about: "About Us", ideas: "⌁ Trade Ideas", portfolios: "Portfolios", portfolioUs: "$ US Portfolio", portfolioEu: "€ EU Portfolio", reports: "▤ Reports", education: "Education", calendar: "Economic Calendar", faq: "FAQ", contact: "Contact", account: "Member account" },
     memberButton: "Member Area",
     hero: {
       pill: "Active trade ideas · Members",
@@ -905,14 +906,15 @@ const translations = {
       q12: "How can I join the team?", a12: "Only after an individual conversation and a real-account statement, tracked over one month. Upon approval, you get access to a real account and to our services, with more detailed reports."
     },
 
-    portfolio: { statCapital: "Total Capital", statStocksEtf: "Stocks / ETF", statInstruments: "Instruments", statReturn: "Annual Return", statVolatility: "Volatility", statHorizon: "Horizon", statBuffer: "Defensive Buffer", tableHead: "Full details — all positions", colTicker: "Ticker", colInstrument: "Instrument", colType: "Type", colSector: "Sector", colRisk: "Risk", disclaimerLabel: "Disclaimer:", swipeHint: "← Swipe for more →" },
-    portfolioUs: { eyebrow: "Portfolio", title: "US Portfolio", desc: "Demonstration diversified portfolio, moderate risk, 3–5 year horizon · Founded 17.06.2026", disclaimer: "Demonstration portfolio for educational purposes. Not investment advice. Consult an FCA-authorised financial advisor before investing. Past performance does not guarantee future results." },
-    portfolioEu: { eyebrow: "Portfolio", title: "European Moderate+ Portfolio", desc: "3–5 year strategy, phased entry, risk control · Founded 17.06.2026", statAssets: "Total Assets", statStocks: "Individual Stocks", statMaxPos: "Max. per Position", regionEurope: "Europe (Core)", regionUs: "US / Global Tech", tableHead: "All positions — overview", colCompany: "Company", bufferHead: "Defensive Buffer Components", colComponent: "Component", colEstReturn: "Est. Return", colLiquidity: "Liquidity", tranche1: "Tranche 1", tranche1Desc: "Initial entry into core positions (ASML, SAP, L'Oréal, Apple, buffer ETF). Buy only if the technical setup is acceptable — no rush.", tranche2: "Tranche 2", tranche2Desc: "After confirmations: trend above moving averages, good earnings, no macro shocks. Add SPCX, Google, Safran, Prysmian.", tranche3: "Tranche 3", tranche3Desc: "Reserved for corrections, pullbacks or sector rotations. The largest tranche — because the market will offer better opportunities than today.", disclaimer: "Educational and informational document — not personalised investment advice. Check prices, fees, taxes and risks before any decision. Past performance does not guarantee future results." }
+    portfolio: { statCapital: "Total Capital", statStocksEtf: "Stocks / ETF", statInstruments: "Instruments", statReturn: "Annual Return", statVolatility: "Volatility", statHorizon: "Horizon", statBuffer: "Defensive Buffer", tableHead: "Full details — all positions", colTicker: "Ticker", colInstrument: "Instrument", colType: "Type", colSector: "Sector", colRisk: "Risk", disclaimerLabel: "Disclaimer:", swipeHint: "← Swipe for more →", teaserCta: "View in Cabinet" },
+    portfolioUs: { eyebrow: "Portfolio", title: "US Portfolio", desc: "Demonstration diversified portfolio, moderate risk, 3–5 year horizon · Founded 17.06.2026", disclaimer: "Demonstration portfolio for educational purposes. Not investment advice. Consult an FCA-authorised financial advisor before investing. Past performance does not guarantee future results.", teaserText: "The full composition (every instrument, weight, average price, current price, profit/loss per position) is available exclusively to members with an active subscription, in your Cabinet." },
+    portfolioEu: { eyebrow: "Portfolio", title: "European Moderate+ Portfolio", desc: "3–5 year strategy, phased entry, risk control · Founded 17.06.2026", statAssets: "Total Assets", statStocks: "Individual Stocks", statMaxPos: "Max. per Position", regionEurope: "Europe (Core)", regionUs: "US / Global Tech", disclaimer: "Educational and informational document — not personalised investment advice. Check prices, fees, taxes and risks before any decision. Past performance does not guarantee future results.", teaserText: "The full list of companies, each weight, exchange, currency, average price and phased-entry strategy is available exclusively to members with an active subscription, in your Cabinet." },
+    cabinet: { portfolios: { title: "Your Portfolios", tabUs: "US Portfolio", tabEu: "Europe Portfolio", locked: "You need an active subscription to view the portfolios. Contact us to activate.", delayedBadge: "Data delayed ~15 minutes", evolution: "Evolution since inception", interval1M: "1M", interval3M: "3M", interval1Y: "1Y", intervalMax: "MAX", chartEmpty: "Not enough data for this interval.", positionsHead: "Active positions", colWeight: "Weight", colAvgPrice: "Avg. price", colCurrentPrice: "Current price", colPl: "Profit/Loss", dividendsHead: "Dividends", colAmount: "Amount", colPayDate: "Pay date", transactionsHead: "Recent transactions", colType: "Type", colDate: "Date", noDividends: "No dividends recorded yet.", noTransactions: "No transactions recorded yet.", disclaimer: "Educational/demonstration data. Not investment advice.", initialCapital: "Initial capital", currentValue: "Current value", profitSince: "Profit since inception", totalReturn: "Total return", requiresSubscription: "You need an active subscription to view the portfolios. Contact us to activate.", sessionExpired: "Session expired. Please sign in again.", lastUpdated: "Last updated:", errorGeneric: "Couldn't load the portfolios. Please try again.", noData: "This portfolio has no published data yet." } }
   },
   ru: {
     riskStrip: "⚠️ Риск: Торговля CFD сопряжена с высоким риском потерь. Независимый информационный сайт.",
     mobileToggle: "Открыть меню",
-    nav: { home: "Главная", about: "О нас", ideas: "⌁ Торговые идеи", portfolios: "Портфели", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Отчёты", education: "Обучение", calendar: "Экономический календарь", faq: "FAQ", contact: "Контакты" },
+    nav: { home: "Главная", about: "О нас", ideas: "⌁ Торговые идеи", portfolios: "Портфели", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Отчёты", education: "Обучение", calendar: "Экономический календарь", faq: "FAQ", contact: "Контакты", account: "Личный кабинет" },
     memberButton: "Личный кабинет",
     hero: {
       pill: "Активные торговые идеи · Участники",
@@ -1319,14 +1321,15 @@ const translations = {
       q12: "Как я могу присоединиться к команде?", a12: "Только после индивидуальной беседы и отчёта по реальному счёту, отслеживаемого в течение месяца. После одобрения вы получаете доступ к реальному счёту и нашим услугам с более подробными отчётами."
     },
 
-    portfolio: { statCapital: "Общий капитал", statStocksEtf: "Акции / ETF", statInstruments: "Инструменты", statReturn: "Годовая доходность", statVolatility: "Волатильность", statHorizon: "Горизонт", statBuffer: "Защитный буфер", tableHead: "Полная информация — все позиции", colTicker: "Тикер", colInstrument: "Инструмент", colType: "Тип", colSector: "Сектор", colRisk: "Риск", disclaimerLabel: "Дисклеймер:", swipeHint: "← Проведите пальцем, чтобы увидеть больше →" },
-    portfolioUs: { eyebrow: "Портфель", title: "Портфель US", desc: "Демонстрационный диверсифицированный портфель, умеренный риск, горизонт 3–5 лет · Основан 17.06.2026", disclaimer: "Демонстрационный портфель в образовательных целях. Не является инвестиционной рекомендацией. Проконсультируйтесь с финансовым советником, авторизованным FCA, перед инвестированием. Прошлые результаты не гарантируют будущих." },
-    portfolioEu: { eyebrow: "Портфель", title: "Европейский портфель Умеренный+", desc: "Стратегия на 3–5 лет, поэтапный вход, контроль риска · Основан 17.06.2026", statAssets: "Всего активов", statStocks: "Отдельные акции", statMaxPos: "Макс. на позицию", regionEurope: "Европа (Ядро)", regionUs: "США / Глобальные технологии", tableHead: "Все позиции — обзор", colCompany: "Компания", bufferHead: "Компоненты защитного буфера", colComponent: "Компонент", colEstReturn: "Ожид. доходность", colLiquidity: "Ликвидность", tranche1: "Транш 1", tranche1Desc: "Начальный вход в основные позиции (ASML, SAP, L'Oréal, Apple, буферный ETF). Покупайте только при приемлемой технической картине — без спешки.", tranche2: "Транш 2", tranche2Desc: "После подтверждений: тренд выше скользящих средних, хорошая отчётность, отсутствие макрошоков. Добавляете SPCX, Google, Safran, Prysmian.", tranche3: "Транш 3", tranche3Desc: "Зарезервирован для коррекций, откатов или секторальных ротаций. Самый крупный транш — потому что рынок предложит возможности лучше, чем сегодня.", disclaimer: "Образовательный и информационный документ — не является персонализированной инвестиционной рекомендацией. Проверьте цены, комиссии, налоги и риски перед любым решением. Прошлые результаты не гарантируют будущих." }
+    portfolio: { statCapital: "Общий капитал", statStocksEtf: "Акции / ETF", statInstruments: "Инструменты", statReturn: "Годовая доходность", statVolatility: "Волатильность", statHorizon: "Горизонт", statBuffer: "Защитный буфер", tableHead: "Полная информация — все позиции", colTicker: "Тикер", colInstrument: "Инструмент", colType: "Тип", colSector: "Сектор", colRisk: "Риск", disclaimerLabel: "Дисклеймер:", swipeHint: "← Проведите пальцем, чтобы увидеть больше →", teaserCta: "Смотреть в Кабинете" },
+    portfolioUs: { eyebrow: "Портфель", title: "Портфель US", desc: "Демонстрационный диверсифицированный портфель, умеренный риск, горизонт 3–5 лет · Основан 17.06.2026", disclaimer: "Демонстрационный портфель в образовательных целях. Не является инвестиционной рекомендацией. Проконсультируйтесь с финансовым советником, авторизованным FCA, перед инвестированием. Прошлые результаты не гарантируют будущих.", teaserText: "Полный состав портфеля (каждый инструмент, доля, средняя цена, текущая цена, прибыль/убыток по позиции) доступен только участникам с активной подпиской, в вашем Кабинете." },
+    portfolioEu: { eyebrow: "Портфель", title: "Европейский портфель Умеренный+", desc: "Стратегия на 3–5 лет, поэтапный вход, контроль риска · Основан 17.06.2026", statAssets: "Всего активов", statStocks: "Отдельные акции", statMaxPos: "Макс. на позицию", regionEurope: "Европа (Ядро)", regionUs: "США / Глобальные технологии", disclaimer: "Образовательный и информационный документ — не является персонализированной инвестиционной рекомендацией. Проверьте цены, комиссии, налоги и риски перед любым решением. Прошлые результаты не гарантируют будущих.", teaserText: "Полный список компаний, доля каждой, биржа, валюта, средняя цена и стратегия поэтапного входа доступны только участникам с активной подпиской, в вашем Кабинете." },
+    cabinet: { portfolios: { title: "Ваши портфели", tabUs: "Портфель США", tabEu: "Портфель Европа", locked: "Для просмотра портфелей нужна активная подписка. Свяжитесь с нами для активации.", delayedBadge: "Данные с задержкой ~15 минут", evolution: "Динамика с момента основания", interval1M: "1М", interval3M: "3М", interval1Y: "1Г", intervalMax: "MAX", chartEmpty: "Недостаточно данных для этого периода.", positionsHead: "Активные позиции", colWeight: "Доля", colAvgPrice: "Средняя цена", colCurrentPrice: "Текущая цена", colPl: "Прибыль/убыток", dividendsHead: "Дивиденды", colAmount: "Сумма", colPayDate: "Дата выплаты", transactionsHead: "Последние транзакции", colType: "Тип", colDate: "Дата", noDividends: "Дивиденды пока не зарегистрированы.", noTransactions: "Транзакции пока не зарегистрированы.", disclaimer: "Образовательные/демонстрационные данные. Не является инвестиционной рекомендацией.", initialCapital: "Начальный капитал", currentValue: "Текущая стоимость", profitSince: "Прибыль с момента основания", totalReturn: "Общая доходность", requiresSubscription: "Для просмотра портфелей нужна активная подписка. Свяжитесь с нами для активации.", sessionExpired: "Сессия истекла. Пожалуйста, войдите снова.", lastUpdated: "Последнее обновление:", errorGeneric: "Не удалось загрузить портфели. Попробуйте снова.", noData: "Для этого портфеля пока нет опубликованных данных." } }
   },
   uk: {
     riskStrip: "⚠️ Ризик: Торгівля CFD пов'язана з високим ризиком втрат. Незалежний інформаційний сайт.",
     mobileToggle: "Відкрити меню",
-    nav: { home: "Головна", about: "Про нас", ideas: "⌁ Торгові ідеї", portfolios: "Портфелі", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Звіти", education: "Навчання", calendar: "Економічний календар", faq: "FAQ", contact: "Контакти" },
+    nav: { home: "Головна", about: "Про нас", ideas: "⌁ Торгові ідеї", portfolios: "Портфелі", portfolioUs: "$ Портфель US", portfolioEu: "€ Портфель EU", reports: "▤ Звіти", education: "Навчання", calendar: "Економічний календар", faq: "FAQ", contact: "Контакти", account: "Особистий кабінет" },
     memberButton: "Особистий кабінет",
     hero: {
       pill: "Активні торгові ідеї · Учасники",
@@ -1733,14 +1736,15 @@ const translations = {
       q12: "Як я можу приєднатися до команди?", a12: "Тільки після індивідуальної розмови та звіту по реальному рахунку, який відстежується протягом місяця. Після схвалення ви отримуєте доступ до реального рахунку та наших послуг із детальнішими звітами."
     },
 
-    portfolio: { statCapital: "Загальний капітал", statStocksEtf: "Акції / ETF", statInstruments: "Інструменти", statReturn: "Річна дохідність", statVolatility: "Волатильність", statHorizon: "Горизонт", statBuffer: "Захисний буфер", tableHead: "Повна інформація — всі позиції", colTicker: "Тікер", colInstrument: "Інструмент", colType: "Тип", colSector: "Сектор", colRisk: "Ризик", disclaimerLabel: "Застереження:", swipeHint: "← Проведіть пальцем, щоб побачити більше →" },
-    portfolioUs: { eyebrow: "Портфель", title: "Портфель US", desc: "Демонстраційний диверсифікований портфель, помірний ризик, горизонт 3–5 років · Засновано 17.06.2026", disclaimer: "Демонстраційний портфель з освітньою метою. Не є інвестиційною рекомендацією. Проконсультуйтеся з фінансовим радником, авторизованим FCA, перед інвестуванням. Минулі результати не гарантують майбутніх." },
-    portfolioEu: { eyebrow: "Портфель", title: "Європейський портфель Помірний+", desc: "Стратегія на 3–5 років, поетапний вхід, контроль ризику · Засновано 17.06.2026", statAssets: "Всього активів", statStocks: "Окремі акції", statMaxPos: "Макс. на позицію", regionEurope: "Європа (Ядро)", regionUs: "США / Глобальні технології", tableHead: "Всі позиції — огляд", colCompany: "Компанія", bufferHead: "Компоненти захисного буфера", colComponent: "Компонент", colEstReturn: "Оч. дохідність", colLiquidity: "Ліквідність", tranche1: "Транш 1", tranche1Desc: "Початковий вхід в основні позиції (ASML, SAP, L'Oréal, Apple, буферний ETF). Купуйте лише за прийнятної технічної картини — без поспіху.", tranche2: "Транш 2", tranche2Desc: "Після підтверджень: тренд вище ковзних середніх, гарна звітність, відсутність макрошоків. Додаєте SPCX, Google, Safran, Prysmian.", tranche3: "Транш 3", tranche3Desc: "Зарезервований для корекцій, відкатів або секторальних ротацій. Найбільший транш — бо ринок запропонує кращі можливості, ніж сьогодні.", disclaimer: "Освітній та інформаційний документ — не є персоналізованою інвестиційною рекомендацією. Перевірте ціни, комісії, податки та ризики перед будь-яким рішенням. Минулі результати не гарантують майбутніх." }
+    portfolio: { statCapital: "Загальний капітал", statStocksEtf: "Акції / ETF", statInstruments: "Інструменти", statReturn: "Річна дохідність", statVolatility: "Волатильність", statHorizon: "Горизонт", statBuffer: "Захисний буфер", tableHead: "Повна інформація — всі позиції", colTicker: "Тікер", colInstrument: "Інструмент", colType: "Тип", colSector: "Сектор", colRisk: "Ризик", disclaimerLabel: "Застереження:", swipeHint: "← Проведіть пальцем, щоб побачити більше →", teaserCta: "Дивитись у Кабінеті" },
+    portfolioUs: { eyebrow: "Портфель", title: "Портфель US", desc: "Демонстраційний диверсифікований портфель, помірний ризик, горизонт 3–5 років · Засновано 17.06.2026", disclaimer: "Демонстраційний портфель з освітньою метою. Не є інвестиційною рекомендацією. Проконсультуйтеся з фінансовим радником, авторизованим FCA, перед інвестуванням. Минулі результати не гарантують майбутніх.", teaserText: "Повний склад портфеля (кожен інструмент, частка, середня ціна, поточна ціна, прибуток/збиток за позицією) доступний лише учасникам з активною підпискою, у вашому Кабінеті." },
+    portfolioEu: { eyebrow: "Портфель", title: "Європейський портфель Помірний+", desc: "Стратегія на 3–5 років, поетапний вхід, контроль ризику · Засновано 17.06.2026", statAssets: "Всього активів", statStocks: "Окремі акції", statMaxPos: "Макс. на позицію", regionEurope: "Європа (Ядро)", regionUs: "США / Глобальні технології", disclaimer: "Освітній та інформаційний документ — не є персоналізованою інвестиційною рекомендацією. Перевірте ціни, комісії, податки та ризики перед будь-яким рішенням. Минулі результати не гарантують майбутніх.", teaserText: "Повний список компаній, частка кожної, біржа, валюта, середня ціна та стратегія поетапного входу доступні лише учасникам з активною підпискою, у вашому Кабінеті." },
+    cabinet: { portfolios: { title: "Ваші портфелі", tabUs: "Портфель США", tabEu: "Портфель Європа", locked: "Для перегляду портфелів потрібна активна підписка. Зв'яжіться з нами для активації.", delayedBadge: "Дані із затримкою ~15 хвилин", evolution: "Динаміка з моменту заснування", interval1M: "1М", interval3M: "3М", interval1Y: "1Р", intervalMax: "MAX", chartEmpty: "Недостатньо даних для цього періоду.", positionsHead: "Активні позиції", colWeight: "Частка", colAvgPrice: "Середня ціна", colCurrentPrice: "Поточна ціна", colPl: "Прибуток/збиток", dividendsHead: "Дивіденди", colAmount: "Сума", colPayDate: "Дата виплати", transactionsHead: "Останні транзакції", colType: "Тип", colDate: "Дата", noDividends: "Дивіденди ще не зареєстровані.", noTransactions: "Транзакції ще не зареєстровані.", disclaimer: "Освітні/демонстраційні дані. Не є інвестиційною рекомендацією.", initialCapital: "Початковий капітал", currentValue: "Поточна вартість", profitSince: "Прибуток з моменту заснування", totalReturn: "Загальна дохідність", requiresSubscription: "Для перегляду портфелів потрібна активна підписка. Зв'яжіться з нами для активації.", sessionExpired: "Сесія закінчилася. Будь ласка, увійдіть знову.", lastUpdated: "Останнє оновлення:", errorGeneric: "Не вдалося завантажити портфелі. Спробуйте ще раз.", noData: "Для цього портфеля ще немає опублікованих даних." } }
   },
   pl: {
     riskStrip: "⚠️ Ryzyko: Handel CFD wiąże się z wysokim ryzykiem straty. Niezależna strona informacyjna.",
     mobileToggle: "Otwórz menu",
-    nav: { home: "Start", about: "O nas", ideas: "⌁ Pomysły transakcyjne", portfolios: "Portfele", portfolioUs: "$ Portfel US", portfolioEu: "€ Portfel EU", reports: "▤ Raporty", education: "Edukacja", calendar: "Kalendarz ekonomiczny", faq: "FAQ", contact: "Kontakt" },
+    nav: { home: "Start", about: "O nas", ideas: "⌁ Pomysły transakcyjne", portfolios: "Portfele", portfolioUs: "$ Portfel US", portfolioEu: "€ Portfel EU", reports: "▤ Raporty", education: "Edukacja", calendar: "Kalendarz ekonomiczny", faq: "FAQ", contact: "Kontakt", account: "Panel użytkownika" },
     memberButton: "Strefa członka",
     hero: {
       pill: "Aktywne pomysły transakcyjne · Członkowie",
@@ -2147,9 +2151,10 @@ const translations = {
       q12: "Jak mogę dołączyć do zespołu?", a12: "Tylko po indywidualnej rozmowie i raporcie z konta rzeczywistego, śledzonym przez miesiąc. Po zatwierdzeniu otrzymujesz dostęp do konta rzeczywistego i naszych usług, z bardziej szczegółowymi raportami."
     },
 
-    portfolio: { statCapital: "Kapitał całkowity", statStocksEtf: "Akcje / ETF", statInstruments: "Instrumenty", statReturn: "Roczna stopa zwrotu", statVolatility: "Zmienność", statHorizon: "Horyzont", statBuffer: "Bufor Defensywny", tableHead: "Pełne szczegóły — wszystkie pozycje", colTicker: "Ticker", colInstrument: "Instrument", colType: "Typ", colSector: "Sektor", colRisk: "Ryzyko", disclaimerLabel: "Zastrzeżenie:", swipeHint: "← Przesuń, aby zobaczyć więcej →" },
-    portfolioUs: { eyebrow: "Portfel", title: "Portfel US", desc: "Demonstracyjny zdywersyfikowany portfel, umiarkowane ryzyko, horyzont 3–5 lat · Założony 17.06.2026", disclaimer: "Portfel demonstracyjny w celach edukacyjnych. Nie stanowi porady inwestycyjnej. Skonsultuj się z doradcą finansowym autoryzowanym przez FCA przed inwestowaniem. Wyniki historyczne nie gwarantują przyszłych rezultatów." },
-    portfolioEu: { eyebrow: "Portfel", title: "Portfel Europejski Umiarkowany+", desc: "Strategia na 3–5 lat, wejście w transzach, kontrola ryzyka · Założony 17.06.2026", statAssets: "Wszystkich aktywów", statStocks: "Akcje indywidualne", statMaxPos: "Maks. na pozycję", regionEurope: "Europa (Rdzeń)", regionUs: "USA / Globalna technologia", tableHead: "Wszystkie pozycje — przegląd", colCompany: "Spółka", bufferHead: "Składniki bufora defensywnego", colComponent: "Składnik", colEstReturn: "Szac. zwrot", colLiquidity: "Płynność", tranche1: "Transza 1", tranche1Desc: "Początkowe wejście w pozycje core (ASML, SAP, L'Oréal, Apple, ETF bufora). Kupuj tylko jeśli układ techniczny jest akceptowalny — bez pośpiechu.", tranche2: "Transza 2", tranche2Desc: "Po potwierdzeniach: trend powyżej średnich kroczących, dobre wyniki finansowe, brak szoków makro. Dodajesz SPCX, Google, Safran, Prysmian.", tranche3: "Transza 3", tranche3Desc: "Zarezerwowana na korekty, cofnięcia lub rotacje sektorowe. Największa transza — bo rynek zaoferuje lepsze okazje niż dziś.", disclaimer: "Dokument edukacyjny i informacyjny — nie stanowi zindywidualizowanej porady inwestycyjnej. Sprawdź ceny, opłaty, podatki i ryzyko przed podjęciem decyzji. Wyniki historyczne nie gwarantują przyszłych rezultatów." }
+    portfolio: { statCapital: "Kapitał całkowity", statStocksEtf: "Akcje / ETF", statInstruments: "Instrumenty", statReturn: "Roczna stopa zwrotu", statVolatility: "Zmienność", statHorizon: "Horyzont", statBuffer: "Bufor Defensywny", tableHead: "Pełne szczegóły — wszystkie pozycje", colTicker: "Ticker", colInstrument: "Instrument", colType: "Typ", colSector: "Sektor", colRisk: "Ryzyko", disclaimerLabel: "Zastrzeżenie:", swipeHint: "← Przesuń, aby zobaczyć więcej →", teaserCta: "Zobacz w Panelu Klienta" },
+    portfolioUs: { eyebrow: "Portfel", title: "Portfel US", desc: "Demonstracyjny zdywersyfikowany portfel, umiarkowane ryzyko, horyzont 3–5 lat · Założony 17.06.2026", disclaimer: "Portfel demonstracyjny w celach edukacyjnych. Nie stanowi porady inwestycyjnej. Skonsultuj się z doradcą finansowym autoryzowanym przez FCA przed inwestowaniem. Wyniki historyczne nie gwarantują przyszłych rezultatów.", teaserText: "Pełny skład portfela (każdy instrument, waga, cena średnia, cena bieżąca, zysk/strata na pozycji) jest dostępny wyłącznie dla członków z aktywną subskrypcją, w Twoim Panelu Klienta." },
+    portfolioEu: { eyebrow: "Portfel", title: "Portfel Europejski Umiarkowany+", desc: "Strategia na 3–5 lat, wejście w transzach, kontrola ryzyka · Założony 17.06.2026", statAssets: "Wszystkich aktywów", statStocks: "Akcje indywidualne", statMaxPos: "Maks. na pozycję", regionEurope: "Europa (Rdzeń)", regionUs: "USA / Globalna technologia", disclaimer: "Dokument edukacyjny i informacyjny — nie stanowi zindywidualizowanej porady inwestycyjnej. Sprawdź ceny, opłaty, podatki i ryzyko przed podjęciem decyzji. Wyniki historyczne nie gwarantują przyszłych rezultatów.", teaserText: "Pełna lista spółek, waga każdej z nich, giełda, waluta, cena średnia i strategia wejścia w transzach są dostępne wyłącznie dla członków z aktywną subskrypcją, w Twoim Panelu Klienta." },
+    cabinet: { portfolios: { title: "Twoje portfele", tabUs: "Portfel USA", tabEu: "Portfel Europa", locked: "Aby zobaczyć portfele, potrzebujesz aktywnej subskrypcji. Skontaktuj się z nami w celu aktywacji.", delayedBadge: "Dane z opóźnieniem ~15 minut", evolution: "Zmiana wartości od założenia", interval1M: "1M", interval3M: "3M", interval1Y: "1R", intervalMax: "MAX", chartEmpty: "Za mało danych dla tego okresu.", positionsHead: "Aktywne pozycje", colWeight: "Waga", colAvgPrice: "Cena średnia", colCurrentPrice: "Cena bieżąca", colPl: "Zysk/strata", dividendsHead: "Dywidendy", colAmount: "Kwota", colPayDate: "Data wypłaty", transactionsHead: "Ostatnie transakcje", colType: "Typ", colDate: "Data", noDividends: "Brak zarejestrowanych dywidend.", noTransactions: "Brak zarejestrowanych transakcji.", disclaimer: "Dane edukacyjne/demonstracyjne. Nie stanowi porady inwestycyjnej.", initialCapital: "Kapitał początkowy", currentValue: "Wartość bieżąca", profitSince: "Zysk od założenia", totalReturn: "Całkowita stopa zwrotu", requiresSubscription: "Aby zobaczyć portfele, potrzebujesz aktywnej subskrypcji. Skontaktuj się z nami w celu aktywacji.", sessionExpired: "Sesja wygasła. Zaloguj się ponownie.", lastUpdated: "Ostatnia aktualizacja:", errorGeneric: "Nie udało się załadować portfeli. Spróbuj ponownie.", noData: "Ten portfel nie ma jeszcze opublikowanych danych." } }
   }
 };
 
@@ -2393,6 +2398,309 @@ function loadCabinetIdeas(sessionToken) {
     })
     .catch(function () {});
 }
+
+/* --- Cabinet Portfolios (US/EU) --------------------------------------- */
+var PORTFOLIO_STATE = { portfolios: null, activeCode: "US", activeInterval: "1M", wired: false, delayedDataMinutes: 15 };
+
+function portfolioT(key) {
+  var dict = translations[currentLang] || translations.ro;
+  return getNested(dict, "cabinet.portfolios." + key) || key;
+}
+
+function portfolioFormatMoney(amount, currency) {
+  if (amount === null || amount === undefined || isNaN(amount)) return "—";
+  var symbols = { GBP: "£", EUR: "€", USD: "$", CHF: "CHF " };
+  var symbol = symbols[currency] || (currency ? currency + " " : "");
+  var sign = amount < 0 ? "-" : "";
+  return sign + symbol + Math.abs(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function portfolioFormatPct(pct) {
+  if (pct === null || pct === undefined || isNaN(pct)) return "—";
+  return (pct >= 0 ? "+" : "") + pct.toFixed(2) + "%";
+}
+
+function portfolioFormatDate(isoDate) {
+  if (!isoDate) return "—";
+  try {
+    var lang = (typeof currentLang !== "undefined" && ACCOUNT_LOCALE_MAP[currentLang]) ? currentLang : "ro";
+    var locale = ACCOUNT_LOCALE_MAP[lang];
+    return new Date(isoDate).toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
+  } catch (e) {
+    return isoDate;
+  }
+}
+
+function portfolioFormatDateTime(isoDate) {
+  if (!isoDate) return "—";
+  try {
+    var lang = (typeof currentLang !== "undefined" && ACCOUNT_LOCALE_MAP[currentLang]) ? currentLang : "ro";
+    var locale = ACCOUNT_LOCALE_MAP[lang];
+    return new Date(isoDate).toLocaleString(locale, { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  } catch (e) {
+    return isoDate;
+  }
+}
+
+function loadCabinetPortfolios(sessionToken) {
+  if (!sessionToken) return;
+  PORTFOLIO_STATE.sessionToken = sessionToken;
+  portfolioWireControlsOnce();
+
+  fetch("/api/account-portfolios", { headers: { Authorization: "Bearer " + sessionToken } })
+    .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
+    .then(function (res) {
+      var locked = document.getElementById("portfolioLocked");
+      var panel = document.getElementById("portfolioPanel");
+      if (res.ok && res.data && res.data.success && Array.isArray(res.data.portfolios)) {
+        PORTFOLIO_STATE.portfolios = res.data.portfolios;
+        PORTFOLIO_STATE.delayedDataMinutes = res.data.delayedDataMinutes || 15;
+        if (locked) locked.hidden = true;
+        if (panel) panel.hidden = false;
+        portfolioRenderActiveTab();
+        return;
+      }
+      if (res.status === 401) {
+        accountHandleSessionExpired();
+        return;
+      }
+      if (res.status === 403) {
+        if (panel) panel.hidden = true;
+        if (locked) {
+          locked.hidden = false;
+          var p = locked.querySelector("p");
+          if (p) p.textContent = portfolioT("requiresSubscription");
+        }
+        return;
+      }
+      if (panel) panel.hidden = true;
+      if (locked) {
+        locked.hidden = false;
+        var p2 = locked.querySelector("p");
+        if (p2) p2.textContent = portfolioT("errorGeneric");
+      }
+    })
+    .catch(function () {});
+}
+
+function portfolioWireControlsOnce() {
+  if (PORTFOLIO_STATE.wired) return;
+  PORTFOLIO_STATE.wired = true;
+
+  var tabs = document.getElementById("portfolioTabs");
+  if (tabs) {
+    tabs.querySelectorAll("[data-portfolio-tab]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var code = btn.getAttribute("data-portfolio-tab");
+        if (code === PORTFOLIO_STATE.activeCode) return;
+        PORTFOLIO_STATE.activeCode = code;
+        tabs.querySelectorAll("[data-portfolio-tab]").forEach(function (b) {
+          var active = b === btn;
+          b.classList.toggle("is-active", active);
+          b.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        portfolioRenderActiveTab();
+      });
+    });
+  }
+
+  var teaserButtons = document.querySelectorAll("[data-portfolio-cta]");
+  teaserButtons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var code = btn.getAttribute("data-portfolio-cta");
+      PORTFOLIO_STATE.activeCode = code;
+      if (tabs) {
+        tabs.querySelectorAll("[data-portfolio-tab]").forEach(function (b) {
+          var active = b.getAttribute("data-portfolio-tab") === code;
+          b.classList.toggle("is-active", active);
+          b.setAttribute("aria-selected", active ? "true" : "false");
+        });
+      }
+      if (PORTFOLIO_STATE.portfolios) portfolioRenderActiveTab();
+    });
+  });
+
+  var intervalSwitch = document.getElementById("portfolioIntervalSwitch");
+  if (intervalSwitch) {
+    intervalSwitch.querySelectorAll("button[data-interval]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        PORTFOLIO_STATE.activeInterval = btn.getAttribute("data-interval");
+        intervalSwitch.querySelectorAll("button[data-interval]").forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        portfolioRenderActiveTab();
+      });
+    });
+  }
+}
+
+function portfolioRenderActiveTab() {
+  if (!PORTFOLIO_STATE.portfolios) return;
+  var p = PORTFOLIO_STATE.portfolios.filter(function (x) { return x.code === PORTFOLIO_STATE.activeCode; })[0];
+
+  var updatedEl = document.getElementById("portfolioUpdatedAt");
+  if (updatedEl) {
+    updatedEl.textContent = p && p.lastUpdatedAt
+      ? portfolioT("lastUpdated") + " " + portfolioFormatDateTime(p.lastUpdatedAt)
+      : portfolioT("lastUpdated") + " —";
+  }
+  var badge = document.querySelector(".portfolio-delayed-badge");
+  if (badge) badge.textContent = portfolioT("delayedBadge").replace("15", String(PORTFOLIO_STATE.delayedDataMinutes));
+
+  var statsEl = document.getElementById("portfolioSummaryStats");
+  if (statsEl) {
+    if (!p) {
+      statsEl.innerHTML = "<p class=\"portfolio-empty-note\">" + portfolioT("noData") + "</p>";
+    } else {
+      statsEl.innerHTML = [
+        portfolioStatHtml(portfolioFormatMoney(p.initialCapital, p.baseCurrency), portfolioT("initialCapital")),
+        portfolioStatHtml(p.currentValueBaseCcy != null ? portfolioFormatMoney(p.currentValueBaseCcy, p.baseCurrency) : "—", portfolioT("currentValue")),
+        portfolioStatHtml(p.profitSinceFoundedBaseCcy != null ? portfolioFormatMoney(p.profitSinceFoundedBaseCcy, p.baseCurrency) : "—", portfolioT("profitSince")),
+        portfolioStatHtml(p.totalReturnPct != null ? portfolioFormatPct(p.totalReturnPct) : "—", portfolioT("totalReturn"))
+      ].join("");
+    }
+  }
+
+  portfolioRenderChart(p ? p.performanceHistory : []);
+  portfolioRenderPositions(p ? p.positions : [], p ? p.baseCurrency : null);
+  portfolioRenderDividends(p ? p.dividends : []);
+  portfolioRenderTransactions(p ? p.transactions : []);
+
+  var fxNote = document.getElementById("portfolioFxNote");
+  if (fxNote) {
+    fxNote.textContent = p
+      ? "1 " + p.baseCurrency + " = moneda de bază a portofoliului. Pozițiile în altă monedă sunt convertite folosind cel mai recent curs introdus de administrator (vezi fx_rates)."
+      : "";
+  }
+}
+
+function portfolioStatHtml(value, label) {
+  return "<div class=\"stat-mini\"><div class=\"stat-mini-val\">" + portfolioEscape(value) +
+    "</div><div class=\"stat-mini-lbl\">" + portfolioEscape(label) + "</div></div>";
+}
+
+function portfolioEscape(s) {
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function portfolioRenderPositions(positions, baseCurrency) {
+  var body = document.getElementById("portfolioPositionsBody");
+  if (!body) return;
+  if (!positions || !positions.length) {
+    body.innerHTML = "<tr><td colspan=\"6\">" + portfolioEscape(portfolioT("noData")) + "</td></tr>";
+    return;
+  }
+  body.innerHTML = positions.map(function (pos) {
+    var weight = (pos.marketValueBaseCcy != null && baseCurrency)
+      ? "" // pondere reala calculata mai jos, relativ la total
+      : "—";
+    var plClass = pos.plInstrumentCcy > 0 ? "money" : (pos.plInstrumentCcy < 0 ? "pct high" : "");
+    var riskClass = pos.riskLevel === "high" ? "high" : (pos.riskLevel === "low" ? "low" : "med");
+    return "<tr><td class=\"ticker\">" + portfolioEscape(pos.ticker) + "</td>" +
+      "<td data-portfolio-weight-cell data-value=\"" + (pos.marketValueBaseCcy || 0) + "\">" + weight + "</td>" +
+      "<td>" + portfolioEscape(portfolioFormatMoney(pos.avgPrice, pos.instrumentCurrency)) + "</td>" +
+      "<td>" + portfolioEscape(pos.currentPrice != null ? portfolioFormatMoney(pos.currentPrice, pos.instrumentCurrency) : "—") + "</td>" +
+      "<td class=\"" + plClass + "\">" + portfolioEscape(pos.plInstrumentCcy != null ? portfolioFormatMoney(pos.plInstrumentCcy, pos.instrumentCurrency) + " (" + portfolioFormatPct(pos.plPct) + ")" : "—") + "</td>" +
+      "<td><span class=\"risk-badge " + riskClass + "\">" + portfolioEscape(pos.riskLevel || "—") + "</span></td></tr>";
+  }).join("");
+
+  // Pondere = valoare_pozitie / suma valorilor cunoscute, calculata client-side
+  // (serverul nu inventeaza o pondere fixa - se calculeaza din valorile reale).
+  var cells = body.querySelectorAll("[data-portfolio-weight-cell]");
+  var total = 0;
+  cells.forEach(function (c) { total += parseFloat(c.getAttribute("data-value")) || 0; });
+  cells.forEach(function (c) {
+    var v = parseFloat(c.getAttribute("data-value")) || 0;
+    c.textContent = total > 0 ? ((v / total) * 100).toFixed(1) + "%" : "—";
+  });
+}
+
+function portfolioRenderDividends(dividends) {
+  var body = document.getElementById("portfolioDividendsBody");
+  var empty = document.getElementById("portfolioDividendsEmpty");
+  if (!body) return;
+  if (!dividends || !dividends.length) {
+    body.innerHTML = "";
+    if (empty) empty.hidden = false;
+    return;
+  }
+  if (empty) empty.hidden = true;
+  body.innerHTML = dividends.map(function (d) {
+    return "<tr><td class=\"ticker\">" + portfolioEscape(d.ticker) + "</td>" +
+      "<td class=\"money\">" + portfolioEscape(portfolioFormatMoney(d.amount, d.currency)) + "</td>" +
+      "<td>" + portfolioEscape(portfolioFormatDate(d.payDate)) + "</td></tr>";
+  }).join("");
+}
+
+function portfolioRenderTransactions(transactions) {
+  var body = document.getElementById("portfolioTransactionsBody");
+  var empty = document.getElementById("portfolioTransactionsEmpty");
+  if (!body) return;
+  if (!transactions || !transactions.length) {
+    body.innerHTML = "";
+    if (empty) empty.hidden = false;
+    return;
+  }
+  if (empty) empty.hidden = true;
+  body.innerHTML = transactions.map(function (tx) {
+    var typeClass = (tx.type === "BUY" || tx.type === "DEPOSIT") ? "buy" : (tx.type === "SELL" || tx.type === "WITHDRAWAL") ? "sell" : "";
+    return "<tr><td class=\"" + typeClass + "\">" + portfolioEscape(tx.type) + "</td>" +
+      "<td class=\"ticker\">" + portfolioEscape(tx.ticker || "—") + "</td>" +
+      "<td>" + portfolioEscape(portfolioFormatMoney(tx.amount, tx.currency)) + "</td>" +
+      "<td>" + portfolioEscape(portfolioFormatDate(tx.executedAt)) + "</td></tr>";
+  }).join("");
+}
+
+function portfolioFilterHistoryByInterval(history, interval) {
+  if (!history || !history.length) return [];
+  if (interval === "MAX") return history;
+  var lastDate = new Date(history[history.length - 1].asOfDate);
+  var cutoff = new Date(lastDate);
+  if (interval === "1M") cutoff.setMonth(cutoff.getMonth() - 1);
+  else if (interval === "3M") cutoff.setMonth(cutoff.getMonth() - 3);
+  else if (interval === "1Y") cutoff.setFullYear(cutoff.getFullYear() - 1);
+  return history.filter(function (h) { return new Date(h.asOfDate) >= cutoff; });
+}
+
+// Grafic minimal, in SVG inline vanilla JS - fara librarie externa, ca sa nu
+// fie nevoie sa extindem CSP script-src (vezi vercel.json).
+function portfolioRenderChart(history) {
+  var wrap = document.getElementById("portfolioChartWrap");
+  var emptyEl = document.getElementById("portfolioChartEmpty");
+  if (!wrap) return;
+
+  var filtered = portfolioFilterHistoryByInterval(history, PORTFOLIO_STATE.activeInterval);
+  if (!filtered || filtered.length < 2) {
+    wrap.innerHTML = "";
+    if (emptyEl) emptyEl.hidden = false;
+    return;
+  }
+  if (emptyEl) emptyEl.hidden = true;
+
+  var W = 600, H = 180, PAD = 8;
+  var values = filtered.map(function (h) { return h.navValue; });
+  var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+  if (min === max) { min -= 1; max += 1; }
+  var stepX = (W - PAD * 2) / (filtered.length - 1);
+
+  var points = filtered.map(function (h, i) {
+    var x = PAD + i * stepX;
+    var y = H - PAD - ((h.navValue - min) / (max - min)) * (H - PAD * 2);
+    return x.toFixed(1) + "," + y.toFixed(1);
+  });
+
+  var trendUp = values[values.length - 1] >= values[0];
+  var strokeColor = trendUp ? "#18d98b" : "#ff4056";
+  var areaPoints = points.concat([(PAD + (filtered.length - 1) * stepX).toFixed(1) + "," + (H - PAD), PAD + "," + (H - PAD)]);
+
+  var svg = "<svg viewBox=\"0 0 " + W + " " + H + "\" preserveAspectRatio=\"none\" role=\"img\" aria-label=\"" +
+    portfolioEscape(portfolioT("evolution")) + "\">" +
+    "<polygon points=\"" + areaPoints.join(" ") + "\" fill=\"" + strokeColor + "\" fill-opacity=\"0.12\" stroke=\"none\"></polygon>" +
+    "<polyline points=\"" + points.join(" ") + "\" fill=\"none\" stroke=\"" + strokeColor + "\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"></polyline>" +
+    "</svg>";
+  wrap.innerHTML = svg;
+}
+
 function cabinetDownloadReport() {
   const sessionToken = (function () { try { return localStorage.getItem("tsb_session_token"); } catch (e) { return null; } })();
   if (!sessionToken) return;
@@ -2715,7 +3023,7 @@ function accountShowCabinetView(data, sessionToken) {
     }
   }
 
-  loadCabinetIdeas(sessionToken); var sinceEl = document.getElementById("cabinetSince");
+  loadCabinetIdeas(sessionToken); loadCabinetPortfolios(sessionToken); var sinceEl = document.getElementById("cabinetSince");
   if (sinceEl) {
     var lang = (typeof currentLang !== "undefined" && ACCOUNT_LOCALE_MAP[currentLang]) ? currentLang : "ro";
     var locale = ACCOUNT_LOCALE_MAP[lang];
