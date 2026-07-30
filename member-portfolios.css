@@ -186,6 +186,18 @@
 .mp-table td.mp-cell-muted{color:var(--muted)}
 .mp-table .mp-ref-price{color:var(--muted);font-style:italic}
 .mp-table .mp-weight-na{color:var(--muted);font-size:11px}
+.mp-table .mp-awaiting-live{color:var(--muted);font-size:11.5px;font-style:italic}
+
+/* stat card afisand placeholder text ("In asteptarea datelor live") in loc
+   de o cifra - font mai mic decat cifrele normale, ca sa incapa pe un card
+   ingust fara sa dea layout overflow. */
+.stat-mini-val.mp-stat-pending{
+  font-size:.78rem;
+  font-weight:700;
+  color:var(--muted);
+  font-style:italic;
+  line-height:1.3;
+}
 .mp-table .mp-pl-pos{color:var(--green);font-weight:800}
 .mp-table .mp-pl-neg{color:var(--red);font-weight:800}
 .mp-table .mp-pl-flat{color:var(--muted)}

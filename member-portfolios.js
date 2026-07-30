@@ -48,13 +48,13 @@
       lastUpdated: "Ultima actualizare:",
       tabUs: "Portofoliu US", tabEu: "Portofoliu EU",
       fxNote: "1 {ccy} = moneda de bază a portofoliului. Pozițiile în altă monedă sunt convertite folosind cel mai recent curs introdus de administrator (fx_rates).",
-      incompleteNote: "⚠️ Unele valori nu pot fi convertite momentan în moneda de bază (lipsește un curs valutar în fx_rates) — ponderile și totalurile afectate apar ca „curs indisponibil” în loc de o valoare aproximativă.",
+      incompleteNote: "⚠️ Ponderea inițială nu poate fi calculată momentan pentru unele poziții (lipsește tranzacția de achiziție sau cursul valutar necesar) — apare ca „curs indisponibil” în loc de o valoare aproximativă.",
       initialCapital: "Capital inițial", currentValue: "Valoare actuală",
       profitSince: "Profit de la fondare", totalReturn: "Randament",
       evolution: "Evoluție de la fondare",
       chartEmpty: "Istoricul performanței se construiește.",
-      colTicker: "Ticker", colWeight: "Pondere", colAvgPrice: "Preț mediu",
-      colCurrentPrice: "Preț de referință", colPl: "Profit/Pierdere", colRisk: "Risc",
+      colTicker: "Ticker", colWeight: "Pondere inițială", colAvgPrice: "Preț mediu",
+      colCurrentPrice: "Preț curent", colPl: "Profit/Pierdere", colRisk: "Risc",
       colCategory: "Categorie", colCashAmount: "Sumă", colCashStatus: "Status",
       colAmount: "Sumă", colPayDate: "Dată plată",
       colType: "Tip", colDate: "Dată",
@@ -67,6 +67,7 @@
       transactionsEmpty: "Nicio tranzacție înregistrată încă.",
       rateUnavailable: "curs indisponibil",
       referencePrice: "preț de referință",
+      awaitingLiveData: "În așteptarea datelor live",
       disclaimer: "Date educaționale/demonstrative. Nu constituie consiliere de investiții.",
       statusReserved: "rezervat", statusReleased: "eliberat"
     },
@@ -85,13 +86,13 @@
       lastUpdated: "Last updated:",
       tabUs: "US Portfolio", tabEu: "EU Portfolio",
       fxNote: "1 {ccy} = the portfolio's base currency. Positions in other currencies are converted using the most recent rate entered by an admin (fx_rates).",
-      incompleteNote: "⚠️ Some values can't currently be converted to the base currency (a rate is missing from fx_rates) — affected weights and totals show as \"rate unavailable\" instead of an approximate value.",
+      incompleteNote: "⚠️ The initial weight can't currently be calculated for some positions (missing purchase transaction or a required FX rate) — shown as \"rate unavailable\" instead of an approximate value.",
       initialCapital: "Initial capital", currentValue: "Current value",
       profitSince: "Profit since founding", totalReturn: "Return",
       evolution: "Performance since founding",
       chartEmpty: "Performance history is being built.",
-      colTicker: "Ticker", colWeight: "Weight", colAvgPrice: "Avg. price",
-      colCurrentPrice: "Reference price", colPl: "Profit/Loss", colRisk: "Risk",
+      colTicker: "Ticker", colWeight: "Initial weight", colAvgPrice: "Avg. price",
+      colCurrentPrice: "Current price", colPl: "Profit/Loss", colRisk: "Risk",
       colCategory: "Category", colCashAmount: "Amount", colCashStatus: "Status",
       colAmount: "Amount", colPayDate: "Pay date",
       colType: "Type", colDate: "Date",
@@ -104,6 +105,7 @@
       transactionsEmpty: "No transactions recorded yet.",
       rateUnavailable: "rate unavailable",
       referencePrice: "reference price",
+      awaitingLiveData: "Awaiting live data",
       disclaimer: "Educational/demo data. Not investment advice.",
       statusReserved: "reserved", statusReleased: "released"
     },
@@ -122,13 +124,13 @@
       lastUpdated: "Последнее обновление:",
       tabUs: "Портфель US", tabEu: "Портфель EU",
       fxNote: "1 {ccy} = базовая валюта портфеля. Позиции в других валютах конвертируются по последнему курсу, введённому администратором (fx_rates).",
-      incompleteNote: "⚠️ Некоторые значения сейчас нельзя конвертировать в базовую валюту (в fx_rates отсутствует курс) — затронутые доли и суммы показаны как «курс недоступен» вместо приблизительного значения.",
+      incompleteNote: "⚠️ Начальную долю сейчас нельзя рассчитать для некоторых позиций (отсутствует сделка покупки или нужный курс валюты) — показано как «курс недоступен» вместо приблизительного значения.",
       initialCapital: "Начальный капитал", currentValue: "Текущая стоимость",
       profitSince: "Прибыль с основания", totalReturn: "Доходность",
       evolution: "Динамика с момента основания",
       chartEmpty: "История доходности формируется.",
-      colTicker: "Тикер", colWeight: "Доля", colAvgPrice: "Средняя цена",
-      colCurrentPrice: "Справочная цена", colPl: "Прибыль/Убыток", colRisk: "Риск",
+      colTicker: "Тикер", colWeight: "Начальная доля", colAvgPrice: "Средняя цена",
+      colCurrentPrice: "Текущая цена", colPl: "Прибыль/Убыток", colRisk: "Риск",
       colCategory: "Категория", colCashAmount: "Сумма", colCashStatus: "Статус",
       colAmount: "Сумма", colPayDate: "Дата выплаты",
       colType: "Тип", colDate: "Дата",
@@ -141,6 +143,7 @@
       transactionsEmpty: "Транзакции пока не зафиксированы.",
       rateUnavailable: "курс недоступен",
       referencePrice: "справочная цена",
+      awaitingLiveData: "Ожидание живых данных",
       disclaimer: "Образовательные/демонстрационные данные. Не является инвестиционной консультацией.",
       statusReserved: "зарезервировано", statusReleased: "высвобождено"
     },
@@ -159,13 +162,13 @@
       lastUpdated: "Останнє оновлення:",
       tabUs: "Портфель US", tabEu: "Портфель EU",
       fxNote: "1 {ccy} = базова валюта портфеля. Позиції в інших валютах конвертуються за останнім курсом, введеним адміністратором (fx_rates).",
-      incompleteNote: "⚠️ Деякі значення наразі не можна конвертувати в базову валюту (у fx_rates відсутній курс) — відповідні частки й суми показані як «курс недоступний» замість приблизного значення.",
+      incompleteNote: "⚠️ Початкову частку наразі не можна розрахувати для деяких позицій (відсутня угода купівлі або потрібний курс валюти) — показано як «курс недоступний» замість приблизного значення.",
       initialCapital: "Початковий капітал", currentValue: "Поточна вартість",
       profitSince: "Прибуток від заснування", totalReturn: "Дохідність",
       evolution: "Динаміка від заснування",
       chartEmpty: "Історія дохідності формується.",
-      colTicker: "Тікер", colWeight: "Частка", colAvgPrice: "Середня ціна",
-      colCurrentPrice: "Довідкова ціна", colPl: "Прибуток/Збиток", colRisk: "Ризик",
+      colTicker: "Тікер", colWeight: "Початкова частка", colAvgPrice: "Середня ціна",
+      colCurrentPrice: "Поточна ціна", colPl: "Прибуток/Збиток", colRisk: "Ризик",
       colCategory: "Категорія", colCashAmount: "Сума", colCashStatus: "Статус",
       colAmount: "Сума", colPayDate: "Дата виплати",
       colType: "Тип", colDate: "Дата",
@@ -178,6 +181,7 @@
       transactionsEmpty: "Транзакції ще не зафіксовано.",
       rateUnavailable: "курс недоступний",
       referencePrice: "довідкова ціна",
+      awaitingLiveData: "Очікування живих даних",
       disclaimer: "Освітні/демонстраційні дані. Не є інвестиційною консультацією.",
       statusReserved: "зарезервовано", statusReleased: "звільнено"
     },
@@ -196,13 +200,13 @@
       lastUpdated: "Ostatnia aktualizacja:",
       tabUs: "Portfel US", tabEu: "Portfel EU",
       fxNote: "1 {ccy} = waluta bazowa portfela. Pozycje w innych walutach są przeliczane po najnowszym kursie wprowadzonym przez administratora (fx_rates).",
-      incompleteNote: "⚠️ Niektórych wartości nie można obecnie przeliczyć na walutę bazową (brak kursu w fx_rates) — dotknięte udziały i sumy pokazują „kurs niedostępny” zamiast wartości przybliżonej.",
+      incompleteNote: "⚠️ Wagi początkowej nie można obecnie obliczyć dla niektórych pozycji (brak transakcji zakupu lub potrzebnego kursu walutowego) — pokazane jako „kurs niedostępny” zamiast wartości przybliżonej.",
       initialCapital: "Kapitał początkowy", currentValue: "Wartość bieżąca",
       profitSince: "Zysk od założenia", totalReturn: "Stopa zwrotu",
       evolution: "Wyniki od założenia",
       chartEmpty: "Historia wyników jest budowana.",
-      colTicker: "Ticker", colWeight: "Udział", colAvgPrice: "Śr. cena",
-      colCurrentPrice: "Cena referencyjna", colPl: "Zysk/Strata", colRisk: "Ryzyko",
+      colTicker: "Ticker", colWeight: "Waga początkowa", colAvgPrice: "Śr. cena",
+      colCurrentPrice: "Cena bieżąca", colPl: "Zysk/Strata", colRisk: "Ryzyko",
       colCategory: "Kategoria", colCashAmount: "Kwota", colCashStatus: "Status",
       colAmount: "Kwota", colPayDate: "Data wypłaty",
       colType: "Typ", colDate: "Data",
@@ -215,6 +219,7 @@
       transactionsEmpty: "Brak zarejestrowanych transakcji.",
       rateUnavailable: "kurs niedostępny",
       referencePrice: "cena referencyjna",
+      awaitingLiveData: "Oczekiwanie na dane na żywo",
       disclaimer: "Dane edukacyjne/demonstracyjne. Nie stanowią porady inwestycyjnej.",
       statusReserved: "zarezerwowane", statusReleased: "zwolnione"
     }
@@ -532,7 +537,10 @@
 
     var incompleteNote = document.getElementById("mpIncompleteNote");
     if (incompleteNote) {
-      var incomplete = !!(p && p.dataComplete === false);
+      // Banner-ul e legat de "Pondere initiala" (initialWeightsComplete),
+      // nu de vechiul dataComplete (bazat pe pretul curent) - vezi
+      // api/account-portfolios.js.
+      var incomplete = !!(p && p.initialWeightsComplete === false);
       incompleteNote.hidden = !incomplete;
       if (incomplete) incompleteNote.textContent = t("incompleteNote");
     }
@@ -545,8 +553,9 @@
     renderTransactions(p ? p.transactions : []);
   }
 
-  function statCardHtml(value, label) {
-    return "<div class=\"stat-mini\"><div class=\"stat-mini-val\">" + esc(value) +
+  function statCardHtml(value, label, pending) {
+    var cls = "stat-mini-val" + (pending ? " mp-stat-pending" : "");
+    return "<div class=\"stat-mini\"><div class=\"" + cls + "\">" + esc(value) +
       "</div><div class=\"stat-mini-lbl\">" + esc(label) + "</div></div>";
   }
 
@@ -557,11 +566,17 @@
       el.innerHTML = "<p class=\"portfolio-empty-note\">" + esc(t("noData")) + "</p>";
       return;
     }
+    // Valoare actuala / profit / randament sunt derivate din pretul curent -
+    // cat timp portofoliul nu are inca un furnizor de preturi live
+    // (p.hasLivePriceData === false, cazul actual pentru toate pozitiile),
+    // NU trebuie afisate ca cifre (nici macar bazate pe pretul de referinta),
+    // ci explicit "In asteptarea datelor live".
+    var live = !!p.hasLivePriceData;
     el.innerHTML = [
-      statCardHtml(fmtMoney(p.initialCapital, p.baseCurrency), t("initialCapital")),
-      statCardHtml(p.currentValueBaseCcy != null ? fmtMoney(p.currentValueBaseCcy, p.baseCurrency) : "—", t("currentValue")),
-      statCardHtml(p.profitSinceFoundedBaseCcy != null ? fmtMoney(p.profitSinceFoundedBaseCcy, p.baseCurrency) : "—", t("profitSince")),
-      statCardHtml(p.totalReturnPct != null ? fmtPct(p.totalReturnPct) : "—", t("totalReturn"))
+      statCardHtml(fmtMoney(p.initialCapital, p.baseCurrency), t("initialCapital"), false),
+      statCardHtml(live && p.currentValueBaseCcy != null ? fmtMoney(p.currentValueBaseCcy, p.baseCurrency) : t("awaitingLiveData"), t("currentValue"), !live),
+      statCardHtml(live && p.profitSinceFoundedBaseCcy != null ? fmtMoney(p.profitSinceFoundedBaseCcy, p.baseCurrency) : t("awaitingLiveData"), t("profitSince"), !live),
+      statCardHtml(live && p.totalReturnPct != null ? fmtPct(p.totalReturnPct) : t("awaitingLiveData"), t("totalReturn"), !live)
     ].join("");
   }
 
@@ -624,26 +639,28 @@
       return;
     }
     body.innerHTML = positions.map(function (pos) {
-      // Pondere calculata pe server (weightPct), relativ la capitalul total
-      // (pozitii + cash) al portofoliului, in moneda de baza - NU 0 cand
-      // lipseste un curs, ci "curs indisponibil" explicit.
-      var weightText = fmtWeight(pos.weightPct);
+      // Pondere initiala (initialWeightPct): suma tranzactiilor BUY ale
+      // pozitiei / capitalul initial al portofoliului - fixa, istorica,
+      // NU depinde de pretul curent. null (nu 0) cand lipseste tranzactia
+      // BUY sau cursul de conversie necesar - "curs indisponibil" explicit.
+      var weightText = fmtWeight(pos.initialWeightPct);
       var weightHtml = weightText ? esc(weightText) : "<span class=\"mp-weight-na\">" + esc(t("rateUnavailable")) + "</span>";
 
-      var currentPriceHtml;
-      if (pos.currentPrice == null) {
-        currentPriceHtml = "—";
-      } else if (pos.isReferencePrice) {
-        currentPriceHtml = "<span class=\"mp-ref-price\" title=\"" + esc(t("referencePrice")) + "\">" +
-          esc(fmtMoney(pos.currentPrice, pos.instrumentCurrency)) + " (" + esc(t("referencePrice")) + ")</span>";
-      } else {
-        currentPriceHtml = esc(fmtMoney(pos.currentPrice, pos.instrumentCurrency));
-      }
+      // Pret curent / profit: pana la integrarea unui furnizor de preturi
+      // live (priceSource === 'live_feed'), NU se afiseaza nicio cifra -
+      // nici macar pretul de referinta - ci explicit "In asteptarea
+      // datelor live". Vezi cerinta: nu prezenta pretul de referinta ca
+      // pret live.
+      var isLive = pos.priceSource === "live_feed";
+      var currentPriceHtml = isLive && pos.currentPrice != null
+        ? esc(fmtMoney(pos.currentPrice, pos.instrumentCurrency))
+        : "<span class=\"mp-awaiting-live\">" + esc(t("awaitingLiveData")) + "</span>";
 
       var plClass = pos.plInstrumentCcy > 0 ? "mp-pl-pos" : (pos.plInstrumentCcy < 0 ? "mp-pl-neg" : "mp-pl-flat");
-      var plHtml = pos.plInstrumentCcy != null
+      var plHtml = isLive && pos.plInstrumentCcy != null
         ? esc(fmtMoney(pos.plInstrumentCcy, pos.instrumentCurrency) + " (" + fmtPct(pos.plPct) + ")")
-        : "—";
+        : "<span class=\"mp-awaiting-live\">" + esc(t("awaitingLiveData")) + "</span>";
+      if (!isLive) plClass = "mp-cell-muted";
 
       var riskClass = pos.riskLevel === "high" ? "high" : (pos.riskLevel === "low" ? "low" : "med");
 
