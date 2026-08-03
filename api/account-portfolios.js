@@ -82,22 +82,42 @@
 // convertViaBridge). Nu introduce niciun curs nou si nu aproximeaza nimic:
 // e strict aritmetica pe cursuri reale deja introduse (EUR/USD, EUR/GBP etc).
 //
-// Limitare cunoscuta, NEREZOLVATA de acest fallback: fx_rates contine in
-// acest moment DOAR cursuri datate 2026-05-18 (data fondarii portofoliului
-// EU). Portofoliul US insa a fost fondat la 2026-05-07 - o data pentru care
-// NU exista niciun curs EUR/USD sau EUR/GBP in fx_rates. Triangularea de mai
-// jos tot foloseste cursurile din 2026-05-18 (cea mai recenta/singura data
-// disponibila), pentru ca altfel pozitiile USD din US ar ramane permanent
-// "curs indisponibil" - dar rezultatul e un curs real DECALAT cu 11 zile
-// fata de data tranzactiilor BUY ale portofoliului US, deci ponderile
-// rezultate pt. IWDA/EIMI/WSML/AAPL vor fi apropiate, dar NU identice cu
-// ponderile-tinta (25% / 10% / 7% / 7.5%) validate anterior - vezi raportul
-// hotfix-ului pentru cifrele exacte. Rezolvarea completa necesita cursuri
-// ECB reale pentru 2026-05-07, sursate si aprobate separat (acelasi tipar ca
-// seed-ul 202607300006) - NU a fost facuta aici, ca sa nu se inventeze un
-// curs istoric.
+// Limitare cunoscuta - ISTORIC (rezolvata partial mai jos, 2026-07-30 v2):
+// fx_rates continea initial DOAR cursuri datate 2026-05-18 (data fondarii
+// portofoliului EU). Portofoliul US insa a fost fondat la 2026-05-07. Prima
+// versiune a acestui fallback (triangulare) folosea "cel mai recent curs
+// disponibil" (2026-05-18) inclusiv pentru pozitiile US - un curs real, dar
+// DECALAT cu 11 zile fata de data tranzactiilor BUY ale portofoliului US,
+// ceea ce producea ponderi apropiate dar NU identice cu tintele (25% / 10% /
+// 7% / 7.5%) validate anterior.
+//
+// Nota (2026-07-30, v2 - cerinta explicita: "cursul din data tranzactiei, nu
+// cel mai recent curs disponibil"): pentru "Pondere initiala" (care insumeaza
+// tranzactii BUY istorice), a folosi "cel mai recent curs" e greisit conceptual
+// - o tranzactie din 7 mai trebuie convertita cu cursul valabil la 7 mai (sau,
+// daca lipseste exact acea data, cu cel mai recent curs ANTERIOR sau egal cu
+// 7 mai), niciodata cu un curs ulterior (18 mai), pentru ca la momentul
+// tranzactiei acel curs ulterior inca nu exista. convert() (mai jos) ramane
+// neschimbata si continua sa foloseasca "cel mai recent curs disponibil" -
+// corect pentru valoarea/cash-ul CURENT (unde nu exista o data de tranzactie
+// de respectat). Pentru suma BUY-urilor a fost adaugata o functie separata,
+// convertAsOf(amount, from, to, targetDate), folosita STRICT pentru
+// initialBuySumBaseCcy - vezi mai jos.
+//
+// Efect practic (fara seed-ul de cursuri 2026-05-07, care NU a fost rulat in
+// Supabase - vezi 202607300007_fx_rates_us_may2026_seed.sql, pregatit dar
+// neexecutat): fx_rates nu are NICIUN curs cu as_of_date <= 2026-05-07, deci
+// convertAsOf() returneaza null pentru toate pozitiile US in USD (IWDA, EIMI,
+// WSML, AAPL) - UI-ul le va afisa "curs indisponibil" in loc de o valoare
+// aproximativa bazata pe un curs ulterior. VUKE si RR. (deja in GBP, moneda
+// de baza a portofoliului US) nu au nevoie de conversie si raman corecte
+// (10% / 7.5%) indiferent de fx_rates. Dupa aprobarea si rularea manuala a
+// seed-ului 2026-05-07, toate cele 6 pozitii US vor avea pondere initiala
+// completa - vezi testele din tests/portfolio-weights.test.mjs pentru cifrele
+// exacte asteptate.
 
 import { getAccessInfo } from './_lib/access.js';
+import { createFxConverter } from './_lib/fx-convert.js';
 
 const RECENT_TRANSACTIONS_LIMIT = 15;
 const RECENT_DIVIDENDS_LIMIT = 15;
@@ -195,66 +215,11 @@ export default async function handler(req, res) {
     if (fxRes.error) return res.status(500).json({ error: 'Server error: ' + fxRes.error.message });
     if (cashRes.error) return res.status(500).json({ error: 'Server error: ' + cashRes.error.message });
 
-    // Cel mai recent curs disponibil per pereche valutara (fx_rates e mic, se
-    // poate reduce in memorie fara alt query).
-    const latestFx = {};
-    (fxRes.data || []).forEach((r) => {
-      const key = r.base_currency + '_' + r.quote_currency;
-      if (!latestFx[key]) latestFx[key] = r; // primul intalnit e cel mai recent (sortat desc)
-    });
-
-    // Cursuri indexate si pe as_of_date (separat de latestFx) - necesar
-    // STRICT pentru triangulare (bridging printr-o moneda terta), ca sa nu
-    // se combine niciodata un curs EUR/X de la o data cu un curs EUR/Y de la
-    // alta data intr-un curs derivat artificial. Vezi convertViaBridge.
-    const fxByDate = {}; // as_of_date -> { 'BASE_QUOTE': rate }
-    (fxRes.data || []).forEach((r) => {
-      const d = r.as_of_date;
-      if (!fxByDate[d]) fxByDate[d] = {};
-      const key = r.base_currency + '_' + r.quote_currency;
-      if (!(key in fxByDate[d])) fxByDate[d][key] = r.rate; // un singur curs per pereche/data (unique constraint din schema)
-    });
-    const fxDatesDesc = Object.keys(fxByDate).sort().reverse(); // cea mai recenta data intai
-
-    function rateOnDate(from, to, ratesForDate) {
-      const direct = ratesForDate[from + '_' + to];
-      if (direct != null) return direct;
-      const inverse = ratesForDate[to + '_' + from];
-      if (inverse) return 1 / inverse;
-      return null;
-    }
-
-    // Triangulare printr-o moneda-punte (implicit EUR): amount (in "from")
-    // -> punte -> "to", folosind DOAR cele doua curse punte->from si
-    // punte->to citite din ACEEASI as_of_date. Incearca datele disponibile
-    // de la cea mai recenta la cea mai veche, foloseste prima data la care
-    // ambele curse exista. Nu aproximeaza si nu introduce niciun curs nou -
-    // e strict aritmetica pe curs deja existent in fx_rates.
-    function convertViaBridge(amount, from, to, bridge) {
-      for (const d of fxDatesDesc) {
-        const ratesForDate = fxByDate[d];
-        const bridgeToFrom = rateOnDate(bridge, from, ratesForDate); // 1 bridge = bridgeToFrom * from
-        const bridgeToTo = rateOnDate(bridge, to, ratesForDate);     // 1 bridge = bridgeToTo * to
-        if (bridgeToFrom != null && bridgeToTo != null) {
-          return (amount / bridgeToFrom) * bridgeToTo;
-        }
-      }
-      return null;
-    }
-
-    function convert(amount, from, to) {
-      if (from === to) return amount;
-      const direct = latestFx[from + '_' + to];
-      if (direct) return amount * direct.rate;
-      const inverse = latestFx[to + '_' + from];
-      if (inverse && inverse.rate) return amount / inverse.rate;
-      // Fallback: triangulare prin EUR, doar daca nu exista curs direct/invers.
-      // Ex.: USD -> GBP = (EUR/GBP) / (EUR/USD), cand fx_rates nu are nicio
-      // pereche USD/GBP sau GBP/USD directa (cazul pozitiilor US in USD).
-      const viaEur = convertViaBridge(amount, from, to, 'EUR');
-      if (viaEur != null) return viaEur;
-      return null; // fara curs disponibil (nici direct, nici invers, nici prin triangulare) - UI trebuie sa afiseze explicit "curs indisponibil", nu 0 sau o valoare inventata
-    }
+    // convert() / convertAsOf(): extrase in api/_lib/fx-convert.js
+    // (2026-07-30, v2) ca functii pure, testabile izolat - vezi
+    // tests/portfolio-weights.test.mjs. Comportament neschimbat fata de
+    // versiunea inline anterioara; vezi acel fisier pentru detalii complete.
+    const { convert, convertAsOf } = createFxConverter(fxRes.data);
 
     const result = (portfolios || []).map((p) => {
       const buysForPortfolio = (buyTxRes.data || []).filter((t) => t.portfolio_id === p.id);
@@ -273,8 +238,16 @@ export default async function handler(req, res) {
           // Pondere initiala: suma tranzactiilor BUY ale acestei pozitii,
           // convertita in moneda de baza a portofoliului. null (nu 0) daca
           // nu exista nicio tranzactie BUY sau daca lipseste cursul necesar.
+          //
+          // IMPORTANT: foloseste convertAsOf (nu convert()) - fiecare BUY
+          // trebuie convertita cu cursul valabil la DATA ACELEI TRANZACTII
+          // (t.executed_at), niciodata cu "cel mai recent curs disponibil"
+          // (care ar putea fi ulterior tranzactiei si deci necunoscut la acel
+          // moment). Vezi nota din antetul fisierului (2026-07-30, v2).
           const buysForPosition = buysForPortfolio.filter((t) => t.position_id === x.id);
-          const convertedBuyAmounts = buysForPosition.map((t) => convert(t.amount, t.currency, p.base_currency));
+          const convertedBuyAmounts = buysForPosition.map((t) =>
+            convertAsOf(t.amount, t.currency, p.base_currency, (t.executed_at || '').slice(0, 10))
+          );
           const initialWeightDataComplete = buysForPosition.length > 0 && convertedBuyAmounts.every((v) => v != null);
           const initialBuySumBaseCcy = initialWeightDataComplete
             ? convertedBuyAmounts.reduce((sum, v) => sum + v, 0)
