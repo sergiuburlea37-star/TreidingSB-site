@@ -164,13 +164,19 @@
 }
 .mp-chart-wrap svg{width:100%;height:100%;display:block}
 
+/* Card compact pentru starea goala a graficului (sub 2 instantanee reale
+   in portfolio_performance_history). Inaltime tinta ~160-200px, indiferent
+   de limba activa (textele I18N variaza usor in lungime) - independent de
+   .mp-chart-wrap (graficul normal, cu 2+ puncte), care isi pastreaza
+   dimensiunea neschimbata (min-height:320px desktop / responsive mai jos). */
 .mp-chart-empty{
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   gap:10px;
-  padding:38px 20px;
+  min-height:180px;
+  padding:24px 20px;
   color:var(--muted);
   text-align:center;
 }

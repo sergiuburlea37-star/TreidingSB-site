@@ -45,7 +45,14 @@
       eyebrow: "Cabinet",
       title: "Portofoliile tale",
       delayedBadge: "Date live indisponibile momentan",
-      lastUpdated: "Ultima actualizare:",
+      // (2026-08-03) Eticheta NU mai spune "Ultima actualizare" - campul
+      // afisat (lastUpdatedAt) e derivat din price_updated_at pe pozitii,
+      // care in acest moment NU e o actualizare live (niciun furnizor de
+      // preturi live activ, price_source='manual' - vezi raportul separat
+      // despre integrarea Twelve Data). Eticheta veche sugera fals o
+      // actualizare in timp real; noua eticheta descrie corect data drept
+      // reper/referinta a portofoliului, nu un semnal de live data.
+      lastUpdated: "Data de referință a portofoliului:",
       tabUs: "Portofoliu US", tabEu: "Portofoliu EU",
       fxNote: "1 {ccy} = moneda de bază a portofoliului. Pozițiile în altă monedă sunt convertite folosind cel mai recent curs introdus de administrator (fx_rates).",
       incompleteNote: "⚠️ Ponderea inițială nu poate fi calculată momentan pentru unele poziții (lipsește tranzacția de achiziție sau cursul valutar necesar) — apare ca „curs indisponibil” în loc de o valoare aproximativă.",
@@ -91,7 +98,7 @@
       eyebrow: "Dashboard",
       title: "Your portfolios",
       delayedBadge: "Live data currently unavailable",
-      lastUpdated: "Last updated:",
+      lastUpdated: "Portfolio reference date:",
       tabUs: "US Portfolio", tabEu: "EU Portfolio",
       fxNote: "1 {ccy} = the portfolio's base currency. Positions in other currencies are converted using the most recent rate entered by an admin (fx_rates).",
       incompleteNote: "⚠️ The initial weight can't currently be calculated for some positions (missing purchase transaction or a required FX rate) — shown as \"rate unavailable\" instead of an approximate value.",
@@ -137,7 +144,7 @@
       eyebrow: "Кабинет",
       title: "Ваши портфели",
       delayedBadge: "Данные в реальном времени сейчас недоступны",
-      lastUpdated: "Последнее обновление:",
+      lastUpdated: "Дата отсчёта портфеля:",
       tabUs: "Портфель US", tabEu: "Портфель EU",
       fxNote: "1 {ccy} = базовая валюта портфеля. Позиции в других валютах конвертируются по последнему курсу, введённому администратором (fx_rates).",
       incompleteNote: "⚠️ Начальную долю сейчас нельзя рассчитать для некоторых позиций (отсутствует сделка покупки или нужный курс валюты) — показано как «курс недоступен» вместо приблизительного значения.",
@@ -183,7 +190,7 @@
       eyebrow: "Кабінет",
       title: "Ваші портфелі",
       delayedBadge: "Дані в реальному часі наразі недоступні",
-      lastUpdated: "Останнє оновлення:",
+      lastUpdated: "Дата відліку портфеля:",
       tabUs: "Портфель US", tabEu: "Портфель EU",
       fxNote: "1 {ccy} = базова валюта портфеля. Позиції в інших валютах конвертуються за останнім курсом, введеним адміністратором (fx_rates).",
       incompleteNote: "⚠️ Початкову частку наразі не можна розрахувати для деяких позицій (відсутня угода купівлі або потрібний курс валюти) — показано як «курс недоступний» замість приблизного значення.",
@@ -229,7 +236,7 @@
       eyebrow: "Panel",
       title: "Twoje portfele",
       delayedBadge: "Dane na żywo są obecnie niedostępne",
-      lastUpdated: "Ostatnia aktualizacja:",
+      lastUpdated: "Data odniesienia portfela:",
       tabUs: "Portfel US", tabEu: "Portfel EU",
       fxNote: "1 {ccy} = waluta bazowa portfela. Pozycje w innych walutach są przeliczane po najnowszym kursie wprowadzonym przez administratora (fx_rates).",
       incompleteNote: "⚠️ Wagi początkowej nie można obecnie obliczyć dla niektórych pozycji (brak transakcji zakupu lub potrzebnego kursu walutowego) — pokazane jako „kurs niedostępny” zamiast wartości przybliżonej.",
