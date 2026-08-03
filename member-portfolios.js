@@ -44,7 +44,7 @@
       retry: "Reîncearcă",
       eyebrow: "Cabinet",
       title: "Portofoliile tale",
-      delayedBadge: "Date întârziate ~{min} minute",
+      delayedBadge: "Date live indisponibile momentan",
       lastUpdated: "Ultima actualizare:",
       tabUs: "Portofoliu US", tabEu: "Portofoliu EU",
       fxNote: "1 {ccy} = moneda de bază a portofoliului. Pozițiile în altă monedă sunt convertite folosind cel mai recent curs introdus de administrator (fx_rates).",
@@ -69,7 +69,15 @@
       referencePrice: "preț de referință",
       awaitingLiveData: "În așteptarea datelor live",
       disclaimer: "Date educaționale/demonstrative. Nu constituie consiliere de investiții.",
-      statusReserved: "rezervat", statusReleased: "eliberat"
+      statusReserved: "rezervat", statusReleased: "eliberat",
+      cashCategories: {
+        amplification_reserve: "Rezervă pentru amplificarea pozițiilor",
+        cash_equivalent: "Numerar disponibil",
+        iwfv_reserved: "Rezervat pentru IWFV",
+        spcx_reserved: "Rezervat pentru SpaceX",
+        novo_b_reserved: "Rezervat pentru NOVO B",
+        buffer_defensiv: "Rezervă defensivă (buffer)"
+      }
     },
     en: {
       navHome: "Home", navCabinet: "Dashboard",
@@ -82,7 +90,7 @@
       retry: "Retry",
       eyebrow: "Dashboard",
       title: "Your portfolios",
-      delayedBadge: "Delayed data ~{min} minutes",
+      delayedBadge: "Live data currently unavailable",
       lastUpdated: "Last updated:",
       tabUs: "US Portfolio", tabEu: "EU Portfolio",
       fxNote: "1 {ccy} = the portfolio's base currency. Positions in other currencies are converted using the most recent rate entered by an admin (fx_rates).",
@@ -107,7 +115,15 @@
       referencePrice: "reference price",
       awaitingLiveData: "Awaiting live data",
       disclaimer: "Educational/demo data. Not investment advice.",
-      statusReserved: "reserved", statusReleased: "released"
+      statusReserved: "reserved", statusReleased: "released",
+      cashCategories: {
+        amplification_reserve: "Reserve for position amplification",
+        cash_equivalent: "Available cash",
+        iwfv_reserved: "Reserved for IWFV",
+        spcx_reserved: "Reserved for SpaceX",
+        novo_b_reserved: "Reserved for NOVO B",
+        buffer_defensiv: "Defensive buffer"
+      }
     },
     ru: {
       navHome: "Главная", navCabinet: "Кабинет",
@@ -120,7 +136,7 @@
       retry: "Повторить",
       eyebrow: "Кабинет",
       title: "Ваши портфели",
-      delayedBadge: "Данные с задержкой ~{min} мин.",
+      delayedBadge: "Данные в реальном времени сейчас недоступны",
       lastUpdated: "Последнее обновление:",
       tabUs: "Портфель US", tabEu: "Портфель EU",
       fxNote: "1 {ccy} = базовая валюта портфеля. Позиции в других валютах конвертируются по последнему курсу, введённому администратором (fx_rates).",
@@ -145,7 +161,15 @@
       referencePrice: "справочная цена",
       awaitingLiveData: "Ожидание живых данных",
       disclaimer: "Образовательные/демонстрационные данные. Не является инвестиционной консультацией.",
-      statusReserved: "зарезервировано", statusReleased: "высвобождено"
+      statusReserved: "зарезервировано", statusReleased: "высвобождено",
+      cashCategories: {
+        amplification_reserve: "Резерв для увеличения позиций",
+        cash_equivalent: "Доступные денежные средства",
+        iwfv_reserved: "Зарезервировано для IWFV",
+        spcx_reserved: "Зарезервировано для SpaceX",
+        novo_b_reserved: "Зарезервировано для NOVO B",
+        buffer_defensiv: "Защитный буфер"
+      }
     },
     uk: {
       navHome: "Головна", navCabinet: "Кабінет",
@@ -158,7 +182,7 @@
       retry: "Повторити",
       eyebrow: "Кабінет",
       title: "Ваші портфелі",
-      delayedBadge: "Дані із затримкою ~{min} хв.",
+      delayedBadge: "Дані в реальному часі наразі недоступні",
       lastUpdated: "Останнє оновлення:",
       tabUs: "Портфель US", tabEu: "Портфель EU",
       fxNote: "1 {ccy} = базова валюта портфеля. Позиції в інших валютах конвертуються за останнім курсом, введеним адміністратором (fx_rates).",
@@ -183,7 +207,15 @@
       referencePrice: "довідкова ціна",
       awaitingLiveData: "Очікування живих даних",
       disclaimer: "Освітні/демонстраційні дані. Не є інвестиційною консультацією.",
-      statusReserved: "зарезервовано", statusReleased: "звільнено"
+      statusReserved: "зарезервовано", statusReleased: "звільнено",
+      cashCategories: {
+        amplification_reserve: "Резерв для збільшення позицій",
+        cash_equivalent: "Доступні грошові кошти",
+        iwfv_reserved: "Зарезервовано для IWFV",
+        spcx_reserved: "Зарезервовано для SpaceX",
+        novo_b_reserved: "Зарезервовано для NOVO B",
+        buffer_defensiv: "Захисний буфер"
+      }
     },
     pl: {
       navHome: "Strona główna", navCabinet: "Panel",
@@ -196,7 +228,7 @@
       retry: "Ponów",
       eyebrow: "Panel",
       title: "Twoje portfele",
-      delayedBadge: "Dane opóźnione ~{min} min",
+      delayedBadge: "Dane na żywo są obecnie niedostępne",
       lastUpdated: "Ostatnia aktualizacja:",
       tabUs: "Portfel US", tabEu: "Portfel EU",
       fxNote: "1 {ccy} = waluta bazowa portfela. Pozycje w innych walutach są przeliczane po najnowszym kursie wprowadzonym przez administratora (fx_rates).",
@@ -221,13 +253,31 @@
       referencePrice: "cena referencyjna",
       awaitingLiveData: "Oczekiwanie na dane na żywo",
       disclaimer: "Dane edukacyjne/demonstracyjne. Nie stanowią porady inwestycyjnej.",
-      statusReserved: "zarezerwowane", statusReleased: "zwolnione"
+      statusReserved: "zarezerwowane", statusReleased: "zwolnione",
+      cashCategories: {
+        amplification_reserve: "Rezerwa na zwiększenie pozycji",
+        cash_equivalent: "Dostępna gotówka",
+        iwfv_reserved: "Zarezerwowane dla IWFV",
+        spcx_reserved: "Zarezerwowane dla SpaceX",
+        novo_b_reserved: "Zarezerwowane dla NOVO B",
+        buffer_defensiv: "Bufor defensywny"
+      }
     }
   };
 
   function t(key) {
     var dict = I18N[STATE.lang] || I18N.ro;
     return dict[key] || (I18N.ro[key] || key);
+  }
+
+  // Traducerea categoriilor de rezerve cash (portfolio_cash_reserves.category
+  // - slug-uri brute din seed, ex. "amplification_reserve"). Fallback pe
+  // categoria bruta (nu pe RO) daca apare vreodata o categorie noua,
+  // necunoscuta - niciodata un text gol sau inventat.
+  function cashCategoryLabel(category) {
+    var dict = (I18N[STATE.lang] && I18N[STATE.lang].cashCategories) || {};
+    var fallback = (I18N.ro && I18N.ro.cashCategories) || {};
+    return dict[category] || fallback[category] || category;
   }
 
   function getLang() {
@@ -297,8 +347,17 @@
     set("mpDividendsEmpty", t("dividendsEmpty"));
     set("mpTransactionsEmpty", t("transactionsEmpty"));
     set("mpDisclaimer", t("disclaimer"));
+    // (2026-07-30) Badge-ul NU mai promite un interval de intarziere ("~15
+    // minute") - nicio integrare de preturi live nu e activa inca (vezi
+    // price_source = 'manual' pe toate pozitiile), deci acea promisiune nu
+    // putea fi sustinuta de infrastructura curenta. Textul e acum onest:
+    // "date live indisponibile momentan", fara sa depinda de
+    // STATE.delayedDataMinutes. Cand un furnizor de preturi live va fi
+    // integrat si activ, acest badge (si traducerile din I18N) trebuie
+    // revizuite din nou, cu cadenta reala confirmata (vezi raportul separat
+    // despre limitele planului Vercel curent - cron o data/zi pe Hobby).
     var delayedBadge = document.getElementById("mpDelayedBadge");
-    if (delayedBadge) delayedBadge.textContent = t("delayedBadge").replace("{min}", String(STATE.delayedDataMinutes));
+    if (delayedBadge) delayedBadge.textContent = t("delayedBadge");
     document.documentElement.lang = STATE.lang;
   }
 
@@ -593,7 +652,17 @@
 
   // Grafic minimal, in SVG inline vanilla JS - fara librarie externa, ca sa
   // nu fie nevoie sa extindem CSP script-src (vezi vercel.json). Cand nu sunt
-  // suficiente puncte, afisam un mesaj elegant in loc de un panou gol mare.
+  // suficiente puncte (nevoie de minim 2 instantanee reale din
+  // portfolio_performance_history), afisam un card compact in loc de grafic.
+  //
+  // Nota (2026-07-30, hotfix): #mpChartWrap avea min-height:320px in CSS
+  // (vezi member-portfolios.css) indiferent daca era gol sau nu - cand
+  // filtered.length < 2, doar innerHTML era golit, dar elementul tot ocupa
+  // 320px goi pe ecran, DEASUPRA cardului compact #mpChartEmpty - asta
+  // producea aspectul de "grafic care nu se afiseaza corect" (un bloc gol
+  // mare, nu un card compact). Fix: ascunde explicit #mpChartWrap (atributul
+  // hidden => display:none, nicio regula CSS nu il suprascrie) cat timp nu
+  // are ce desena, si reafiseaza-l quand exista suficiente puncte.
   function renderChart(history) {
     var wrap = document.getElementById("mpChartWrap");
     var emptyEl = document.getElementById("mpChartEmpty");
@@ -602,9 +671,11 @@
     var filtered = filterHistoryByInterval(history, STATE.activeInterval);
     if (!filtered || filtered.length < 2) {
       wrap.innerHTML = "";
+      wrap.hidden = true;
       if (emptyEl) emptyEl.hidden = false;
       return;
     }
+    wrap.hidden = false;
     if (emptyEl) emptyEl.hidden = true;
 
     var W = 1000, H = 280, PAD = 10;
@@ -685,7 +756,7 @@
     if (empty) empty.hidden = true;
     body.innerHTML = reserves.map(function (r) {
       var statusLabel = r.status === "released" ? t("statusReleased") : t("statusReserved");
-      var label = r.category + (r.reservedForTicker ? " (" + r.reservedForTicker + ")" : "");
+      var label = cashCategoryLabel(r.category) + (r.reservedForTicker ? " (" + r.reservedForTicker + ")" : "");
       return "<tr><td>" + esc(label) + "</td>" +
         "<td>" + esc(fmtMoney(r.amount, r.currency)) + "</td>" +
         "<td>" + esc(statusLabel) + "</td></tr>";

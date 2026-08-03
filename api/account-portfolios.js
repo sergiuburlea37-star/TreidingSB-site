@@ -68,8 +68,56 @@
 // le afiseze ca valori "curente" catre membri cat timp price_source ramane
 // 'manual' pe toate pozitiile; UI-ul trebuie sa afiseze explicit "In asteptarea
 // datelor live" in loc, vezi campul priceSource / isReferencePrice.
+//
+// Nota (2026-07-30, hotfix): convert() stia doar sa caute un curs DIRECT
+// (from_to) sau un singur nivel de curs INVERS (to_from) - nimic altceva.
+// Pozitiile US in USD (IWDA, EIMI, WSML, AAPL - vezi seed v5, instrument_currency
+// = 'USD' desi portofoliul US e in GBP) nu aveau niciun curs direct sau invers
+// USD/GBP in fx_rates (seed-ul din 2026-07-30 a introdus doar perechi EUR/*),
+// deci convert() returna null si UI-ul afisa "curs indisponibil" pentru toate
+// cele 4 pozitii. Adaugat mai jos: triangulare printr-o moneda-punte (EUR),
+// ca fallback STRICT dupa ce cursul direct/invers lipseste - foloseste doar
+// cursuri EUR/X si EUR/Y deja existente in fx_rates, din ACEEASI as_of_date
+// (nu combina niciodata doua date diferite intr-un curs derivat - vezi
+// convertViaBridge). Nu introduce niciun curs nou si nu aproximeaza nimic:
+// e strict aritmetica pe cursuri reale deja introduse (EUR/USD, EUR/GBP etc).
+//
+// Limitare cunoscuta - ISTORIC (rezolvata partial mai jos, 2026-07-30 v2):
+// fx_rates continea initial DOAR cursuri datate 2026-05-18 (data fondarii
+// portofoliului EU). Portofoliul US insa a fost fondat la 2026-05-07. Prima
+// versiune a acestui fallback (triangulare) folosea "cel mai recent curs
+// disponibil" (2026-05-18) inclusiv pentru pozitiile US - un curs real, dar
+// DECALAT cu 11 zile fata de data tranzactiilor BUY ale portofoliului US,
+// ceea ce producea ponderi apropiate dar NU identice cu tintele (25% / 10% /
+// 7% / 7.5%) validate anterior.
+//
+// Nota (2026-07-30, v2 - cerinta explicita: "cursul din data tranzactiei, nu
+// cel mai recent curs disponibil"): pentru "Pondere initiala" (care insumeaza
+// tranzactii BUY istorice), a folosi "cel mai recent curs" e greisit conceptual
+// - o tranzactie din 7 mai trebuie convertita cu cursul valabil la 7 mai (sau,
+// daca lipseste exact acea data, cu cel mai recent curs ANTERIOR sau egal cu
+// 7 mai), niciodata cu un curs ulterior (18 mai), pentru ca la momentul
+// tranzactiei acel curs ulterior inca nu exista. convert() (mai jos) ramane
+// neschimbata si continua sa foloseasca "cel mai recent curs disponibil" -
+// corect pentru valoarea/cash-ul CURENT (unde nu exista o data de tranzactie
+// de respectat). Pentru suma BUY-urilor a fost adaugata o functie separata,
+// convertAsOf(amount, from, to, targetDate), folosita STRICT pentru
+// initialBuySumBaseCcy - vezi mai jos.
+//
+// Efect practic (fara seed-ul de cursuri 2026-05-07, care NU a fost rulat in
+// Supabase - vezi 202607300007_fx_rates_us_may2026_seed.sql, pregatit dar
+// neexecutat): fx_rates nu are NICIUN curs cu as_of_date <= 2026-05-07, deci
+// convertAsOf() returneaza null pentru toate pozitiile US in USD (IWDA, EIMI,
+// WSML, AAPL) - UI-ul le va afisa "curs indisponibil" in loc de o valoare
+// aproximativa bazata pe un curs ulterior. VUKE si RR. (deja in GBP, moneda
+// de baza a portofoliului US) nu au nevoie de conversie si raman corecte
+// (10% / 7.5%) indiferent de fx_rates. Dupa aprobarea si rularea manuala a
+// seed-ului 2026-05-07, toate cele 6 pozitii US vor avea pondere initiala
+// completa - vezi testele din tests/portfolio-weights.test.mjs pentru cifrele
+// exacte asteptate.
 
 import { getAccessInfo } from './_lib/access.js';
+import { createFxConverter } from './_lib/fx-convert.js';
 
 const RECENT_TRANSACTIONS_LIMIT = 15;
 const RECENT_DIVIDENDS_LIMIT = 15;
@@ -167,21 +215,11 @@ export default async function handler(req, res) {
     if (fxRes.error) return res.status(500).json({ error: 'Server error: ' + fxRes.error.message });
     if (cashRes.error) return res.status(500).json({ error: 'Server error: ' + cashRes.error.message });
 
-    // Cel mai recent curs disponibil per pereche valutara (fx_rates e mic, se
-    // poate reduce in memorie fara alt query).
-    const latestFx = {};
-    (fxRes.data || []).forEach((r) => {
-      const key = r.base_currency + '_' + r.quote_currency;
-      if (!latestFx[key]) latestFx[key] = r; // primul intalnit e cel mai recent (sortat desc)
-    });
-    function convert(amount, from, to) {
-      if (from === to) return amount;
-      const direct = latestFx[from + '_' + to];
-      if (direct) return amount * direct.rate;
-      const inverse = latestFx[to + '_' + from];
-      if (inverse && inverse.rate) return amount / inverse.rate;
-      return null; // fara curs disponibil - UI trebuie sa afiseze explicit "curs indisponibil", nu 0 sau o valoare inventata
-    }
+    // convert() / convertAsOf(): extrase in api/_lib/fx-convert.js
+    // (2026-07-30, v2) ca functii pure, testabile izolat - vezi
+    // tests/portfolio-weights.test.mjs. Comportament neschimbat fata de
+    // versiunea inline anterioara; vezi acel fisier pentru detalii complete.
+    const { convert, convertAsOf } = createFxConverter(fxRes.data);
 
     const result = (portfolios || []).map((p) => {
       const buysForPortfolio = (buyTxRes.data || []).filter((t) => t.portfolio_id === p.id);
@@ -200,8 +238,16 @@ export default async function handler(req, res) {
           // Pondere initiala: suma tranzactiilor BUY ale acestei pozitii,
           // convertita in moneda de baza a portofoliului. null (nu 0) daca
           // nu exista nicio tranzactie BUY sau daca lipseste cursul necesar.
+          //
+          // IMPORTANT: foloseste convertAsOf (nu convert()) - fiecare BUY
+          // trebuie convertita cu cursul valabil la DATA ACELEI TRANZACTII
+          // (t.executed_at), niciodata cu "cel mai recent curs disponibil"
+          // (care ar putea fi ulterior tranzactiei si deci necunoscut la acel
+          // moment). Vezi nota din antetul fisierului (2026-07-30, v2).
           const buysForPosition = buysForPortfolio.filter((t) => t.position_id === x.id);
-          const convertedBuyAmounts = buysForPosition.map((t) => convert(t.amount, t.currency, p.base_currency));
+          const convertedBuyAmounts = buysForPosition.map((t) =>
+            convertAsOf(t.amount, t.currency, p.base_currency, (t.executed_at || '').slice(0, 10))
+          );
           const initialWeightDataComplete = buysForPosition.length > 0 && convertedBuyAmounts.every((v) => v != null);
           const initialBuySumBaseCcy = initialWeightDataComplete
             ? convertedBuyAmounts.reduce((sum, v) => sum + v, 0)
