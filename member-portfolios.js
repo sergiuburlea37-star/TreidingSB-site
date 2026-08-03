@@ -44,7 +44,7 @@
       retry: "Reîncearcă",
       eyebrow: "Cabinet",
       title: "Portofoliile tale",
-      delayedBadge: "Date întârziate ~{min} minute",
+      delayedBadge: "Date live indisponibile momentan",
       lastUpdated: "Ultima actualizare:",
       tabUs: "Portofoliu US", tabEu: "Portofoliu EU",
       fxNote: "1 {ccy} = moneda de bază a portofoliului. Pozițiile în altă monedă sunt convertite folosind cel mai recent curs introdus de administrator (fx_rates).",
@@ -90,7 +90,7 @@
       retry: "Retry",
       eyebrow: "Dashboard",
       title: "Your portfolios",
-      delayedBadge: "Delayed data ~{min} minutes",
+      delayedBadge: "Live data currently unavailable",
       lastUpdated: "Last updated:",
       tabUs: "US Portfolio", tabEu: "EU Portfolio",
       fxNote: "1 {ccy} = the portfolio's base currency. Positions in other currencies are converted using the most recent rate entered by an admin (fx_rates).",
@@ -136,7 +136,7 @@
       retry: "Повторить",
       eyebrow: "Кабинет",
       title: "Ваши портфели",
-      delayedBadge: "Данные с задержкой ~{min} мин.",
+      delayedBadge: "Данные в реальном времени сейчас недоступны",
       lastUpdated: "Последнее обновление:",
       tabUs: "Портфель US", tabEu: "Портфель EU",
       fxNote: "1 {ccy} = базовая валюта портфеля. Позиции в других валютах конвертируются по последнему курсу, введённому администратором (fx_rates).",
@@ -182,7 +182,7 @@
       retry: "Повторити",
       eyebrow: "Кабінет",
       title: "Ваші портфелі",
-      delayedBadge: "Дані із затримкою ~{min} хв.",
+      delayedBadge: "Дані в реальному часі наразі недоступні",
       lastUpdated: "Останнє оновлення:",
       tabUs: "Портфель US", tabEu: "Портфель EU",
       fxNote: "1 {ccy} = базова валюта портфеля. Позиції в інших валютах конвертуються за останнім курсом, введеним адміністратором (fx_rates).",
@@ -228,7 +228,7 @@
       retry: "Ponów",
       eyebrow: "Panel",
       title: "Twoje portfele",
-      delayedBadge: "Dane opóźnione ~{min} min",
+      delayedBadge: "Dane na żywo są obecnie niedostępne",
       lastUpdated: "Ostatnia aktualizacja:",
       tabUs: "Portfel US", tabEu: "Portfel EU",
       fxNote: "1 {ccy} = waluta bazowa portfela. Pozycje w innych walutach są przeliczane po najnowszym kursie wprowadzonym przez administratora (fx_rates).",
@@ -347,8 +347,17 @@
     set("mpDividendsEmpty", t("dividendsEmpty"));
     set("mpTransactionsEmpty", t("transactionsEmpty"));
     set("mpDisclaimer", t("disclaimer"));
+    // (2026-07-30) Badge-ul NU mai promite un interval de intarziere ("~15
+    // minute") - nicio integrare de preturi live nu e activa inca (vezi
+    // price_source = 'manual' pe toate pozitiile), deci acea promisiune nu
+    // putea fi sustinuta de infrastructura curenta. Textul e acum onest:
+    // "date live indisponibile momentan", fara sa depinda de
+    // STATE.delayedDataMinutes. Cand un furnizor de preturi live va fi
+    // integrat si activ, acest badge (si traducerile din I18N) trebuie
+    // revizuite din nou, cu cadenta reala confirmata (vezi raportul separat
+    // despre limitele planului Vercel curent - cron o data/zi pe Hobby).
     var delayedBadge = document.getElementById("mpDelayedBadge");
-    if (delayedBadge) delayedBadge.textContent = t("delayedBadge").replace("{min}", String(STATE.delayedDataMinutes));
+    if (delayedBadge) delayedBadge.textContent = t("delayedBadge");
     document.documentElement.lang = STATE.lang;
   }
 
