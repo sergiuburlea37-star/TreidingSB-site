@@ -90,6 +90,11 @@
       chartMonthShort: "Luna {n}",
       chartMonthSinceFounding: "Luna {n} de la fondare",
       chartInitialCapitalLine: "Capital inițial: {amount}",
+      chartTitleTemplate: "Evoluție portofoliu {code}",
+      chartSubtitleTemplate: "Valoare totală (NAV) în {ccy}",
+      chartMonthDashTemplate: "Luna {n} — {month}",
+      lastSnapshotAvailable: "Ultimul instantaneu disponibil",
+      returnSinceFounding: "Randament de la fondare",
       colTicker: "Ticker",
       colWeight: "Pondere inițială",
       colAvgPrice: "Preț mediu",
@@ -160,6 +165,11 @@
       chartMonthShort: "Month {n}",
       chartMonthSinceFounding: "Month {n} since founding",
       chartInitialCapitalLine: "Initial capital: {amount}",
+      chartTitleTemplate: "Portfolio evolution {code}",
+      chartSubtitleTemplate: "Total value (NAV) in {ccy}",
+      chartMonthDashTemplate: "Month {n} — {month}",
+      lastSnapshotAvailable: "Last available snapshot",
+      returnSinceFounding: "Return since founding",
       colTicker: "Ticker",
       colWeight: "Initial weight",
       colAvgPrice: "Avg. price",
@@ -230,6 +240,11 @@
       chartMonthShort: "Месяц {n}",
       chartMonthSinceFounding: "Месяц {n} с основания",
       chartInitialCapitalLine: "Начальный капитал: {amount}",
+      chartTitleTemplate: "Динамика портфеля {code}",
+      chartSubtitleTemplate: "Общая стоимость (NAV) в {ccy}",
+      chartMonthDashTemplate: "Месяц {n} — {month}",
+      lastSnapshotAvailable: "Последний доступный снимок",
+      returnSinceFounding: "Доходность с основания",
       colTicker: "Тикер",
       colWeight: "Начальная доля",
       colAvgPrice: "Средняя цена",
@@ -301,6 +316,11 @@
       chartMonthShort: "Місяць {n}",
       chartMonthSinceFounding: "Місяць {n} від заснування",
       chartInitialCapitalLine: "Початковий капітал: {amount}",
+      chartTitleTemplate: "Динаміка портфеля {code}",
+      chartSubtitleTemplate: "Загальна вартість (NAV) у {ccy}",
+      chartMonthDashTemplate: "Місяць {n} — {month}",
+      lastSnapshotAvailable: "Останній доступний знімок",
+      returnSinceFounding: "Дохідність від заснування",
       colTicker: "Тікер",
       colWeight: "Початкова частка",
       colAvgPrice: "Середня ціна",
@@ -371,6 +391,11 @@
       chartMonthShort: "Miesiąc {n}",
       chartMonthSinceFounding: "Miesiąc {n} od założenia",
       chartInitialCapitalLine: "Kapitał początkowy: {amount}",
+      chartTitleTemplate: "Ewolucja portfela {code}",
+      chartSubtitleTemplate: "Wartość całkowita (NAV) w {ccy}",
+      chartMonthDashTemplate: "Miesiąc {n} — {month}",
+      lastSnapshotAvailable: "Ostatni dostępny zrzut",
+      returnSinceFounding: "Stopa zwrotu od założenia",
       colTicker: "Ticker",
       colWeight: "Waga początkowa",
       colAvgPrice: "Śr. cena",
@@ -977,19 +1002,44 @@
     renderTransactions(p ? p.transactions : []);
   }
 
-  function statCardHtml(value, label, pending) {
-    var cls = "stat-mini-val" + (pending ? " mp-stat-pending" : "");
+  // Cardul unui rand de sumar cu iconita circulara (2026-08-05, redesign) -
+  // vezi renderStatCards() mai jos. `sub` (optional) e o a doua linie mica
+  // sub valoare (folosita STRICT pentru data instantaneului la cardul
+  // "Ultimul instantaneu disponibil" - cerinta 2), niciodata generata pentru
+  // celelalte doua carduri.
+  function statCard3Html(iconId, iconCls, label, value, valCls, sub, pending) {
+    var valueCls =
+      "mp-stat-value" + (valCls ? " " + valCls : "") + (pending ? " mp-stat-val-pending" : "");
     return (
-      '<div class="stat-mini"><div class="' +
-      cls +
+      '<div class="mp-stat-card">' +
+      '<div class="mp-stat-icon ' +
+      iconCls +
+      '"><svg class="mp-stat-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><use href="#' +
+      iconId +
+      '"></use></svg></div>' +
+      '<div class="mp-stat-body">' +
+      '<div class="mp-stat-label">' +
+      esc(label) +
+      '</div><div class="' +
+      valueCls +
       '">' +
       esc(value) +
-      '</div><div class="stat-mini-lbl">' +
-      esc(label) +
+      "</div>" +
+      (sub ? '<div class="mp-stat-sub">' + esc(sub) + "</div>" : "") +
       "</div></div>"
     );
   }
 
+  // Exact 3 carduri de sumar (cerinta 2, redesign 2026-08-05): Capital
+  // inițial (auriu), Ultimul instantaneu disponibil (alb-argintiu) și
+  // Randament de la fondare (verde/roșu) - TOATE trei calculate din
+  // p.initialCapital / ultimul rand din p.performanceHistory, niciodata din
+  // campurile conditionate de p.hasLivePriceData (acelea raman strict pentru
+  // "Valoare actuala" bazata pe pret curent, care NU mai apare pe acest
+  // card - cerinta 8: "Valoare actuala" ramane separata de istoricul NAV).
+  // Daca performanceHistory e gol (portofoliu foarte nou, inainte de primul
+  // instantaneu), cardurile 2-3 afiseaza explicit "In asteptarea datelor
+  // live", niciodata 0 sau o valoare inventata.
   function renderStatCards(p) {
     var el = document.getElementById("mpStatsCards");
     if (!el) return;
@@ -997,32 +1047,51 @@
       el.innerHTML = '<p class="portfolio-empty-note">' + esc(t("noData")) + "</p>";
       return;
     }
-    // Valoare actuala / profit / randament sunt derivate din pretul curent -
-    // cat timp portofoliul nu are inca un furnizor de preturi live
-    // (p.hasLivePriceData === false, cazul actual pentru toate pozitiile),
-    // NU trebuie afisate ca cifre (nici macar bazate pe pretul de referinta),
-    // ci explicit "In asteptarea datelor live".
-    var live = !!p.hasLivePriceData;
+    var history = p.performanceHistory || [];
+    var last = history.length ? history[history.length - 1] : null;
+    var lastMetrics = last ? computePointMetrics(last) : null;
+    var returnPct = lastMetrics ? lastMetrics.returnPct : null;
+    var returnSign = signClass(returnPct);
+    var returnIconCls =
+      returnSign === "mp-chart-pos"
+        ? "mp-stat-icon-green"
+        : returnSign === "mp-chart-neg"
+          ? "mp-stat-icon-red"
+          : "mp-stat-icon-silver";
+    var returnValCls =
+      returnSign === "mp-chart-pos"
+        ? "mp-stat-val-green"
+        : returnSign === "mp-chart-neg"
+          ? "mp-stat-val-red"
+          : "";
+
     el.innerHTML = [
-      statCardHtml(fmtMoney(p.initialCapital, p.baseCurrency), t("initialCapital"), false),
-      statCardHtml(
-        live && p.currentValueBaseCcy != null
-          ? fmtMoney(p.currentValueBaseCcy, p.baseCurrency)
-          : t("awaitingLiveData"),
-        t("currentValue"),
-        !live,
+      statCard3Html(
+        "mp-icon-coin",
+        "mp-stat-icon-gold",
+        t("initialCapital"),
+        fmtMoney(p.initialCapital, p.baseCurrency),
+        "mp-stat-val-gold",
+        null,
+        false,
       ),
-      statCardHtml(
-        live && p.profitSinceFoundedBaseCcy != null
-          ? fmtMoney(p.profitSinceFoundedBaseCcy, p.baseCurrency)
-          : t("awaitingLiveData"),
-        t("profitSince"),
-        !live,
+      statCard3Html(
+        "mp-icon-clock",
+        "mp-stat-icon-silver",
+        t("lastSnapshotAvailable"),
+        last ? fmtMoney(last.navValue, p.baseCurrency) : t("awaitingLiveData"),
+        "mp-stat-val-silver",
+        last ? fmtDateLong(last.asOfDate) : null,
+        !last,
       ),
-      statCardHtml(
-        live && p.totalReturnPct != null ? fmtPct(p.totalReturnPct) : t("awaitingLiveData"),
-        t("totalReturn"),
-        !live,
+      statCard3Html(
+        "mp-icon-trend",
+        returnIconCls,
+        t("returnSinceFounding"),
+        returnPct != null ? fmtSignedPct(returnPct) : t("awaitingLiveData"),
+        returnValCls,
+        null,
+        returnPct == null,
       ),
     ].join("");
   }
@@ -1126,10 +1195,36 @@
   // initial cu zona de profit (verde, deasupra liniei) si de pierdere
   // (rosu, dedesubt) si un tooltip extins la 6 randuri (data, luna de la
   // fondare, valoare totala, capital investit, profit, randament).
+  // Titlu + subtitlu dinamice ale cardului graficului (cerinta 3, redesign
+  // 2026-08-05): "Evoluție portofoliu US/EU" (majuscule aurii, mostenite din
+  // CSS) + "Valoare totală (NAV) în GBP/EUR" - ambele derivate din
+  // portofoliul activ (p.code / p.baseCurrency), nu texte statice fixe. Cat
+  // timp portofoliul nu e inca disponibil (p null - stare initiala de
+  // incarcare), titlul ramane pe eticheta generica (deja setata de
+  // applyStaticTexts) si subtitlul ramane ascuns.
+  function updateChartHeader(p) {
+    var titleEl = document.getElementById("mpEvolutionLabel");
+    var subEl = document.getElementById("mpEvolutionSubtitle");
+    if (titleEl) {
+      titleEl.textContent =
+        p && p.code ? tfmt("chartTitleTemplate", { code: p.code }) : t("evolution");
+    }
+    if (subEl) {
+      if (p && p.baseCurrency) {
+        subEl.textContent = tfmt("chartSubtitleTemplate", { ccy: p.baseCurrency });
+        subEl.hidden = false;
+      } else {
+        subEl.hidden = true;
+      }
+    }
+  }
+
   function renderChart(p) {
     var wrap = document.getElementById("mpChartWrap");
     var emptyEl = document.getElementById("mpChartEmpty");
     if (!wrap) return;
+
+    updateChartHeader(p);
 
     var history = p ? p.performanceHistory : [];
     var filtered = filterHistoryByInterval(history, STATE.activeInterval);
@@ -1197,6 +1292,120 @@
   // renderChart ca sa poata fi rechemata si la resize/rotire ecran, fara sa
   // refiltreze istoricul (vezi wireDashboardControlsOnce -> window resize
   // listener), folosind STATE.chartMeta salvat de renderChart.
+  // Latimea reala (in pixeli CSS) a unui text randat cu un anumit font,
+  // folosind un <canvas> offscreen (2D Text Metrics) - mult mai precisa
+  // decat o estimare pe baza numarului de caractere, folosita ca sa rareasca
+  // corect etichetele axei X (vezi drawChart -> candidates/keptTicks) fara
+  // sa le suprapuna, indiferent de limba activa (unele traduceri, ex. luni
+  // in rusa/ucraineana, sunt semnificativ mai lungi decat originalul RO).
+  function measureTextWidth(text, fontSpec) {
+    try {
+      if (!measureTextWidth._ctx) {
+        measureTextWidth._ctx = document.createElement("canvas").getContext("2d");
+      }
+      if (measureTextWidth._ctx) {
+        measureTextWidth._ctx.font = fontSpec;
+        return measureTextWidth._ctx.measureText(text).width;
+      }
+    } catch (e) {
+      /* ignore - fallback mai jos */
+    }
+    return text.length * 6.5;
+  }
+
+  // "Nice numbers" pentru pasul intre repere (algoritm standard, Heckbert) -
+  // vezi computeNiceTicks() mai jos.
+  function niceNum(range, round) {
+    if (!isFinite(range) || range <= 0) return 1;
+    var exponent = Math.floor(Math.log10(range));
+    var fraction = range / Math.pow(10, exponent);
+    var niceFraction;
+    if (round) {
+      if (fraction < 1.5) niceFraction = 1;
+      else if (fraction < 3) niceFraction = 2;
+      else if (fraction < 7) niceFraction = 5;
+      else niceFraction = 10;
+    } else {
+      if (fraction <= 1) niceFraction = 1;
+      else if (fraction <= 2) niceFraction = 2;
+      else if (fraction <= 5) niceFraction = 5;
+      else niceFraction = 10;
+    }
+    return niceFraction * Math.pow(10, exponent);
+  }
+
+  // Repere ("nice numbers") rotunde pentru axa Y (2026-08-05, redesign) -
+  // inlocuieste vechile repere prin interpolare liniara bruta (care puteau
+  // produce valori neregulate, ex. "£10.032") cu valori rotunde, previzibile
+  // (ex. "£10.000", "£10.200"), asa cum apar in referinta vizuala. Extinde
+  // usor domeniul brut primit (deja cu padding) ca sa acopere un numar
+  // intreg de pasi rotunzi - niciun punct de date sau linia capitalului nu
+  // raman in afara acestui domeniu (vezi apelul din drawChart mai jos).
+  function computeNiceTicks(rawMin, rawMax, tickCount) {
+    if (rawMin === rawMax) {
+      rawMin -= 1;
+      rawMax += 1;
+    }
+    var range = niceNum(rawMax - rawMin, false);
+    var step = niceNum(range / Math.max(1, tickCount - 1), true);
+    var niceMin = Math.floor(rawMin / step) * step;
+    var niceMax = Math.ceil(rawMax / step) * step;
+    var ticks = [];
+    for (var v = niceMin; v <= niceMax + step / 2 && ticks.length < 12; v += step) {
+      ticks.push(Math.round(v * 100) / 100);
+    }
+    return { min: niceMin, max: niceMax, step: step, ticks: ticks };
+  }
+
+  // Culoarea unui punct/segment fata de linia capitalului initial (verde la
+  // sau peste capital, rosu sub el) - cerinta 6/7: aria de profit/pierdere
+  // trebuie sa se reflecte si in linia/punctele graficului, nu doar in
+  // umplerea de fundal.
+  var CAPITAL_ABOVE_COLOR = "#18d98b";
+  var CAPITAL_BELOW_COLOR = "#ff4056";
+  function sideColor(value, capitalValue) {
+    return value >= capitalValue ? CAPITAL_ABOVE_COLOR : CAPITAL_BELOW_COLOR;
+  }
+
+  // Sparge polilinia in segmente individuale colorate fata de capitalValue,
+  // interpoland liniar (in valoare, nu doar pe cel mai apropiat punct)
+  // coordonata exacta unde segmentul traverseaza linia capitalului - cerinta
+  // 7 ("linia trebuie sa isi schimbe culoarea exact la intersectie, nu doar
+  // sa fie colorata pe bucati intregi intre puncte").
+  function buildColoredSegments(pts, capitalValue) {
+    var segs = [];
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i],
+        p1 = pts[i + 1];
+      var v0 = p0.h.navValue,
+        v1 = p1.h.navValue;
+      var side0 = v0 >= capitalValue,
+        side1 = v1 >= capitalValue;
+      if (side0 === side1 || v1 === v0) {
+        segs.push({ x1: p0.x, y1: p0.y, x2: p1.x, y2: p1.y, color: sideColor(v0, capitalValue) });
+      } else {
+        var frac = (capitalValue - v0) / (v1 - v0);
+        var crossX = p0.x + frac * (p1.x - p0.x);
+        var crossY = p0.y + frac * (p1.y - p0.y);
+        segs.push({
+          x1: p0.x,
+          y1: p0.y,
+          x2: crossX,
+          y2: crossY,
+          color: sideColor(v0, capitalValue),
+        });
+        segs.push({
+          x1: crossX,
+          y1: crossY,
+          x2: p1.x,
+          y2: p1.y,
+          color: sideColor(v1, capitalValue),
+        });
+      }
+    }
+    return segs;
+  }
+
   function drawChart(wrap, filtered, meta) {
     var W = 1000,
       H = 280,
@@ -1214,8 +1423,10 @@
     // orizontala sa fie mereu vizibila in grafic, nu doar cand NAV-ul e deja
     // aproape de ea) si NU incepe neaparat de la zero (cerinta axei Y:
     // variatiile trebuie sa ramana vizibile) - plus un padding "rezonabil"
-    // (8% din plaja) sus si jos, ca linia si punctele sa nu fie lipite de
-    // marginile graficului.
+    // (10% din plaja) sus si jos, ca linia si punctele sa nu fie lipite de
+    // marginile graficului, apoi rotunjit la repere intregi ("nice numbers"
+    // - vezi computeNiceTicks) ca axa sa afiseze valori precum "£10.000",
+    // "£10.200", nu cifre brute interpolate.
     var domainMin = capitalValue != null ? Math.min(rawMin, capitalValue) : rawMin;
     var domainMax = capitalValue != null ? Math.max(rawMax, capitalValue) : rawMax;
     if (domainMin === domainMax) {
@@ -1223,9 +1434,11 @@
       domainMax += 100;
     }
     var span = domainMax - domainMin;
-    var padY = span * 0.08;
-    var min = domainMin - padY,
-      max = domainMax + padY;
+    var padY = span * 0.1;
+    var yTickCount = 4;
+    var nice = computeNiceTicks(domainMin - padY, domainMax + padY, yTickCount);
+    var min = nice.min,
+      max = nice.max;
 
     var innerH = H - PAD * 2;
     var stepX = (W - PAD * 2) / (filtered.length - 1);
@@ -1242,6 +1455,94 @@
         y = yFor(h.navValue);
       return { i: i, x: x, y: y, xPct: (x / W) * 100, yPct: (y / H) * 100, h: h };
     });
+
+    // --- grupuri "luni de la fondare" (cerinta axei X) si rarirea lor -
+    // calculate DEVREME, inaintea desenarii SVG-ului, pentru ca acum sunt
+    // refolosite si de gridline-urile verticale (cerinta 3/6: linii de
+    // grila punctate la graniitele lunilor).
+    //
+    // Nota (2026-08-05, redesign - eticheta pe o singura linie): rarirea nu
+    // se mai face dupa o distanta FIXA intre ancore (insuficienta acum ca
+    // eticheta combina "Luna N — luna calendaristica" pe un singur rand,
+    // mult mai lata decat vechiul format pe 2 randuri), ci masurand latimea
+    // REALA a textului fiecarei etichete (canvas 2D, vezi measureTextWidth)
+    // si pastrand o eticheta noua doar daca "amprenta" ei vizuala (stanga-
+    // dreapta, tinand cont de alinierea stanga/centru/dreapta fata de
+    // ancora) nu se suprapune cu a ultimei etichete pastrate. Ultima luna e
+    // mereu pastrata (inlocuind eventual eticheta anterioara, daca s-ar
+    // suprapune), ca sa ramana mereu vizibila luna cea mai recenta.
+    var groups = computeMonthGroups(founded, filtered);
+    var wrapWidth = wrap.clientWidth || 760;
+    var xtickFontPx = wrapWidth <= 420 ? 9.5 : 10.5;
+    var xtickFont = "700 " + xtickFontPx + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+    // Aproximeaza latimea zonei de desenat (fara coloana axei Y) - o mica
+    // subestimare aici e sigura (duce doar la o rarire usor mai agresiva,
+    // niciodata la suprapunere).
+    var plotWidthPx = Math.max(1, wrapWidth - 70);
+    var labelGapPx = 10;
+    var gapPct = (labelGapPx / plotWidthPx) * 100;
+    var candidates = groups.map(function (g, gi) {
+      var p = pts[g.idx];
+      var label = tfmt("chartMonthDashTemplate", { n: g.monthIndex, month: fmtMonthYear(g.iso) });
+      var widthPct = (measureTextWidth(label, xtickFont) / plotWidthPx) * 100;
+      var align = p.xPct < 15 ? "left" : p.xPct > 85 ? "right" : "center";
+      var leftEdge, rightEdge;
+      if (align === "left") {
+        leftEdge = p.xPct;
+        rightEdge = p.xPct + widthPct;
+      } else if (align === "right") {
+        leftEdge = p.xPct - widthPct;
+        rightEdge = p.xPct;
+      } else {
+        leftEdge = p.xPct - widthPct / 2;
+        rightEdge = p.xPct + widthPct / 2;
+      }
+      return {
+        gi: gi,
+        g: g,
+        p: p,
+        label: label,
+        align: align,
+        leftEdge: leftEdge,
+        rightEdge: rightEdge,
+      };
+    });
+    // Rarire "de la coada spre inceput": ultima luna (cea mai recenta) e
+    // mereu pastrata necondiționat, apoi se parcurge in ordine inversa,
+    // pastrand o eticheta mai veche doar daca amprenta ei nu se suprapune cu
+    // cea mai apropiata eticheta deja pastrata (mai recenta) - garanteaza
+    // matematic zero suprapuneri (spre deosebire de o trecere simpla
+    // stanga-dreapta cu "fortare" a ultimei etichete la final, care putea
+    // lasa totusi o suprapunere cand doar 2-3 luni incap intr-un interval
+    // scurt si ultimele doua ancore sunt foarte apropiate).
+    var keptTicksRev = [candidates[candidates.length - 1]];
+    for (var ci2 = candidates.length - 2; ci2 >= 0; ci2--) {
+      var cnd2 = candidates[ci2];
+      var nextKept = keptTicksRev[keptTicksRev.length - 1];
+      if (cnd2.rightEdge + gapPct <= nextKept.leftEdge) {
+        keptTicksRev.push(cnd2);
+      }
+    }
+    var keptTicks = keptTicksRev.reverse();
+
+    // --- gridline-uri verticale punctate, discrete, la fiecare ancora de
+    // luna pastrata dupa rarire (aceleasi ancore ca etichetele axei X, ca sa
+    // nu aglomereze graficul cu mai multe linii decat etichete).
+    var gridlinesSvg = keptTicks
+      .map(function (cnd) {
+        return (
+          '<line x1="' +
+          cnd.p.x.toFixed(1) +
+          '" y1="' +
+          PAD +
+          '" x2="' +
+          cnd.p.x.toFixed(1) +
+          '" y2="' +
+          (H - PAD) +
+          '" class="mp-chart-month-gridline" stroke="rgba(255,255,255,.14)" stroke-width="1" stroke-dasharray="3 4"></line>'
+        );
+      })
+      .join("");
 
     var pointsStr = pts
       .map(function (p) {
@@ -1340,30 +1641,86 @@
         '" fill-opacity="0.12" stroke="none"></polygon>';
     }
 
+    // --- linia/punctele colorate pe segment fata de capital (cerinta 7,
+    // redesign 2026-08-05): daca stim capitalValue, linia nu mai e desenata
+    // ca o singura polilinie de o culoare ("trend general"), ci ca segmente
+    // individuale, colorate exact fata de pozitia lor relativa la linia
+    // capitalului, cu intersectia interpolata precis (vezi
+    // buildColoredSegments). Fallback (fara capitalValue): o singura
+    // polilinie in culoarea trendului general, ca inainte.
+    var lineSvg;
+    if (capitalValue != null) {
+      lineSvg = buildColoredSegments(pts, capitalValue)
+        .map(function (s) {
+          return (
+            '<line x1="' +
+            s.x1.toFixed(1) +
+            '" y1="' +
+            s.y1.toFixed(1) +
+            '" x2="' +
+            s.x2.toFixed(1) +
+            '" y2="' +
+            s.y2.toFixed(1) +
+            '" stroke="' +
+            s.color +
+            '" stroke-width="2.4" stroke-linecap="round"></line>'
+          );
+        })
+        .join("");
+    } else {
+      lineSvg =
+        '<polyline points="' +
+        pointsStr +
+        '" fill="none" stroke="' +
+        strokeColor +
+        '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"></polyline>';
+    }
+
     // --- hit-targets: un cerc invizibil (raza mare, usor de atins pe mobil)
-    // per punct, plus un cerc mic vizibil doar pe ultimul punct (evidentiere
-    // - cerinta 5). <title> nativ pe fiecare, ca fallback minimal accesibil
-    // (tastatura/cititor de ecran) in plus fata de tooltip-ul HTML custom.
-    // TOATE instantaneele raman puncte distincte aici, indiferent cate
-    // grupuri de luni sunt etichetate pe axa X (vezi computeMonthGroups).
+    // per punct, plus un marcaj mic vizibil pe FIECARE punct, colorat fata
+    // de capital (cerinta 7: "punctele isi schimba si ele culoarea"), si un
+    // halou discret, pulsatoriu, DOAR pe ultimul punct (cerinta 7: evidentiere
+    // cu cerc luminos discret). <title> nativ pe fiecare, ca fallback minimal
+    // accesibil (tastatura/cititor de ecran) in plus fata de tooltip-ul HTML
+    // custom. TOATE instantaneele raman puncte distincte aici, indiferent
+    // cate grupuri de luni sunt etichetate pe axa X (vezi computeMonthGroups).
     var circlesSvg = pts
       .map(function (p) {
         var isLast = p.i === pts.length - 1;
+        var pointColor = capitalValue != null ? sideColor(p.h.navValue, capitalValue) : strokeColor;
         var titleText =
           fmtDateLong(p.h.asOfDate) +
           " — " +
           t("chartTotalValue") +
           ": " +
           fmtMoneyLocale(p.h.navValue, currency);
-        var visibleMarker = isLast
-          ? '<circle cx="' +
+        var visibleMarker;
+        if (isLast) {
+          visibleMarker =
+            '<circle cx="' +
+            p.x.toFixed(1) +
+            '" cy="' +
+            p.y.toFixed(1) +
+            '" r="11" fill="' +
+            pointColor +
+            '" fill-opacity="0.28" class="mp-chart-point-last-halo"></circle>' +
+            '<circle cx="' +
             p.x.toFixed(1) +
             '" cy="' +
             p.y.toFixed(1) +
             '" r="5" fill="' +
-            strokeColor +
-            '" stroke="#04101f" stroke-width="2" class="mp-chart-point-last"></circle>'
-          : "";
+            pointColor +
+            '" stroke="#04101f" stroke-width="2" class="mp-chart-point-last"></circle>';
+        } else {
+          visibleMarker =
+            '<circle cx="' +
+            p.x.toFixed(1) +
+            '" cy="' +
+            p.y.toFixed(1) +
+            '" r="2.6" fill="' +
+            pointColor +
+            '" stroke="#04101f" stroke-width="1" class="mp-chart-point-mini"></circle>';
+        }
         return (
           visibleMarker +
           '<circle cx="' +
@@ -1385,91 +1742,50 @@
       " " +
       H +
       '" preserveAspectRatio="none" role="img" aria-label="' +
-      esc(t("evolution")) +
+      esc(meta.code ? tfmt("chartTitleTemplate", { code: meta.code }) : t("evolution")) +
       '">' +
+      gridlinesSvg +
       capitalSvg +
-      '<polyline points="' +
-      pointsStr +
-      '" fill="none" stroke="' +
-      strokeColor +
-      '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"></polyline>' +
+      lineSvg +
       circlesSvg +
       "</svg>";
 
-    // --- axa verticala (NAV total al portofoliului, in moneda de baza): 4
-    // repere egal distantate intre min si max (plaja acum dinamica, cu
-    // padding - vezi mai sus -, NU neaparat de la zero).
-    var yTickCount = 4;
-    var yTicksHtml = "";
-    for (var ti = 0; ti < yTickCount; ti++) {
-      var v = max - (ti * (max - min)) / (yTickCount - 1);
-      var topPct = (yFor(v) / H) * 100;
-      yTicksHtml +=
-        '<span class="mp-chart-ytick" style="top:' +
-        topPct.toFixed(2) +
-        '%">' +
-        esc(fmtMoneyAxis(v, currency)) +
-        "</span>";
-    }
+    // --- axa verticala (NAV total al portofoliului, in moneda de baza):
+    // repere rotunde ("nice numbers", vezi computeNiceTicks mai sus), NU
+    // neaparat de la zero - plaja (min/max) e deja rotunjita mai sus.
+    var yTicksHtml = nice.ticks
+      .slice()
+      .sort(function (a, b) {
+        return b - a;
+      })
+      .map(function (v) {
+        var topPct = (yFor(v) / H) * 100;
+        return (
+          '<span class="mp-chart-ytick" style="top:' +
+          topPct.toFixed(2) +
+          '%">' +
+          esc(fmtMoneyAxis(v, currency)) +
+          "</span>"
+        );
+      })
+      .join("");
 
-    // --- axa orizontala (cerinta axei X): o eticheta pe 2 linii per luna de
-    // la fondare ("Luna N" + luna calendaristica, ex. "Mai 2026"), niciodata
-    // aceeasi luna calendaristica de doua ori - vezi computeMonthGroups.
-    //
-    // Rarirea grupurilor NU se face dupa un numar fix de etichete (un simplu
-    // "maxLabels" pe baza latimii), ci printr-un filtru "greedy" bazat pe
-    // distanta reala in pixeli dintre ancorele consecutive: o eticheta noua e
-    // pastrata doar daca e la cel putin `minLabelPx` de precedenta pastrata -
-    // altfel s-ar putea suprapune vizual (ex. cand doar 2 luni exista in
-    // intervalul activ, dar al doilea instantaneu al lunii urmatoare e la
-    // putin timp dupa primul - vezi si "1L" cu doar 5 instantanee). Ultima
-    // luna (cea mai recenta) e mereu pastrata, chiar daca inlocuieste
-    // eticheta anterioara pastrata, ca sa ramana mereu vizibila data cea mai
-    // recenta pe axa.
-    var groups = computeMonthGroups(founded, filtered);
-    var wrapWidth = wrap.clientWidth || 760;
-    var minLabelPx = wrapWidth <= 420 ? 60 : wrapWidth <= 640 ? 74 : 90;
-    var minGapPct = (minLabelPx / wrapWidth) * 100;
-    var groupIdxs = [];
-    if (groups.length) {
-      groupIdxs.push(0);
-      var lastKeptX = pts[groups[0].idx].xPct;
-      for (var gi2 = 1; gi2 < groups.length; gi2++) {
-        var curX = pts[groups[gi2].idx].xPct;
-        var isLastGroup = gi2 === groups.length - 1;
-        if (curX - lastKeptX >= minGapPct) {
-          groupIdxs.push(gi2);
-          lastKeptX = curX;
-        } else if (isLastGroup) {
-          if (groupIdxs.length > 1) groupIdxs[groupIdxs.length - 1] = gi2;
-          else groupIdxs.push(gi2);
-          lastKeptX = curX;
-        }
-      }
-    }
-    // Alinierea etichetei (stanga/centru/dreapta fata de ancora ei) se
-    // decide dupa POZITIA REALA in grafic, nu dupa faptul ca e prima/ultima
-    // luna pastrata - altfel o "ultima luna" care se intampla sa fie totusi
-    // aproape de marginea stanga (interval scurt, putine luni) ar creste
-    // spre stanga peste eticheta anterioara (exact suprapunerea descrisa mai
-    // sus). Doar ancorele chiar aproape de marginea stanga/dreapta a
-    // containerului cresc spre interior; restul sunt centrate pe ancora lor.
-    var xTicksHtml = groupIdxs
-      .map(function (gi) {
-        var g = groups[gi];
-        var p = pts[g.idx];
-        var align = p.xPct < 15 ? "left" : p.xPct > 85 ? "right" : "center";
+    // --- axa orizontala (cerinta axei X): o singura eticheta pe linie per
+    // luna de la fondare ("Luna N — luna calendaristica", ex.
+    // "Luna 1 — Mai 2026"), niciodata aceeasi luna calendaristica de doua
+    // ori - vezi computeMonthGroups. Grupurile, latimile masurate si rarirea
+    // lor (keptTicks) au fost deja calculate mai sus (si refolosite pentru
+    // gridline-urile verticale).
+    var xTicksHtml = keptTicks
+      .map(function (cnd) {
         return (
           '<span class="mp-chart-xtick mp-chart-xtick-' +
-          align +
+          cnd.align +
           '" style="left:' +
-          p.xPct.toFixed(2) +
+          cnd.p.xPct.toFixed(2) +
           '%">' +
-          '<span class="mp-chart-xtick-month">' +
-          esc(tfmt("chartMonthShort", { n: g.monthIndex })) +
-          "</span>" +
-          '<span class="mp-chart-xtick-cal">' +
-          esc(fmtMonthYear(g.iso)) +
+          '<span class="mp-chart-xtick-label">' +
+          esc(cnd.label) +
           "</span>" +
           "</span>"
         );
@@ -1556,35 +1872,32 @@
           esc(tfmt("chartMonthSinceFounding", { n: monthsSinceFounding(founded, p.h.asOfDate) })) +
           "</div>"
         : "";
+      // Fiecare rand eticheta/valoare foloseste doi copii flex distincti
+      // (span + b), nu text simplu urmat de ": " - vezi ".mp-chart-tooltip-
+      // row{display:flex;justify-content:space-between}" din
+      // member-portfolios.css (redesign 2026-08-05), ca eticheta si valoarea
+      // sa ramana aliniate pe acelasi rand indiferent de lungimea textului
+      // tradus (RO/EN/RU/UK/PL).
+      function row(cls, label, value) {
+        return (
+          '<div class="mp-chart-tooltip-row' +
+          (cls ? " " + cls : "") +
+          '"><span>' +
+          esc(label) +
+          "</span><b>" +
+          esc(value) +
+          "</b></div>"
+        );
+      }
       tooltip.innerHTML =
         '<div class="mp-chart-tooltip-date">' +
         esc(fmtDateLong(p.h.asOfDate)) +
         "</div>" +
         monthLine +
-        '<div class="mp-chart-tooltip-row">' +
-        esc(t("chartTotalValue")) +
-        ": <b>" +
-        esc(fmtMoneyLocale(p.h.navValue, currency)) +
-        "</b></div>" +
-        '<div class="mp-chart-tooltip-row">' +
-        esc(t("chartCapitalInvested")) +
-        ": <b>" +
-        esc(fmtMoneyLocale(p.h.capitalContributed, currency)) +
-        "</b></div>" +
-        '<div class="mp-chart-tooltip-row ' +
-        signClass(m.profitLoss) +
-        '">' +
-        esc(t("chartProfit")) +
-        ": <b>" +
-        esc(fmtSignedMoney(m.profitLoss, currency)) +
-        "</b></div>" +
-        '<div class="mp-chart-tooltip-row ' +
-        signClass(m.returnPct) +
-        '">' +
-        esc(t("totalReturn")) +
-        ": <b>" +
-        esc(fmtSignedPct(m.returnPct)) +
-        "</b></div>";
+        row(null, t("chartTotalValue"), fmtMoneyLocale(p.h.navValue, currency)) +
+        row(null, t("chartCapitalInvested"), fmtMoneyLocale(p.h.capitalContributed, currency)) +
+        row(signClass(m.profitLoss), t("chartProfit"), fmtSignedMoney(m.profitLoss, currency)) +
+        row(signClass(m.returnPct), t("totalReturn"), fmtSignedPct(m.returnPct));
       tooltip.hidden = false;
 
       var plotRect = plot.getBoundingClientRect();

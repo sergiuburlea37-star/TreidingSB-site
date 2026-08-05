@@ -125,10 +125,68 @@
 /* ---------- stat cards row ---------- */
 .mp-cards-row{
   display:grid;
-  grid-template-columns:repeat(4, 1fr);
+  grid-template-columns:repeat(3, 1fr);
   gap:14px;
   margin-bottom:22px;
 }
+
+/* Cardurile de sumar (2026-08-05, redesign): exact 3 carduri (Capital
+   inițial / Ultimul instantaneu disponibil / Randament de la fondare),
+   fiecare cu o iconiță circulară - vezi renderStatCards()/statCard3Html()
+   din member-portfolios.js. Inlocuiesc vechile 4 carduri ".stat-mini"
+   (Capital inițial / Valoare actuală / Profit / Randament, ultimele 3
+   condiționate de p.hasLivePriceData) - regula ".stat-mini-val.mp-stat-
+   pending" de mai jos ramane neutilizata de acest fisier, dar nu e stearsa
+   (clasa ".stat-mini" ramane definita global in style.css si ar putea fi
+   refolosita ulterior). */
+.mp-stat-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:rgba(6,13,24,.42);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px 18px;
+}
+.mp-stat-icon{
+  flex:0 0 44px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.05);
+}
+.mp-stat-icon-svg{width:22px;height:22px}
+.mp-stat-icon-gold{background:rgba(232,185,35,.14);color:var(--gold)}
+.mp-stat-icon-silver{background:rgba(198,211,230,.12);color:var(--muted)}
+.mp-stat-icon-green{background:rgba(24,217,139,.14);color:var(--green)}
+.mp-stat-icon-red{background:rgba(255,64,86,.14);color:var(--red)}
+.mp-stat-body{min-width:0}
+.mp-stat-label{
+  font-size:11.5px;
+  color:var(--muted);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin-bottom:4px;
+}
+.mp-stat-value{
+  font-size:20px;
+  font-weight:900;
+  color:var(--text);
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.mp-stat-val-gold{color:var(--gold)}
+.mp-stat-val-silver{color:#e8edf5}
+.mp-stat-val-green{color:var(--green)}
+.mp-stat-val-red{color:var(--red)}
+.mp-stat-val-pending{font-size:.78rem;font-weight:700;color:var(--muted);font-style:italic}
+.mp-stat-sub{font-size:10.5px;color:var(--muted);margin-top:2px}
 
 /* ---------- generic card ---------- */
 .mp-card{
@@ -156,7 +214,37 @@
 }
 
 /* ---------- chart ---------- */
-.mp-chart-card .mp-card-head{padding-bottom:12px}
+.mp-chart-card .mp-card-head{padding-bottom:12px;align-items:flex-start;color:var(--gold)}
+/* Titlu + subtitlu dinamice per portofoliu (2026-08-05, redesign): titlul
+   ("Evoluție portofoliu US/EU") ramane cu majuscule aurii, mostenite de la
+   .mp-card-head; subtitlul ("Valoare totală (NAV) în GBP/EUR") e adaugat sub
+   el, cu majuscule si accent auriu dezactivate explicit - vezi
+   updateChartHeader() din member-portfolios.js. */
+.mp-chart-titles{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.mp-chart-title{display:block}
+.mp-chart-subtitle{
+  display:block;
+  font-size:11px;
+  font-weight:600;
+  text-transform:none;
+  letter-spacing:normal;
+  color:var(--muted);
+}
+.mp-chart-subtitle[hidden]{display:none}
+
+/* Butonul de interval activ ("3L") e auriu global (style.css,
+   .portfolio-interval-switch button.is-active) - referinta vizuala pentru
+   acest card il arata albastru; suprascris DOAR pentru cardul graficului
+   acestei pagini, ca sa nu afecteze alte pagini care refolosesc aceeasi
+   clasa globala. */
+.mp-chart-card .portfolio-interval-switch button.is-active{
+  background:var(--blue);
+  color:#fff;
+}
 .mp-chart-wrap{
   width:100%;
   min-height:320px;
@@ -226,10 +314,31 @@
 }
 .mp-chart-hit{cursor:pointer}
 .mp-chart-point-last{pointer-events:none}
+.mp-chart-point-mini{pointer-events:none}
+
+/* Halou/glow discret pe ultimul punct (2026-08-05, redesign) - trei cercuri
+   concentrice semi-transparente in spatele marcajului vizibil
+   (.mp-chart-point-last), cu o pulsatie lenta si subtila (opacitate, nu
+   raza, ca sa ramana ieftin de randat) - vezi drawChart(). */
+.mp-chart-point-last-halo{
+  pointer-events:none;
+  animation:mpChartGlowPulse 2.4s ease-in-out infinite;
+}
+@keyframes mpChartGlowPulse{
+  0%,100%{opacity:.25}
+  50%{opacity:.55}
+}
+
+/* Gridline-uri verticale punctate la graniitele lunilor (2026-08-05,
+   redesign) - aliniate cu etichetele axei X pastrate dupa rarirea din
+   drawChart(), discrete (culoarea liniei generice a site-ului). */
+.mp-chart-month-gridline{
+  pointer-events:none;
+}
 
 .mp-chart-xaxis{
   position:relative;
-  height:32px;
+  height:22px;
   margin-top:6px;
   margin-left:70px;
 }
@@ -237,16 +346,14 @@
   position:absolute;
   top:0;
   display:flex;
-  flex-direction:column;
   align-items:center;
-  line-height:1.25;
+  line-height:1.3;
   transform:translateX(-50%);
   white-space:nowrap;
 }
 .mp-chart-xtick-left{transform:translateX(0)}
 .mp-chart-xtick-right{transform:translateX(-100%)}
-.mp-chart-xtick-month{font-size:10.5px;font-weight:800;color:var(--text)}
-.mp-chart-xtick-cal{font-size:9.5px;color:var(--muted)}
+.mp-chart-xtick-label{font-size:10.5px;font-weight:700;color:var(--muted)}
 
 /* linia + eticheta capitalului initial - discreta, aurie, punctata */
 .mp-chart-capital-label{
@@ -290,7 +397,11 @@
 .mp-chart-tooltip[hidden]{display:none}
 .mp-chart-tooltip-date{font-weight:900;margin-bottom:1px}
 .mp-chart-tooltip-month{color:var(--muted);font-size:10.5px;margin-bottom:6px}
-.mp-chart-tooltip-row b{font-weight:800}
+/* aliniere flex eticheta/valoare (2026-08-05, redesign) - eticheta la
+   stanga, valoarea (ingrosata) la dreapta, pe acelasi rand, cu spatiu intre
+   ele oricat de lunga ar fi eticheta tradusa (RO/EN/RU/UK/PL). */
+.mp-chart-tooltip-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.mp-chart-tooltip-row b{font-weight:800;white-space:nowrap}
 
 /* eticheta permanenta a ultimului punct - implicit ancorata SUS-STANGA
    fata de punct (translate -100%,-100%): ultimul punct e mereu langa
@@ -368,7 +479,6 @@
 
 @media (max-width:1024px){
   .mp-main{padding-top:150px}
-  .mp-cards-row{grid-template-columns:repeat(2, 1fr)}
   .mp-subgrid{grid-template-columns:1fr 1fr}
   .mp-chart-wrap{min-height:260px}
 }
@@ -378,22 +488,26 @@
   .mp-head{flex-direction:column;align-items:flex-start}
   .mp-head h1{font-size:24px}
   .mp-tabs{max-width:100%}
-  .mp-cards-row{grid-template-columns:1fr 1fr;gap:10px}
+  /* 3 carduri de sumar (2026-08-05, redesign) - stivuite pe o coloana sub
+     768px (in loc de un grid 2+1 incomplet pe randul al doilea), ca sa
+     ramana lizibile fara sa se ingusteze excesiv. */
+  .mp-cards-row{grid-template-columns:1fr;gap:10px}
   .mp-subgrid{grid-template-columns:1fr;gap:14px}
   .mp-card{padding:14px 14px 6px;border-radius:14px}
   .mp-chart-wrap{min-height:220px;padding:10px 0 14px}
   .mp-chart-yaxis{flex:0 0 48px;width:48px}
   .mp-chart-ytick{font-size:9.5px}
   .mp-chart-xaxis{margin-left:56px}
-  .mp-chart-xtick-month{font-size:9.5px}
-  .mp-chart-xtick-cal{font-size:8.5px}
+  .mp-chart-xtick-label{font-size:9.5px}
   .mp-chart-tooltip{font-size:10.5px;padding:7px 9px}
   .mp-chart-last-nav{font-size:11.5px}
   .mp-chart-last-badge{font-size:10px}
+  .mp-stat-icon{flex:0 0 38px;width:38px;height:38px}
+  .mp-stat-icon-svg{width:19px;height:19px}
+  .mp-stat-value{font-size:18px}
 }
 
 @media (max-width:480px){
-  .mp-cards-row{grid-template-columns:1fr}
   .mp-locked-card{padding:26px 20px}
   .mp-head h1{font-size:21px}
   .mp-card-head{font-size:12px}
@@ -406,6 +520,8 @@
   .mp-card{padding:12px 10px 4px}
   .mp-chart-wrap{min-height:190px}
   .mp-chart-capital-label{font-size:9.5px;padding:1px 6px}
+  .mp-stat-card{padding:13px 14px;gap:11px}
+  .mp-stat-value{font-size:16.5px}
 }
 
 @media (max-width:320px){
@@ -414,4 +530,8 @@
   .mp-chart-yaxis{flex:0 0 38px;width:38px}
   .mp-chart-xaxis{margin-left:44px}
   .mp-chart-ytick{font-size:8.5px}
+  .mp-stat-icon{flex:0 0 34px;width:34px;height:34px}
+  .mp-stat-icon-svg{width:17px;height:17px}
+  .mp-stat-value{font-size:15px}
+  .mp-stat-label{font-size:10.5px}
 }
