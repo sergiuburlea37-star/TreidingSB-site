@@ -1,12 +1,17 @@
 -- 202608050008_portfolio_performance_history_seed_rollback.sql
 --
 -- Rollback pentru 202608050008_portfolio_performance_history_seed.sql.
--- Elimina DOAR cele 22 de randuri introduse de acel seed, identificate
+-- Elimina DOAR cele 21 de randuri introduse de acel seed, identificate
 -- strict prin (portfolio_id via code, as_of_date) SI nav_value exact - NU
 -- "toate randurile din portfolio_performance_history" si NU doar cheia
 -- (portfolio_id, as_of_date) fara verificarea valorii.
 --
--- Siguranta: daca oricare din cele 22 de randuri lipseste sau are alt
+-- Actualizare 2026-08-05: fata de versiunea initiala (22 randuri), EU
+-- 2026-07-24 (PRY) a fost eliminat din lista asteptata - vezi antetul
+-- fisierului seed pentru motiv (discrepanta de atribuire a datei,
+-- semnalata in Surse_Audit).
+--
+-- Siguranta: daca oricare din cele 21 de randuri lipseste sau are alt
 -- nav_value decat cel introdus de acest seed (ex. a fost corectat manual
 -- de admin intre timp, sau suprascris de o rulare ulterioara a seed-ului
 -- cu valori actualizate prin on conflict do update), scriptul se opreste
@@ -15,9 +20,9 @@
 -- Nu atinge nicio alta tabela.
 --
 -- Testat local intr-un sandbox Postgres aruncat (nu Supabase, PostgreSQL 16):
--- rollback curat dupa seed (sterge exact 22 randuri, tabela ramane goala)
+-- rollback curat dupa seed (sterge exact 21 randuri, tabela ramane goala)
 -- si test de siguranta separat (un nav_value modificat manual pe unul din
--- cele 22 randuri -> guard-ul opreste rollback-ul cu exceptie, 0 randuri
+-- cele 21 randuri -> guard-ul opreste rollback-ul cu exceptie, 0 randuri
 -- sterse).
 
 begin;
@@ -45,8 +50,7 @@ expected jsonb := '[
 {"code":"EU","as_of_date":"2026-06-12","nav_value":10403.58},
 {"code":"EU","as_of_date":"2026-07-03","nav_value":10604.89},
 {"code":"EU","as_of_date":"2026-07-10","nav_value":10364.71},
-{"code":"EU","as_of_date":"2026-07-17","nav_value":10311.44},
-{"code":"EU","as_of_date":"2026-07-24","nav_value":10384.94}
+{"code":"EU","as_of_date":"2026-07-17","nav_value":10311.44}
 ]'::jsonb;
 row_data jsonb;
 found_nav numeric;
@@ -81,7 +85,7 @@ using public.portfolios p
 where h.portfolio_id = p.id
 and (
 (p.code = 'US' and h.as_of_date in ('2026-05-07','2026-05-08','2026-05-15','2026-05-22','2026-05-29','2026-06-05','2026-06-12','2026-06-19','2026-06-26','2026-07-03','2026-07-10','2026-07-17','2026-07-24','2026-07-31'))
-or (p.code = 'EU' and h.as_of_date in ('2026-05-18','2026-05-29','2026-06-05','2026-06-12','2026-07-03','2026-07-10','2026-07-17','2026-07-24'))
+or (p.code = 'EU' and h.as_of_date in ('2026-05-18','2026-05-29','2026-06-05','2026-06-12','2026-07-03','2026-07-10','2026-07-17'))
 )
 and (
 (p.code = 'US' and h.as_of_date = '2026-05-07' and h.nav_value = 10003.60)
@@ -105,7 +109,6 @@ or (p.code = 'EU' and h.as_of_date = '2026-06-12' and h.nav_value = 10403.58)
 or (p.code = 'EU' and h.as_of_date = '2026-07-03' and h.nav_value = 10604.89)
 or (p.code = 'EU' and h.as_of_date = '2026-07-10' and h.nav_value = 10364.71)
 or (p.code = 'EU' and h.as_of_date = '2026-07-17' and h.nav_value = 10311.44)
-or (p.code = 'EU' and h.as_of_date = '2026-07-24' and h.nav_value = 10384.94)
 );
 
 commit;
