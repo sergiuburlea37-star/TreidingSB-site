@@ -1,246 +1,247 @@
 /* member-portfolios.css
-Pagina dedicata portofoliilor membrilor (US/EU). Foloseste variabilele si
-clasele de baza deja definite in style.css (paleta, header, .portfolio-*,
-.table-card, .stat-mini, .risk-badge, .btn) - fisierul de fata adauga doar
-layout-ul specific noii pagini (shell lat, carduri, grid responsive),
-fara sa duplice regulile de header/nav care vin deja din style.css.
+   Pagina dedicata portofoliilor membrilor (US/EU). Foloseste variabilele si
+   clasele de baza deja definite in style.css (paleta, header, .portfolio-*,
+   .table-card, .stat-mini, .risk-badge, .btn) - fisierul de fata adauga doar
+   layout-ul specific noii pagini (shell lat, carduri, grid responsive),
+   fara sa duplice regulile de header/nav care vin deja din style.css.
 */
 
 .mp-body{min-height:100vh}
 
 .mp-main{
-padding:158px 5vw 90px;
-display:flex;
-justify-content:center;
+  padding:158px 5vw 90px;
+  display:flex;
+  justify-content:center;
 }
 
 .mp-shell{
-width:100%;
-max-width:1520px;
-margin:0 auto;
+  width:100%;
+  max-width:1520px;
+  margin:0 auto;
 }
 
 /* ---------- stari: loading / locked / error ---------- */
 .mp-state{
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-min-height:50vh;
-text-align:center;
-gap:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:50vh;
+  text-align:center;
+  gap:16px;
 }
 .mp-state[hidden]{display:none}
 
 .mp-spinner{
-width:44px;height:44px;
-border-radius:50%;
-border:3px solid rgba(255,255,255,.16);
-border-top-color:var(--orange);
-animation:mpSpin .85s linear infinite;
+  width:44px;height:44px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,.16);
+  border-top-color:var(--orange);
+  animation:mpSpin .85s linear infinite;
 }
 @keyframes mpSpin{to{transform:rotate(360deg)}}
 
 .mp-state-loading p{color:var(--muted);font-size:14px}
 
 .mp-locked-card{
-max-width:480px;
-width:100%;
-padding:36px 30px;
-border:1px solid var(--line);
-border-radius:20px;
-background:rgba(6,13,24,.5);
-backdrop-filter:blur(14px);
--webkit-backdrop-filter:blur(14px);
+  max-width:480px;
+  width:100%;
+  padding:36px 30px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:rgba(6,13,24,.5);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
 }
 .mp-locked-icon{
-width:40px;height:40px;
-color:var(--gold);
-margin:0 auto 14px;
-display:block;
+  width:40px;height:40px;
+  color:var(--gold);
+  margin:0 auto 14px;
+  display:block;
 }
 .mp-locked-card h1{
-font-size:22px;
-margin:0 0 10px;
-color:var(--text);
+  font-size:22px;
+  margin:0 0 10px;
+  color:var(--text);
 }
 .mp-locked-card p{
-color:var(--muted);
-font-size:14px;
-line-height:1.6;
-margin:0 0 20px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+  margin:0 0 20px;
 }
 
 /* ---------- dashboard head ---------- */
 .mp-dashboard{display:flex;flex-direction:column;gap:0}
 
 .mp-head{
-display:flex;
-align-items:flex-end;
-justify-content:space-between;
-flex-wrap:wrap;
-gap:14px;
-margin-bottom:18px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-bottom:18px;
 }
 .mp-head h1{
-margin:10px 0 0;
-font-size:30px;
-line-height:1.15;
+  margin:10px 0 0;
+  font-size:30px;
+  line-height:1.15;
 }
 .mp-head-meta{
-display:flex;
-align-items:center;
-gap:12px;
-flex-wrap:wrap;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
 }
 .mp-updated{
-color:var(--muted);
-font-size:12px;
+  color:var(--muted);
+  font-size:12px;
 }
 
 /* ---------- tabs / notes ---------- */
 .mp-tabs{
-max-width:420px;
-margin-bottom:14px;
+  max-width:420px;
+  margin-bottom:14px;
 }
 
 .mp-fx-note{
-margin:0 0 6px;
-font-size:11.5px;
-color:#9fb0c9;
-line-height:1.6;
+  margin:0 0 6px;
+  font-size:11.5px;
+  color:#9fb0c9;
+  line-height:1.6;
 }
 .mp-incomplete-note{
-margin:0 0 18px;
-padding:10px 14px;
-border:1px solid rgba(255,159,22,.4);
-background:rgba(255,159,22,.08);
-border-radius:10px;
-font-size:12.5px;
-color:#ffd493;
-line-height:1.6;
+  margin:0 0 18px;
+  padding:10px 14px;
+  border:1px solid rgba(255,159,22,.4);
+  background:rgba(255,159,22,.08);
+  border-radius:10px;
+  font-size:12.5px;
+  color:#ffd493;
+  line-height:1.6;
 }
 .mp-incomplete-note[hidden]{display:none}
 
 /* ---------- stat cards row ---------- */
 .mp-cards-row{
-display:grid;
-grid-template-columns:repeat(4, 1fr);
-gap:14px;
-margin-bottom:22px;
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:14px;
+  margin-bottom:22px;
 }
 
 /* ---------- generic card ---------- */
 .mp-card{
-background:rgba(6,13,24,.42);
-border:1px solid var(--line);
-border-radius:16px;
-padding:18px 18px 8px;
-margin-bottom:20px;
-overflow:hidden;
+  background:rgba(6,13,24,.42);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px 18px 8px;
+  margin-bottom:20px;
+  overflow:hidden;
 }
 .mp-card-head{
-display:flex;
-align-items:center;
-justify-content:space-between;
-flex-wrap:wrap;
-gap:10px;
-padding-bottom:14px;
-margin-bottom:6px;
-font-size:13px;
-font-weight:900;
-text-transform:uppercase;
-letter-spacing:.05em;
-color:var(--orange);
-border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+  padding-bottom:14px;
+  margin-bottom:6px;
+  font-size:13px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--orange);
+  border-bottom:1px solid var(--line);
 }
 
 /* ---------- chart ---------- */
 .mp-chart-card .mp-card-head{padding-bottom:12px}
 .mp-chart-wrap{
-width:100%;
-min-height:320px;
-padding:14px 4px 18px;
-display:flex;
-flex-direction:column;
+  width:100%;
+  min-height:320px;
+  padding:14px 4px 18px;
+  display:flex;
+  flex-direction:column;
 }
 .mp-chart-wrap svg{width:100%;height:100%;display:block}
 
 .mp-chart-empty{
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-gap:10px;
-padding:38px 20px;
-color:var(--muted);
-text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:38px 20px;
+  color:var(--muted);
+  text-align:center;
 }
 .mp-chart-empty[hidden]{display:none}
 .mp-chart-empty svg{width:34px;height:34px;color:var(--cyan)}
 .mp-chart-empty p{margin:0;font-size:13px}
 
 /* ---------- chart: axe profesionale, linia capitalului, tooltip, ultimul
-punct (2026-08-05) ----------
-Structura: .mp-chart-grid (randul axa-Y + zona de desenat) urmat de
-.mp-chart-xaxis (randul axa-X, sub grafic). Zona de desenat (.mp-chart-plot)
-e singurul container position:relative pentru supraetajul absolut-pozitionat
-(SVG-ul propriu-zis, linia+eticheta capitalului initial, tooltip-ul de
-hover/tap, eticheta permanenta a ultimului punct) - toate raman clipuite de
-overflow:hidden mostenit de la .mp-card (vezi si clamp-urile din JS). */
+   punct (2026-08-05) ----------
+   Structura: .mp-chart-grid (randul axa-Y + zona de desenat) urmat de
+   .mp-chart-xaxis (randul axa-X, sub grafic). Zona de desenat
+   (.mp-chart-plot) e singurul container position:relative pentru
+   supraetajul absolut-pozitionat (SVG-ul propriu-zis, linia+eticheta
+   capitalului initial, tooltip-ul de hover/tap, eticheta permanenta a
+   ultimului punct) - toate raman clipuite de overflow:hidden mostenit de
+   la .mp-card (vezi si clamp-urile din JS). */
 .mp-chart-grid{
-display:flex;
-align-items:stretch;
-gap:8px;
-flex:1 1 auto;
-min-height:0;
+  display:flex;
+  align-items:stretch;
+  gap:8px;
+  flex:1 1 auto;
+  min-height:0;
 }
 .mp-chart-yaxis{
-position:relative;
-flex:0 0 62px;
-width:62px;
+  position:relative;
+  flex:0 0 62px;
+  width:62px;
 }
 .mp-chart-ytick{
-position:absolute;
-left:0;
-right:6px;
-transform:translateY(-50%);
-text-align:right;
-white-space:nowrap;
-font-size:10.5px;
-color:var(--muted);
+  position:absolute;
+  left:0;
+  right:6px;
+  transform:translateY(-50%);
+  text-align:right;
+  white-space:nowrap;
+  font-size:10.5px;
+  color:var(--muted);
 }
 .mp-chart-plot{
-position:relative;
-flex:1 1 auto;
-min-width:0;
-min-height:150px;
+  position:relative;
+  flex:1 1 auto;
+  min-width:0;
+  min-height:150px;
 }
 .mp-chart-plot svg{
-position:absolute;
-inset:0;
-width:100%;
-height:100%;
-display:block;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
 }
 .mp-chart-hit{cursor:pointer}
 .mp-chart-point-last{pointer-events:none}
 
 .mp-chart-xaxis{
-position:relative;
-height:32px;
-margin-top:6px;
-margin-left:70px;
+  position:relative;
+  height:32px;
+  margin-top:6px;
+  margin-left:70px;
 }
 .mp-chart-xtick{
-position:absolute;
-top:0;
-display:flex;
-flex-direction:column;
-align-items:center;
-line-height:1.25;
-transform:translateX(-50%);
-white-space:nowrap;
+  position:absolute;
+  top:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  line-height:1.25;
+  transform:translateX(-50%);
+  white-space:nowrap;
 }
 .mp-chart-xtick-left{transform:translateX(0)}
 .mp-chart-xtick-right{transform:translateX(-100%)}
@@ -249,18 +250,18 @@ white-space:nowrap;
 
 /* linia + eticheta capitalului initial - discreta, aurie, punctata */
 .mp-chart-capital-label{
-position:absolute;
-left:4px;
-transform:translateY(-130%);
-font-size:10.5px;
-font-weight:700;
-color:var(--gold);
-background:rgba(5,10,20,.55);
-padding:2px 7px;
-border-radius:6px;
-white-space:nowrap;
-pointer-events:none;
-z-index:2;
+  position:absolute;
+  left:4px;
+  transform:translateY(-130%);
+  font-size:10.5px;
+  font-weight:700;
+  color:var(--gold);
+  background:rgba(5,10,20,.55);
+  padding:2px 7px;
+  border-radius:6px;
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:2;
 }
 .mp-chart-capital-label.is-below{transform:translateY(28%)}
 
@@ -271,20 +272,20 @@ z-index:2;
 
 /* tooltip pe hover (desktop) / tap (mobil) */
 .mp-chart-tooltip{
-position:absolute;
-z-index:5;
-pointer-events:none;
-background:var(--glass-strong);
-border:1px solid var(--line);
-border-radius:10px;
-padding:8px 11px;
-font-size:11.5px;
-line-height:1.55;
-color:var(--text);
-box-shadow:0 10px 26px rgba(0,0,0,.4);
-white-space:nowrap;
-backdrop-filter:blur(8px);
--webkit-backdrop-filter:blur(8px);
+  position:absolute;
+  z-index:5;
+  pointer-events:none;
+  background:var(--glass-strong);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 11px;
+  font-size:11.5px;
+  line-height:1.55;
+  color:var(--text);
+  box-shadow:0 10px 26px rgba(0,0,0,.4);
+  white-space:nowrap;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
 }
 .mp-chart-tooltip[hidden]{display:none}
 .mp-chart-tooltip-date{font-weight:900;margin-bottom:1px}
@@ -292,25 +293,25 @@ backdrop-filter:blur(8px);
 .mp-chart-tooltip-row b{font-weight:800}
 
 /* eticheta permanenta a ultimului punct - implicit ancorata SUS-STANGA
-fata de punct (translate -100%,-100%): ultimul punct e mereu langa
-marginea DREAPTA a graficului (e cel mai recent instantaneu), asa ca
-eticheta se intinde spre stanga lui, nu spre dreapta, ca sa nu iasa
-niciodata din cardul cu overflow:hidden - nici pe mobil. */
+   fata de punct (translate -100%,-100%): ultimul punct e mereu langa
+   marginea DREAPTA a graficului (e cel mai recent instantaneu), asa ca
+   eticheta se intinde spre stanga lui, nu spre dreapta, ca sa nu iasa
+   niciodata din cardul cu overflow:hidden - nici pe mobil. */
 .mp-chart-last-badge{
-position:absolute;
-transform:translate(-100%,-100%);
-margin:0 0 10px 0;
-padding:5px 10px;
-text-align:right;
-background:rgba(5,10,20,.6);
-border:1px solid var(--line);
-border-radius:8px;
-font-size:11px;
-line-height:1.35;
-white-space:nowrap;
-pointer-events:none;
-backdrop-filter:blur(6px);
--webkit-backdrop-filter:blur(6px);
+  position:absolute;
+  transform:translate(-100%,-100%);
+  margin:0 0 10px 0;
+  padding:5px 10px;
+  text-align:right;
+  background:rgba(5,10,20,.6);
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-size:11px;
+  line-height:1.35;
+  white-space:nowrap;
+  pointer-events:none;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
 }
 .mp-chart-last-badge.is-below{transform:translate(-100%,14px)}
 .mp-chart-last-nav{font-weight:900;font-size:12.5px;color:var(--text)}
@@ -328,14 +329,14 @@ backdrop-filter:blur(6px);
 .mp-table .mp-awaiting-live{color:var(--muted);font-size:11.5px;font-style:italic}
 
 /* stat card afisand placeholder text ("In asteptarea datelor live") in loc
-de o cifra - font mai mic decat cifrele normale, ca sa incapa pe un card
-ingust fara sa dea layout overflow. */
+   de o cifra - font mai mic decat cifrele normale, ca sa incapa pe un card
+   ingust fara sa dea layout overflow. */
 .stat-mini-val.mp-stat-pending{
-font-size:.78rem;
-font-weight:700;
-color:var(--muted);
-font-style:italic;
-line-height:1.3;
+  font-size:.78rem;
+  font-weight:700;
+  color:var(--muted);
+  font-style:italic;
+  line-height:1.3;
 }
 .mp-table .mp-pl-pos{color:var(--green);font-weight:800}
 .mp-table .mp-pl-neg{color:var(--red);font-weight:800}
@@ -343,10 +344,10 @@ line-height:1.3;
 
 /* ---------- subgrid: cash + dividends ---------- */
 .mp-subgrid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-margin-bottom:0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-bottom:0;
 }
 .mp-subgrid .mp-card{margin-bottom:20px}
 
@@ -354,63 +355,63 @@ margin-bottom:0;
 #mpDisclaimer{margin-top:6px;padding-top:16px;border-top:1px solid var(--line)}
 
 /* =====================================================
-RESPONSIVE
-Verificat la: 1440 / 1024 / 768 / 430 / 390 / 375 / 320px
-===================================================== */
+   RESPONSIVE
+   Verificat la: 1440 / 1024 / 768 / 430 / 390 / 375 / 320px
+   ===================================================== */
 
 /* Desktop mare - putin mai compact peste 1440 nu e nevoie de reguli extra,
-.mp-shell deja plafoneaza la 1520px. */
+   .mp-shell deja plafoneaza la 1520px. */
 
 @media (max-width:1440px){
-.mp-shell{max-width:1320px}
+  .mp-shell{max-width:1320px}
 }
 
 @media (max-width:1024px){
-.mp-main{padding-top:150px}
-.mp-cards-row{grid-template-columns:repeat(2, 1fr)}
-.mp-subgrid{grid-template-columns:1fr 1fr}
-.mp-chart-wrap{min-height:260px}
+  .mp-main{padding-top:150px}
+  .mp-cards-row{grid-template-columns:repeat(2, 1fr)}
+  .mp-subgrid{grid-template-columns:1fr 1fr}
+  .mp-chart-wrap{min-height:260px}
 }
 
 @media (max-width:768px){
-.mp-main{padding:140px 4vw 60px}
-.mp-head{flex-direction:column;align-items:flex-start}
-.mp-head h1{font-size:24px}
-.mp-tabs{max-width:100%}
-.mp-cards-row{grid-template-columns:1fr 1fr;gap:10px}
-.mp-subgrid{grid-template-columns:1fr;gap:14px}
-.mp-card{padding:14px 14px 6px;border-radius:14px}
-.mp-chart-wrap{min-height:220px;padding:10px 0 14px}
-.mp-chart-yaxis{flex:0 0 48px;width:48px}
-.mp-chart-ytick{font-size:9.5px}
-.mp-chart-xaxis{margin-left:56px}
-.mp-chart-xtick-month{font-size:9.5px}
-.mp-chart-xtick-cal{font-size:8.5px}
-.mp-chart-tooltip{font-size:10.5px;padding:7px 9px}
-.mp-chart-last-nav{font-size:11.5px}
-.mp-chart-last-badge{font-size:10px}
+  .mp-main{padding:140px 4vw 60px}
+  .mp-head{flex-direction:column;align-items:flex-start}
+  .mp-head h1{font-size:24px}
+  .mp-tabs{max-width:100%}
+  .mp-cards-row{grid-template-columns:1fr 1fr;gap:10px}
+  .mp-subgrid{grid-template-columns:1fr;gap:14px}
+  .mp-card{padding:14px 14px 6px;border-radius:14px}
+  .mp-chart-wrap{min-height:220px;padding:10px 0 14px}
+  .mp-chart-yaxis{flex:0 0 48px;width:48px}
+  .mp-chart-ytick{font-size:9.5px}
+  .mp-chart-xaxis{margin-left:56px}
+  .mp-chart-xtick-month{font-size:9.5px}
+  .mp-chart-xtick-cal{font-size:8.5px}
+  .mp-chart-tooltip{font-size:10.5px;padding:7px 9px}
+  .mp-chart-last-nav{font-size:11.5px}
+  .mp-chart-last-badge{font-size:10px}
 }
 
 @media (max-width:480px){
-.mp-cards-row{grid-template-columns:1fr}
-.mp-locked-card{padding:26px 20px}
-.mp-head h1{font-size:21px}
-.mp-card-head{font-size:12px}
-.mp-chart-yaxis{flex:0 0 42px;width:42px}
-.mp-chart-xaxis{margin-left:48px}
+  .mp-cards-row{grid-template-columns:1fr}
+  .mp-locked-card{padding:26px 20px}
+  .mp-head h1{font-size:21px}
+  .mp-card-head{font-size:12px}
+  .mp-chart-yaxis{flex:0 0 42px;width:42px}
+  .mp-chart-xaxis{margin-left:48px}
 }
 
 @media (max-width:390px){
-.mp-main{padding:132px 4vw 50px}
-.mp-card{padding:12px 10px 4px}
-.mp-chart-wrap{min-height:190px}
-.mp-chart-capital-label{font-size:9.5px;padding:1px 6px}
+  .mp-main{padding:132px 4vw 50px}
+  .mp-card{padding:12px 10px 4px}
+  .mp-chart-wrap{min-height:190px}
+  .mp-chart-capital-label{font-size:9.5px;padding:1px 6px}
 }
 
 @media (max-width:320px){
-.mp-head h1{font-size:19px}
-.mp-locked-card{padding:20px 14px}
-.mp-chart-yaxis{flex:0 0 38px;width:38px}
-.mp-chart-xaxis{margin-left:44px}
-.mp-chart-ytick{font-size:8.5px}
+  .mp-head h1{font-size:19px}
+  .mp-locked-card{padding:20px 14px}
+  .mp-chart-yaxis{flex:0 0 38px;width:38px}
+  .mp-chart-xaxis{margin-left:44px}
+  .mp-chart-ytick{font-size:8.5px}
 }
