@@ -8,16 +8,29 @@
 
 .mp-body{min-height:100vh}
 
+/* Padding-ul orizontal era 5vw pana acum (2026-08-06: adus la 0) - cu
+   .mp-shell folosind acum "calc(100vw - 64px)" ca sa isi calculeze singur
+   gutter-ul, un padding orizontal suplimentar aici facea ca latimea
+   calculata sa depaseasca spatiul disponibil in interiorul .mp-main, iar
+   flexbox micsora (flex-shrink) cardul inapoi sub latimea intentionata (ex.
+   1296px in loc de 1376px la 1440px viewport). .mp-shell ramane centrat de
+   "justify-content:center" de mai jos, exact ca inainte. */
 .mp-main{
-  padding:158px 5vw 90px;
+  padding:158px 0 90px;
   display:flex;
   justify-content:center;
 }
 
+/* Latimea containerului paginii (2026-08-06, corectie layout): formula
+   fluida ceruta explicit - umple aproape tot viewport-ul pe ecrane late (nu
+   mai plafoneaza devreme la 1520/1320px), cu un gutter minim de 32px pe
+   fiecare parte cand viewport-ul scade sub ~1464px. Inlocuieste vechiul
+   max-width fix + breakpoint-ul de la 1440px (nu mai e necesar - formula de
+   mai jos acopera deja acea tranzitie continuu). */
 .mp-shell{
-  width:100%;
-  max-width:1520px;
-  margin:0 auto;
+  width:min(1400px, calc(100vw - 64px));
+  max-width:1400px;
+  margin-inline:auto;
 }
 
 /* ---------- stari: loading / locked / error ---------- */
@@ -72,7 +85,19 @@
 }
 
 /* ---------- dashboard head ---------- */
-.mp-dashboard{display:flex;flex-direction:column;gap:0}
+/* Fix layout (2026-08-06): #mpStateDashboard poarta AMBELE clase
+   "mp-state mp-dashboard" pe acelasi element - regula ".mp-state"
+   (mai sus) seteaza "align-items:center" (corect pentru starile de
+   loading/locked/error, unde continutul e un singur card centrat), dar
+   ".mp-dashboard" nu suprascria acest "align-items", asa ca toate cardurile
+   copil (cardurile de sumar, cardul graficului, pozitii, subgrid,
+   tranzactii) mosteneau "align-items:center" de la ".mp-state" si se
+   ingustau la latimea propriului continut in loc sa se intinda pe toata
+   latimea ".mp-shell" - de-asta cardul graficului aparea ingust
+   (~420px) in loc sa ocupe aproape toata latimea paginii. Suprascriere
+   explicita cu "stretch" mai jos - singura schimbare necesara ca toate
+   cardurile sa aiba aceleasi margini laterale ca ".mp-shell". */
+.mp-dashboard{display:flex;flex-direction:column;gap:0;align-items:stretch}
 
 .mp-head{
   display:flex;
@@ -125,10 +150,68 @@
 /* ---------- stat cards row ---------- */
 .mp-cards-row{
   display:grid;
-  grid-template-columns:repeat(4, 1fr);
+  grid-template-columns:repeat(3, 1fr);
   gap:14px;
   margin-bottom:22px;
 }
+
+/* Cardurile de sumar (2026-08-05, redesign): exact 3 carduri (Capital
+   inițial / Ultimul instantaneu disponibil / Randament de la fondare),
+   fiecare cu o iconiță circulară - vezi renderStatCards()/statCard3Html()
+   din member-portfolios.js. Inlocuiesc vechile 4 carduri ".stat-mini"
+   (Capital inițial / Valoare actuală / Profit / Randament, ultimele 3
+   condiționate de p.hasLivePriceData) - regula ".stat-mini-val.mp-stat-
+   pending" de mai jos ramane neutilizata de acest fisier, dar nu e stearsa
+   (clasa ".stat-mini" ramane definita global in style.css si ar putea fi
+   refolosita ulterior). */
+.mp-stat-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:rgba(6,13,24,.42);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px 18px;
+}
+.mp-stat-icon{
+  flex:0 0 44px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.05);
+}
+.mp-stat-icon-svg{width:22px;height:22px}
+.mp-stat-icon-gold{background:rgba(232,185,35,.14);color:var(--gold)}
+.mp-stat-icon-silver{background:rgba(198,211,230,.12);color:var(--muted)}
+.mp-stat-icon-green{background:rgba(24,217,139,.14);color:var(--green)}
+.mp-stat-icon-red{background:rgba(255,64,86,.14);color:var(--red)}
+.mp-stat-body{min-width:0}
+.mp-stat-label{
+  font-size:11.5px;
+  color:var(--muted);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin-bottom:4px;
+}
+.mp-stat-value{
+  font-size:20px;
+  font-weight:900;
+  color:var(--text);
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.mp-stat-val-gold{color:var(--gold)}
+.mp-stat-val-silver{color:#e8edf5}
+.mp-stat-val-green{color:var(--green)}
+.mp-stat-val-red{color:var(--red)}
+.mp-stat-val-pending{font-size:.78rem;font-weight:700;color:var(--muted);font-style:italic}
+.mp-stat-sub{font-size:10.5px;color:var(--muted);margin-top:2px}
 
 /* ---------- generic card ---------- */
 .mp-card{
@@ -156,11 +239,60 @@
 }
 
 /* ---------- chart ---------- */
-.mp-chart-card .mp-card-head{padding-bottom:12px}
+/* Latime explicita (2026-08-06, corectie layout): cardul graficului trebuie
+   sa ocupe intreaga latime a ".mp-shell", la fel ca celelalte carduri -
+   redundant acum ca ".mp-dashboard{align-items:stretch}" de mai sus
+   rezolva cauza reala, dar declarat explicit oricum, ca sa fie evident ca
+   niciun "max-width" ingust nu se mai aplica pe acest card. */
+.mp-chart-card{
+  width:100%;
+  max-width:none;
+  margin-inline:0;
+}
+.mp-chart-card .mp-card-head{padding-bottom:12px;align-items:flex-start;color:var(--gold)}
+/* Titlu + subtitlu dinamice per portofoliu (2026-08-05, redesign): titlul
+   ("Evoluție portofoliu US/EU") ramane cu majuscule aurii, mostenite de la
+   .mp-card-head; subtitlul ("Valoare totală (NAV) în GBP/EUR") e adaugat sub
+   el, cu majuscule si accent auriu dezactivate explicit - vezi
+   updateChartHeader() din member-portfolios.js. */
+.mp-chart-titles{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.mp-chart-title{display:block}
+.mp-chart-subtitle{
+  display:block;
+  font-size:11px;
+  font-weight:600;
+  text-transform:none;
+  letter-spacing:normal;
+  color:var(--muted);
+}
+.mp-chart-subtitle[hidden]{display:none}
+
+/* Butonul de interval activ ("3L") e auriu global (style.css,
+   .portfolio-interval-switch button.is-active) - referinta vizuala pentru
+   acest card il arata albastru; suprascris DOAR pentru cardul graficului
+   acestei pagini, ca sa nu afecteze alte pagini care refolosesc aceeasi
+   clasa globala. */
+.mp-chart-card .portfolio-interval-switch button.is-active{
+  background:var(--blue);
+  color:#fff;
+}
+/* Inaltime panoramica pe desktop (2026-08-06, corectie layout): un raport
+   lat/scurt, ca in referinta vizuala, nu forma verticala anterioara (era
+   doar min-height:320px, fara relatie cu latimea reala a cardului acum
+   corectata mai sus). "clamp" tine inaltimea proportionala cu latimea
+   viewport-ului (38vw) intre un minim de 480px si un maxim de 620px -
+   suprascrisa explicit pe mobil mai jos (min-height:360px, inaltime
+   automata, nu fixa). */
 .mp-chart-wrap{
   width:100%;
-  min-height:320px;
+  height:clamp(480px, 38vw, 620px);
   padding:14px 4px 18px;
+  display:flex;
+  flex-direction:column;
 }
 .mp-chart-wrap svg{width:100%;height:100%;display:block}
 
@@ -177,6 +309,167 @@
 .mp-chart-empty[hidden]{display:none}
 .mp-chart-empty svg{width:34px;height:34px;color:var(--cyan)}
 .mp-chart-empty p{margin:0;font-size:13px}
+
+/* ---------- chart: axe profesionale, linia capitalului, tooltip, ultimul
+   punct (2026-08-05) ----------
+   Structura: .mp-chart-grid (randul axa-Y + zona de desenat) urmat de
+   .mp-chart-xaxis (randul axa-X, sub grafic). Zona de desenat
+   (.mp-chart-plot) e singurul container position:relative pentru
+   supraetajul absolut-pozitionat (SVG-ul propriu-zis, linia+eticheta
+   capitalului initial, tooltip-ul de hover/tap, eticheta permanenta a
+   ultimului punct) - toate raman clipuite de overflow:hidden mostenit de
+   la .mp-card (vezi si clamp-urile din JS). */
+.mp-chart-grid{
+  display:flex;
+  align-items:stretch;
+  gap:8px;
+  flex:1 1 auto;
+  min-height:0;
+}
+.mp-chart-yaxis{
+  position:relative;
+  flex:0 0 62px;
+  width:62px;
+}
+.mp-chart-ytick{
+  position:absolute;
+  left:0;
+  right:6px;
+  transform:translateY(-50%);
+  text-align:right;
+  white-space:nowrap;
+  font-size:10.5px;
+  color:var(--muted);
+}
+.mp-chart-plot{
+  position:relative;
+  flex:1 1 auto;
+  min-width:0;
+  min-height:150px;
+}
+.mp-chart-plot svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+}
+.mp-chart-hit{cursor:pointer}
+.mp-chart-point-last{pointer-events:none}
+.mp-chart-point-mini{pointer-events:none}
+
+/* Halou/glow discret pe ultimul punct (2026-08-05, redesign) - trei cercuri
+   concentrice semi-transparente in spatele marcajului vizibil
+   (.mp-chart-point-last), cu o pulsatie lenta si subtila (opacitate, nu
+   raza, ca sa ramana ieftin de randat) - vezi drawChart(). */
+.mp-chart-point-last-halo{
+  pointer-events:none;
+  animation:mpChartGlowPulse 2.4s ease-in-out infinite;
+}
+@keyframes mpChartGlowPulse{
+  0%,100%{opacity:.25}
+  50%{opacity:.55}
+}
+
+/* Gridline-uri verticale punctate la graniitele lunilor (2026-08-05,
+   redesign) - aliniate cu etichetele axei X pastrate dupa rarirea din
+   drawChart(), discrete (culoarea liniei generice a site-ului). */
+.mp-chart-month-gridline{
+  pointer-events:none;
+}
+
+.mp-chart-xaxis{
+  position:relative;
+  height:22px;
+  margin-top:6px;
+  margin-left:70px;
+}
+.mp-chart-xtick{
+  position:absolute;
+  top:0;
+  display:flex;
+  align-items:center;
+  line-height:1.3;
+  transform:translateX(-50%);
+  white-space:nowrap;
+}
+.mp-chart-xtick-left{transform:translateX(0)}
+.mp-chart-xtick-right{transform:translateX(-100%)}
+.mp-chart-xtick-label{font-size:10.5px;font-weight:700;color:var(--muted)}
+
+/* linia + eticheta capitalului initial - discreta, aurie, punctata */
+.mp-chart-capital-label{
+  position:absolute;
+  left:4px;
+  transform:translateY(-130%);
+  font-size:10.5px;
+  font-weight:700;
+  color:var(--gold);
+  background:rgba(5,10,20,.55);
+  padding:2px 7px;
+  border-radius:6px;
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:2;
+}
+.mp-chart-capital-label.is-below{transform:translateY(28%)}
+
+/* culori semnate, comune tooltip-ului si etichetei ultimului punct */
+.mp-chart-pos{color:var(--green)}
+.mp-chart-neg{color:var(--red)}
+.mp-chart-neutral{color:var(--muted)}
+
+/* tooltip pe hover (desktop) / tap (mobil) */
+.mp-chart-tooltip{
+  position:absolute;
+  z-index:5;
+  pointer-events:none;
+  background:var(--glass-strong);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 11px;
+  font-size:11.5px;
+  line-height:1.55;
+  color:var(--text);
+  box-shadow:0 10px 26px rgba(0,0,0,.4);
+  white-space:nowrap;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.mp-chart-tooltip[hidden]{display:none}
+.mp-chart-tooltip-date{font-weight:900;margin-bottom:1px}
+.mp-chart-tooltip-month{color:var(--muted);font-size:10.5px;margin-bottom:6px}
+/* aliniere flex eticheta/valoare (2026-08-05, redesign) - eticheta la
+   stanga, valoarea (ingrosata) la dreapta, pe acelasi rand, cu spatiu intre
+   ele oricat de lunga ar fi eticheta tradusa (RO/EN/RU/UK/PL). */
+.mp-chart-tooltip-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.mp-chart-tooltip-row b{font-weight:800;white-space:nowrap}
+
+/* eticheta permanenta a ultimului punct - implicit ancorata SUS-STANGA
+   fata de punct (translate -100%,-100%): ultimul punct e mereu langa
+   marginea DREAPTA a graficului (e cel mai recent instantaneu), asa ca
+   eticheta se intinde spre stanga lui, nu spre dreapta, ca sa nu iasa
+   niciodata din cardul cu overflow:hidden - nici pe mobil. */
+.mp-chart-last-badge{
+  position:absolute;
+  transform:translate(-100%,-100%);
+  margin:0 0 10px 0;
+  padding:5px 10px;
+  text-align:right;
+  background:rgba(5,10,20,.6);
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-size:11px;
+  line-height:1.35;
+  white-space:nowrap;
+  pointer-events:none;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.mp-chart-last-badge.is-below{transform:translate(-100%,14px)}
+.mp-chart-last-nav{font-weight:900;font-size:12.5px;color:var(--text)}
+.mp-chart-last-pct{font-weight:800}
+.mp-chart-last-date{color:var(--muted);font-size:10px}
 
 /* ---------- positions / tables ---------- */
 .mp-positions-card .table-scroll,
@@ -219,45 +512,68 @@
    Verificat la: 1440 / 1024 / 768 / 430 / 390 / 375 / 320px
    ===================================================== */
 
-/* Desktop mare - putin mai compact peste 1440 nu e nevoie de reguli extra,
-   .mp-shell deja plafoneaza la 1520px. */
-
-@media (max-width:1440px){
-  .mp-shell{max-width:1320px}
-}
+/* Desktop mare - formula fluida a .mp-shell (mai sus) acopera deja
+   tranzitia continua pana la 1400px, fara breakpoint separat aici. */
 
 @media (max-width:1024px){
   .mp-main{padding-top:150px}
-  .mp-cards-row{grid-template-columns:repeat(2, 1fr)}
   .mp-subgrid{grid-template-columns:1fr 1fr}
-  .mp-chart-wrap{min-height:260px}
 }
 
 @media (max-width:768px){
-  .mp-main{padding:140px 4vw 60px}
+  .mp-main{padding:140px 0 60px}
   .mp-head{flex-direction:column;align-items:flex-start}
   .mp-head h1{font-size:24px}
   .mp-tabs{max-width:100%}
-  .mp-cards-row{grid-template-columns:1fr 1fr;gap:10px}
+  /* Gutere de pagina pe mobil (2026-08-06, corectie layout): exact 12px pe
+     fiecare parte, cerute explicit - padding-ul orizontal al .mp-main de mai
+     sus e zero acum, ca sa nu se dubleze cu marginea de aici. */
+  .mp-shell{width:calc(100% - 24px);max-width:none;margin-inline:12px}
+  /* 3 carduri de sumar (2026-08-05, redesign) - stivuite pe o coloana sub
+     768px (in loc de un grid 2+1 incomplet pe randul al doilea), ca sa
+     ramana lizibile fara sa se ingusteze excesiv. */
+  .mp-cards-row{grid-template-columns:1fr;gap:10px}
   .mp-subgrid{grid-template-columns:1fr;gap:14px}
   .mp-card{padding:14px 14px 6px;border-radius:14px}
-  .mp-chart-wrap{min-height:220px;padding:10px 0 14px}
+  /* Pe mobil inaltimea graficului redevine automata (nu clamp-ul panoramic
+     de pe desktop), cu un minim de 360px cerut explicit. */
+  .mp-chart-wrap{height:auto;min-height:360px;padding:10px 0 14px}
+  .mp-chart-yaxis{flex:0 0 48px;width:48px}
+  .mp-chart-ytick{font-size:9.5px}
+  .mp-chart-xaxis{margin-left:56px}
+  .mp-chart-xtick-label{font-size:9.5px}
+  .mp-chart-tooltip{font-size:10.5px;padding:7px 9px}
+  .mp-chart-last-nav{font-size:11.5px}
+  .mp-chart-last-badge{font-size:10px}
+  .mp-stat-icon{flex:0 0 38px;width:38px;height:38px}
+  .mp-stat-icon-svg{width:19px;height:19px}
+  .mp-stat-value{font-size:18px}
 }
 
 @media (max-width:480px){
-  .mp-cards-row{grid-template-columns:1fr}
   .mp-locked-card{padding:26px 20px}
   .mp-head h1{font-size:21px}
   .mp-card-head{font-size:12px}
+  .mp-chart-yaxis{flex:0 0 42px;width:42px}
+  .mp-chart-xaxis{margin-left:48px}
 }
 
 @media (max-width:390px){
-  .mp-main{padding:132px 4vw 50px}
+  .mp-main{padding:132px 0 50px}
   .mp-card{padding:12px 10px 4px}
-  .mp-chart-wrap{min-height:190px}
+  .mp-chart-capital-label{font-size:9.5px;padding:1px 6px}
+  .mp-stat-card{padding:13px 14px;gap:11px}
+  .mp-stat-value{font-size:16.5px}
 }
 
 @media (max-width:320px){
   .mp-head h1{font-size:19px}
   .mp-locked-card{padding:20px 14px}
+  .mp-chart-yaxis{flex:0 0 38px;width:38px}
+  .mp-chart-xaxis{margin-left:44px}
+  .mp-chart-ytick{font-size:8.5px}
+  .mp-stat-icon{flex:0 0 34px;width:34px;height:34px}
+  .mp-stat-icon-svg{width:17px;height:17px}
+  .mp-stat-value{font-size:15px}
+  .mp-stat-label{font-size:10.5px}
 }
