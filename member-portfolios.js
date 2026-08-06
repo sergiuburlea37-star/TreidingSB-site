@@ -106,17 +106,15 @@
       colCashStatus: "Status",
       colAmount: "Sumă",
       colPayDate: "Dată plată",
-      colType: "Tip",
-      colDate: "Dată",
       positionsHead: "Poziții active",
       cashHead: "Rezerve cash",
       dividendsHead: "Dividende",
-      transactionsHead: "Tranzacții recente",
       swipeHint: "← Glisează pentru mai multe →",
       noData: "Nu există date disponibile.",
       cashEmpty: "Nicio rezervă cash înregistrată.",
       dividendsEmpty: "Niciun dividend înregistrat încă.",
-      transactionsEmpty: "Nicio tranzacție înregistrată încă.",
+      firstPurchase: "Prima achiziție: {date}",
+      purchaseDateUnavailable: "Data achiziției indisponibilă",
       rateUnavailable: "curs indisponibil",
       referencePrice: "preț de referință",
       awaitingLiveData: "În așteptarea datelor live",
@@ -181,17 +179,15 @@
       colCashStatus: "Status",
       colAmount: "Amount",
       colPayDate: "Pay date",
-      colType: "Type",
-      colDate: "Date",
       positionsHead: "Active positions",
       cashHead: "Cash reserves",
       dividendsHead: "Dividends",
-      transactionsHead: "Recent transactions",
       swipeHint: "← Swipe for more →",
       noData: "No data available.",
       cashEmpty: "No cash reserves recorded.",
       dividendsEmpty: "No dividends recorded yet.",
-      transactionsEmpty: "No transactions recorded yet.",
+      firstPurchase: "First purchase: {date}",
+      purchaseDateUnavailable: "Purchase date unavailable",
       rateUnavailable: "rate unavailable",
       referencePrice: "reference price",
       awaitingLiveData: "Awaiting live data",
@@ -256,17 +252,15 @@
       colCashStatus: "Статус",
       colAmount: "Сумма",
       colPayDate: "Дата выплаты",
-      colType: "Тип",
-      colDate: "Дата",
       positionsHead: "Активные позиции",
       cashHead: "Резервы наличности",
       dividendsHead: "Дивиденды",
-      transactionsHead: "Последние транзакции",
       swipeHint: "← Листайте для просмотра →",
       noData: "Нет доступных данных.",
       cashEmpty: "Резервы наличности не зафиксированы.",
       dividendsEmpty: "Дивиденды пока не зафиксированы.",
-      transactionsEmpty: "Транзакции пока не зафиксированы.",
+      firstPurchase: "Первая покупка: {date}",
+      purchaseDateUnavailable: "Дата покупки недоступна",
       rateUnavailable: "курс недоступен",
       referencePrice: "справочная цена",
       awaitingLiveData: "Ожидание живых данных",
@@ -332,17 +326,15 @@
       colCashStatus: "Статус",
       colAmount: "Сума",
       colPayDate: "Дата виплати",
-      colType: "Тип",
-      colDate: "Дата",
       positionsHead: "Активні позиції",
       cashHead: "Грошові резерви",
       dividendsHead: "Дивіденди",
-      transactionsHead: "Останні транзакції",
       swipeHint: "← Прогорніть для деталей →",
       noData: "Немає доступних даних.",
       cashEmpty: "Грошові резерви не зафіксовано.",
       dividendsEmpty: "Дивіденди ще не зафіксовано.",
-      transactionsEmpty: "Транзакції ще не зафіксовано.",
+      firstPurchase: "Перша купівля: {date}",
+      purchaseDateUnavailable: "Дата купівлі недоступна",
       rateUnavailable: "курс недоступний",
       referencePrice: "довідкова ціна",
       awaitingLiveData: "Очікування живих даних",
@@ -407,17 +399,15 @@
       colCashStatus: "Status",
       colAmount: "Kwota",
       colPayDate: "Data wypłaty",
-      colType: "Typ",
-      colDate: "Data",
       positionsHead: "Aktywne pozycje",
       cashHead: "Rezerwy gotówkowe",
       dividendsHead: "Dywidendy",
-      transactionsHead: "Ostatnie transakcje",
       swipeHint: "← Przesuń, aby zobaczyć więcej →",
       noData: "Brak dostępnych danych.",
       cashEmpty: "Brak zarejestrowanych rezerw gotówkowych.",
       dividendsEmpty: "Brak zarejestrowanych dywidend.",
-      transactionsEmpty: "Brak zarejestrowanych transakcji.",
+      firstPurchase: "Pierwszy zakup: {date}",
+      purchaseDateUnavailable: "Data zakupu niedostępna",
       rateUnavailable: "kurs niedostępny",
       referencePrice: "cena referencyjna",
       awaitingLiveData: "Oczekiwanie na dane na żywo",
@@ -513,18 +503,12 @@
     set("mpColTicker2", t("colTicker"));
     set("mpColAmount", t("colAmount"));
     set("mpColPayDate", t("colPayDate"));
-    set("mpColType", t("colType"));
-    set("mpColTicker3", t("colTicker"));
-    set("mpColAmount2", t("colAmount"));
-    set("mpColDate", t("colDate"));
     set("mpPositionsHead", t("positionsHead"));
     set("mpCashHead", t("cashHead"));
     set("mpDividendsHead", t("dividendsHead"));
-    set("mpTransactionsHead", t("transactionsHead"));
     set("mpSwipeHint", t("swipeHint"));
     set("mpCashEmpty", t("cashEmpty"));
     set("mpDividendsEmpty", t("dividendsEmpty"));
-    set("mpTransactionsEmpty", t("transactionsEmpty"));
     set("mpDisclaimer", t("disclaimer"));
     // (2026-07-30) Badge-ul NU mai promite un interval de intarziere ("~15
     // minute") - nicio integrare de preturi live nu e activa inca (vezi
@@ -999,7 +983,6 @@
     renderPositions(p ? p.positions : [], p ? p.baseCurrency : null);
     renderCashReserves(p ? p.cashReserves : [], p ? p.baseCurrency : null);
     renderDividends(p ? p.dividends : []);
-    renderTransactions(p ? p.transactions : []);
   }
 
   // Cardul unui rand de sumar cu iconita circulara (2026-08-05, redesign) -
@@ -1948,11 +1931,11 @@
     var body = document.getElementById("mpPositionsBody");
     if (!body) return;
     if (!positions || !positions.length) {
-      body.innerHTML = '<tr><td colspan="6">' + esc(t("noData")) + "</td></tr>";
+      body.innerHTML = '<tr><td colspan="7">' + esc(t("noData")) + "</td></tr>";
       return;
     }
     body.innerHTML = positions
-      .map(function (pos) {
+      .map(function (pos, idx) {
         // Pondere initiala (initialWeightPct): suma tranzactiilor BUY ale
         // pozitiei / capitalul initial al portofoliului - fixa, istorica,
         // NU depinde de pretul curent. null (nu 0) cand lipseste tranzactia
@@ -1961,6 +1944,13 @@
         var weightHtml = weightText
           ? esc(weightText)
           : '<span class="mp-weight-na">' + esc(t("rateUnavailable")) + "</span>";
+
+        // Data primei achizitii (firstBuyAt, din tranzactia BUY reala) -
+        // afisata sub pretul mediu, ca sa fie clar de cand e valabil acel
+        // pret (nu un pret "curent"/live - vezi nota de mai jos).
+        var purchaseDateText = pos.firstBuyAt
+          ? t("firstPurchase").replace("{date}", fmtDate(pos.firstBuyAt))
+          : t("purchaseDateUnavailable");
 
         // Pret curent / profit: pana la integrarea unui furnizor de preturi
         // live (priceSource === 'live_feed'), NU se afiseaza nicio cifra -
@@ -1993,15 +1983,20 @@
         var riskClass = pos.riskLevel === "high" ? "high" : pos.riskLevel === "low" ? "low" : "med";
 
         return (
-          '<tr><td class="ticker">' +
+          '<tr><td class="mp-row-index">' +
+          (idx + 1) +
+          "</td>" +
+          '<td class="ticker">' +
           esc(pos.ticker) +
           "</td>" +
           "<td>" +
           weightHtml +
           "</td>" +
-          "<td>" +
+          '<td><span class="mp-price-stack"><span class="mp-avg-price">' +
           esc(fmtMoney(pos.avgPrice, pos.instrumentCurrency)) +
-          "</td>" +
+          '</span><span class="mp-purchase-date">' +
+          esc(purchaseDateText) +
+          "</span></span></td>" +
           "<td>" +
           currentPriceHtml +
           "</td>" +
@@ -2072,36 +2067,6 @@
           "</td>" +
           "<td>" +
           esc(fmtDate(d.payDate)) +
-          "</td></tr>"
-        );
-      })
-      .join("");
-  }
-
-  function renderTransactions(transactions) {
-    var body = document.getElementById("mpTransactionsBody");
-    var empty = document.getElementById("mpTransactionsEmpty");
-    if (!body) return;
-    if (!transactions || !transactions.length) {
-      body.innerHTML = "";
-      if (empty) empty.hidden = false;
-      return;
-    }
-    if (empty) empty.hidden = true;
-    body.innerHTML = transactions
-      .map(function (tx) {
-        return (
-          "<tr><td>" +
-          esc(tx.type) +
-          "</td>" +
-          '<td class="ticker">' +
-          esc(tx.ticker || "—") +
-          "</td>" +
-          "<td>" +
-          esc(fmtMoney(tx.amount, tx.currency)) +
-          "</td>" +
-          "<td>" +
-          esc(fmtDate(tx.executedAt)) +
           "</td></tr>"
         );
       })

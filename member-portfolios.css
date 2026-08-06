@@ -473,8 +473,13 @@
 
 /* ---------- positions / tables ---------- */
 .mp-positions-card .table-scroll,
-.mp-transactions-card .table-scroll,
 .mp-card .table-scroll{margin-top:4px}
+
+.mp-price-stack{display:flex;flex-direction:column;gap:3px;min-width:132px}
+.mp-avg-price{color:var(--text)}
+.mp-purchase-date{color:var(--muted);font-size:10.5px;line-height:1.25;white-space:nowrap}
+
+.mp-positions-card td.mp-row-index{color:var(--muted);font-variant-numeric:tabular-nums;text-align:center}
 
 .mp-table td.mp-cell-muted{color:var(--muted)}
 .mp-table .mp-ref-price{color:var(--muted);font-style:italic}
