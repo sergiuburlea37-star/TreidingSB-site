@@ -8,16 +8,29 @@
 
 .mp-body{min-height:100vh}
 
+/* Padding-ul orizontal era 5vw pana acum (2026-08-06: adus la 0) - cu
+   .mp-shell folosind acum "calc(100vw - 64px)" ca sa isi calculeze singur
+   gutter-ul, un padding orizontal suplimentar aici facea ca latimea
+   calculata sa depaseasca spatiul disponibil in interiorul .mp-main, iar
+   flexbox micsora (flex-shrink) cardul inapoi sub latimea intentionata (ex.
+   1296px in loc de 1376px la 1440px viewport). .mp-shell ramane centrat de
+   "justify-content:center" de mai jos, exact ca inainte. */
 .mp-main{
-  padding:158px 5vw 90px;
+  padding:158px 0 90px;
   display:flex;
   justify-content:center;
 }
 
+/* Latimea containerului paginii (2026-08-06, corectie layout): formula
+   fluida ceruta explicit - umple aproape tot viewport-ul pe ecrane late (nu
+   mai plafoneaza devreme la 1520/1320px), cu un gutter minim de 32px pe
+   fiecare parte cand viewport-ul scade sub ~1464px. Inlocuieste vechiul
+   max-width fix + breakpoint-ul de la 1440px (nu mai e necesar - formula de
+   mai jos acopera deja acea tranzitie continuu). */
 .mp-shell{
-  width:100%;
-  max-width:1520px;
-  margin:0 auto;
+  width:min(1400px, calc(100vw - 64px));
+  max-width:1400px;
+  margin-inline:auto;
 }
 
 /* ---------- stari: loading / locked / error ---------- */
@@ -72,7 +85,19 @@
 }
 
 /* ---------- dashboard head ---------- */
-.mp-dashboard{display:flex;flex-direction:column;gap:0}
+/* Fix layout (2026-08-06): #mpStateDashboard poarta AMBELE clase
+   "mp-state mp-dashboard" pe acelasi element - regula ".mp-state"
+   (mai sus) seteaza "align-items:center" (corect pentru starile de
+   loading/locked/error, unde continutul e un singur card centrat), dar
+   ".mp-dashboard" nu suprascria acest "align-items", asa ca toate cardurile
+   copil (cardurile de sumar, cardul graficului, pozitii, subgrid,
+   tranzactii) mosteneau "align-items:center" de la ".mp-state" si se
+   ingustau la latimea propriului continut in loc sa se intinda pe toata
+   latimea ".mp-shell" - de-asta cardul graficului aparea ingust
+   (~420px) in loc sa ocupe aproape toata latimea paginii. Suprascriere
+   explicita cu "stretch" mai jos - singura schimbare necesara ca toate
+   cardurile sa aiba aceleasi margini laterale ca ".mp-shell". */
+.mp-dashboard{display:flex;flex-direction:column;gap:0;align-items:stretch}
 
 .mp-head{
   display:flex;
@@ -214,6 +239,16 @@
 }
 
 /* ---------- chart ---------- */
+/* Latime explicita (2026-08-06, corectie layout): cardul graficului trebuie
+   sa ocupe intreaga latime a ".mp-shell", la fel ca celelalte carduri -
+   redundant acum ca ".mp-dashboard{align-items:stretch}" de mai sus
+   rezolva cauza reala, dar declarat explicit oricum, ca sa fie evident ca
+   niciun "max-width" ingust nu se mai aplica pe acest card. */
+.mp-chart-card{
+  width:100%;
+  max-width:none;
+  margin-inline:0;
+}
 .mp-chart-card .mp-card-head{padding-bottom:12px;align-items:flex-start;color:var(--gold)}
 /* Titlu + subtitlu dinamice per portofoliu (2026-08-05, redesign): titlul
    ("Evoluție portofoliu US/EU") ramane cu majuscule aurii, mostenite de la
@@ -245,9 +280,16 @@
   background:var(--blue);
   color:#fff;
 }
+/* Inaltime panoramica pe desktop (2026-08-06, corectie layout): un raport
+   lat/scurt, ca in referinta vizuala, nu forma verticala anterioara (era
+   doar min-height:320px, fara relatie cu latimea reala a cardului acum
+   corectata mai sus). "clamp" tine inaltimea proportionala cu latimea
+   viewport-ului (38vw) intre un minim de 480px si un maxim de 620px -
+   suprascrisa explicit pe mobil mai jos (min-height:360px, inaltime
+   automata, nu fixa). */
 .mp-chart-wrap{
   width:100%;
-  min-height:320px;
+  height:clamp(480px, 38vw, 620px);
   padding:14px 4px 18px;
   display:flex;
   flex-direction:column;
@@ -470,31 +512,32 @@
    Verificat la: 1440 / 1024 / 768 / 430 / 390 / 375 / 320px
    ===================================================== */
 
-/* Desktop mare - putin mai compact peste 1440 nu e nevoie de reguli extra,
-   .mp-shell deja plafoneaza la 1520px. */
-
-@media (max-width:1440px){
-  .mp-shell{max-width:1320px}
-}
+/* Desktop mare - formula fluida a .mp-shell (mai sus) acopera deja
+   tranzitia continua pana la 1400px, fara breakpoint separat aici. */
 
 @media (max-width:1024px){
   .mp-main{padding-top:150px}
   .mp-subgrid{grid-template-columns:1fr 1fr}
-  .mp-chart-wrap{min-height:260px}
 }
 
 @media (max-width:768px){
-  .mp-main{padding:140px 4vw 60px}
+  .mp-main{padding:140px 0 60px}
   .mp-head{flex-direction:column;align-items:flex-start}
   .mp-head h1{font-size:24px}
   .mp-tabs{max-width:100%}
+  /* Gutere de pagina pe mobil (2026-08-06, corectie layout): exact 12px pe
+     fiecare parte, cerute explicit - padding-ul orizontal al .mp-main de mai
+     sus e zero acum, ca sa nu se dubleze cu marginea de aici. */
+  .mp-shell{width:calc(100% - 24px);max-width:none;margin-inline:12px}
   /* 3 carduri de sumar (2026-08-05, redesign) - stivuite pe o coloana sub
      768px (in loc de un grid 2+1 incomplet pe randul al doilea), ca sa
      ramana lizibile fara sa se ingusteze excesiv. */
   .mp-cards-row{grid-template-columns:1fr;gap:10px}
   .mp-subgrid{grid-template-columns:1fr;gap:14px}
   .mp-card{padding:14px 14px 6px;border-radius:14px}
-  .mp-chart-wrap{min-height:220px;padding:10px 0 14px}
+  /* Pe mobil inaltimea graficului redevine automata (nu clamp-ul panoramic
+     de pe desktop), cu un minim de 360px cerut explicit. */
+  .mp-chart-wrap{height:auto;min-height:360px;padding:10px 0 14px}
   .mp-chart-yaxis{flex:0 0 48px;width:48px}
   .mp-chart-ytick{font-size:9.5px}
   .mp-chart-xaxis{margin-left:56px}
@@ -516,9 +559,8 @@
 }
 
 @media (max-width:390px){
-  .mp-main{padding:132px 4vw 50px}
+  .mp-main{padding:132px 0 50px}
   .mp-card{padding:12px 10px 4px}
-  .mp-chart-wrap{min-height:190px}
   .mp-chart-capital-label{font-size:9.5px;padding:1px 6px}
   .mp-stat-card{padding:13px 14px;gap:11px}
   .mp-stat-value{font-size:16.5px}
