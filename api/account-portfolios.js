@@ -245,6 +245,10 @@ export default async function handler(req, res) {
           // (care ar putea fi ulterior tranzactiei si deci necunoscut la acel
           // moment). Vezi nota din antetul fisierului (2026-07-30, v2).
           const buysForPosition = buysForPortfolio.filter((t) => t.position_id === x.id);
+          const firstBuyAt = buysForPosition.reduce((earliest, t) => {
+            if (!t.executed_at) return earliest;
+            return !earliest || t.executed_at < earliest ? t.executed_at : earliest;
+          }, null);
           const convertedBuyAmounts = buysForPosition.map((t) =>
             convertAsOf(t.amount, t.currency, p.base_currency, (t.executed_at || '').slice(0, 10))
           );
@@ -261,6 +265,7 @@ export default async function handler(req, res) {
             instrumentCurrency: x.instrument_currency,
             quantity: x.quantity,
             avgPrice: x.avg_price,
+            firstBuyAt,
             currentPrice: x.current_price,
             // true cand pretul curent afisat e de fapt pretul mediu de achizitie
             // (nicio integrare de piata live inca - vezi price_source = 'manual').
