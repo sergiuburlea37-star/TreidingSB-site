@@ -22,7 +22,7 @@
 // structurat corect. Fara try/catch in jurul apelului, exceptia respectiva
 // ajunge neprinsa la runtime-ul Vercel si rezulta intr-un 500 generic
 // (FUNCTION_INVOCATION_FAILED), nu intr-un 401 curat. Acelasi comportament
-// exista si in api/account-ideas.js, api/auth-me.js, api/subscription-status.js
+// exista si in api/account-ideas.js, api/auth/[action].js (ruta "me"), api/subscription-status.js
 // (toate folosesc getAccessInfo() neprotejat) - NU a fost modificat aici,
 // fiind in afara scopului acestui PR (necesita aprobare separata inainte de
 // a atinge cod folosit de rute existente). Fixul de mai jos e strict local
