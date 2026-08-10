@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trading-idea.v1.schema.json",
+  "title": "TSB Trading Idea v1",
+  "description": "Canonical website ingest contract for serialized trading ideas.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "context_id",
+    "created_at",
+    "symbol",
+    "direction",
+    "entry",
+    "stop_loss",
+    "take_profit",
+    "risk_reward",
+    "confidence",
+    "execution_status",
+    "fundamental_status",
+    "risk_status",
+    "guardrails_status",
+    "ai_status",
+    "ai_verdict",
+    "ai_strength",
+    "ai_summary",
+    "outcome",
+    "closed_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "symbol": {
+      "type": "string",
+      "minLength": 1
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "BUY",
+        "SELL"
+      ]
+    },
+    "entry": {
+      "type": "number"
+    },
+    "stop_loss": {
+      "type": "number"
+    },
+    "take_profit": {
+      "type": "number"
+    },
+    "risk_reward": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "confidence": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "execution_status": {
+      "type": "string",
+      "enum": [
+        "APPROVED",
+        "BLOCKED"
+      ]
+    },
+    "fundamental_status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "risk_status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "guardrails_status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "ai_status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "ai_verdict": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "ai_strength": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "ai_summary": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "outcome": {
+      "enum": [
+        "TP_HIT",
+        "SL_HIT",
+        "BREAKEVEN",
+        "MANUAL_CLOSE",
+        "AMBIGUOUS",
+        "OPEN",
+        "UNKNOWN",
+        null
+      ]
+    },
+    "closed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

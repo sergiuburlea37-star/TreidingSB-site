@@ -1,0 +1,23 @@
+name: website-integration
+
+on:
+  push:
+    branches: ["tsb-integration"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: node --test tests/website-integration.test.mjs
+      - run: node --check api/tsb/trading-ideas.js
+      - run: node --check lib/validate-idea.mjs
+      - run: node --check lib/verify-signature.mjs
+      - run: node --check lib/canonical-fingerprint.mjs
+      - run: node --check lib/handle-ingest.mjs
