@@ -8,7 +8,6 @@
   "required": [
     "schema_version",
     "event_id",
-    "context_id",
     "created_at",
     "symbol",
     "direction",
@@ -16,17 +15,7 @@
     "stop_loss",
     "take_profit",
     "risk_reward",
-    "confidence",
-    "execution_status",
-    "fundamental_status",
-    "risk_status",
-    "guardrails_status",
-    "ai_status",
-    "ai_verdict",
-    "ai_strength",
-    "ai_summary",
-    "outcome",
-    "closed_at"
+    "execution_status"
   ],
   "properties": {
     "schema_version": {

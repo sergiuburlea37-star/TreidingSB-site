@@ -28,22 +28,24 @@ const ALLOWED_FIELDS = Object.freeze([
   "closed_at",
 ]);
 
-const REQUIRED_FIELDS = Object.freeze(ALLOWED_FIELDS);
-const IMMUTABLE_SETUP_FIELDS = Object.freeze([
+// Fields TradingIdeaPayload.__post_init__ (TSB website_integration/schema.py)
+// rejects null/None for - mirrors WEBSITE_CONTRACT_REQUIRED_FIELDS in the TSB
+// repo's scripts/export_contract.py and contract/trading-idea.v1.schema.json
+// "required". The other 11 ALLOWED_FIELDS entries are accepted missing or
+// null and are normalized to null below.
+const REQUIRED_FIELDS = Object.freeze([
+  "schema_version",
+  "event_id",
+  "created_at",
   "symbol",
   "direction",
   "entry",
   "stop_loss",
   "take_profit",
   "risk_reward",
+  "execution_status",
 ]);
-const FINAL_OUTCOMES = Object.freeze([
-  "TP_HIT",
-  "SL_HIT",
-  "BREAKEVEN",
-  "MANUAL_CLOSE",
-  "AMBIGUOUS",
-]);
+
 const ALLOWED_OUTCOMES = Object.freeze([
   "OPEN",
   "TP_HIT",
@@ -100,6 +102,16 @@ class ValidationError extends HttpError {
   }
 }
 
+class NotPublishableError extends HttpError {
+  constructor() {
+    super(
+      400,
+      "execution_status_not_publishable",
+      "Only execution_status=APPROVED trading ideas are accepted for ingestion."
+    );
+  }
+}
+
 class ConflictError extends HttpError {
   constructor(message) {
     super(409, "conflict", message);
@@ -144,12 +156,18 @@ async function handler(req, res) {
 
     const parsed = parseJsonObject(rawBody);
     const payload = validateTradingIdeaPayload(parsed);
+
+    if (payload.execution_status !== "APPROVED") {
+      throw new NotPublishableError();
+    }
+
     const persistence = req.tsbPersistence || createSupabasePersistence();
-    await persistTradingIdea(payload, persistence);
+    const result = await persistTradingIdea(payload, persistence);
 
     return sendJson(res, 200, {
       success: true,
-      event_id: payload.event_id,
+      event_id: result.event_id,
+      idempotent: result.idempotent,
     });
   } catch (error) {
     return sendSafeError(res, error);
@@ -306,7 +324,7 @@ function validateTradingIdeaPayload(input) {
     }
   }
   for (const key of REQUIRED_FIELDS) {
-    if (!Object.prototype.hasOwnProperty.call(input, key)) {
+    if (!Object.prototype.hasOwnProperty.call(input, key) || input[key] === null) {
       throw new ValidationError(`Missing field: ${key}.`);
     }
   }
@@ -362,7 +380,7 @@ function requiredText(value, fieldName, maxLength) {
 }
 
 function optionalText(value, fieldName, maxLength) {
-  if (value === null) {
+  if (value === null || value === undefined) {
     return null;
   }
   if (typeof value !== "string") {
@@ -388,7 +406,7 @@ function requiredEnum(value, fieldName, allowedValues) {
 }
 
 function optionalOutcome(value) {
-  if (value === null) {
+  if (value === null || value === undefined) {
     return null;
   }
   const text = requiredText(value, "outcome", 32);
@@ -406,7 +424,7 @@ function finiteNumber(value, fieldName) {
 }
 
 function parseIsoDatetime(value, fieldName, required) {
-  if (value === null) {
+  if (value === null || value === undefined) {
     if (required) {
       throw new ValidationError(`${fieldName} is required.`);
     }
@@ -435,50 +453,41 @@ function rejectForbiddenText(value, fieldName) {
   }
 }
 
+// Canonical fingerprint: delegates to lib/canonical-fingerprint.mjs (the same
+// module tests/website-integration.test.mjs exercises directly) instead of
+// re-implementing the hashing rules a second time, so the two can no longer
+// silently drift apart. Cached after the first call - dynamic import() is the
+// only way to load an ESM module from this CommonJS file (see
+// api/tsb/package.json "type": "commonjs").
+let canonicalFingerprintFn;
+async function computePayloadSha256(payload) {
+  if (!canonicalFingerprintFn) {
+    ({ canonicalFingerprint: canonicalFingerprintFn } = await import("../../lib/canonical-fingerprint.mjs"));
+  }
+  return canonicalFingerprintFn(payload);
+}
+
+// Idempotency model, keyed on event_id (unique, not payload_sha256):
+//  - no existing row                                -> insert, created=true
+//  - existing row, same canonical payload_sha256     -> 200 idempotent, zero writes
+//  - existing row, different canonical payload_sha256 -> 409, existing row untouched
 async function persistTradingIdea(payload, persistence) {
+  const payloadSha256 = await computePayloadSha256(payload);
   const existing = await persistence.findByEventId(payload.event_id);
-  if (existing) {
-    assertSetupNotConflicting(existing, payload);
-    assertOutcomeNotConflicting(existing, payload);
+
+  if (!existing) {
+    await persistence.upsert(toDatabaseRow(payload, payloadSha256));
+    return { event_id: payload.event_id, created: true, idempotent: false, payload_sha256: payloadSha256 };
   }
 
-  await persistence.upsert(toDatabaseRow(payload));
-  return {
-    event_id: payload.event_id,
-    created: !existing,
-  };
+  if (existing.payload_sha256 === payloadSha256) {
+    return { event_id: payload.event_id, created: false, idempotent: true, payload_sha256: payloadSha256 };
+  }
+
+  throw new ConflictError("event_id already exists with a different payload.");
 }
 
-function assertSetupNotConflicting(existing, payload) {
-  for (const field of IMMUTABLE_SETUP_FIELDS) {
-    if (!sameComparableValue(existing[field], payload[field])) {
-      throw new ConflictError(`Immutable setup field changed: ${field}.`);
-    }
-  }
-}
-
-function assertOutcomeNotConflicting(existing, payload) {
-  const existingOutcome = existing.outcome || null;
-  const nextOutcome = payload.outcome || null;
-  if (!FINAL_OUTCOMES.includes(existingOutcome)) {
-    return;
-  }
-  if (nextOutcome === null || nextOutcome === existingOutcome) {
-    return;
-  }
-  if (FINAL_OUTCOMES.includes(nextOutcome) && nextOutcome !== existingOutcome) {
-    throw new ConflictError("Final outcome cannot be changed.");
-  }
-}
-
-function sameComparableValue(left, right) {
-  if (typeof right === "number") {
-    return Number(left) === right;
-  }
-  return String(left) === String(right);
-}
-
-function toDatabaseRow(payload) {
+function toDatabaseRow(payload, payloadSha256) {
   return {
     schema_version: payload.schema_version,
     event_id: payload.event_id,
@@ -501,6 +510,7 @@ function toDatabaseRow(payload) {
     ai_summary: payload.ai_summary,
     outcome: payload.outcome,
     closed_at: payload.closed_at,
+    payload_sha256: payloadSha256,
   };
 }
 
@@ -537,7 +547,7 @@ function createSupabasePersistence(env = process.env, fetchImpl = globalThis.fet
     async findByEventId(eventId) {
       const url = new URL("/rest/v1/trading_ideas", supabaseUrl);
       url.searchParams.set("event_id", `eq.${eventId}`);
-      url.searchParams.set("select", IMMUTABLE_SETUP_FIELDS.concat(["event_id", "outcome", "closed_at"]).join(","));
+      url.searchParams.set("select", "event_id,payload_sha256");
       url.searchParams.set("limit", "1");
       const response = await fetchImpl(url, {
         method: "GET",
@@ -638,12 +648,14 @@ function sendJson(res, statusCode, payload, extraHeaders = {}) {
 module.exports = handler;
 module.exports._internals = {
   ALLOWED_FIELDS,
+  REQUIRED_FIELDS,
   MAX_BODY_BYTES,
   TIMESTAMP_TOLERANCE_MS,
   validateTradingIdeaPayload,
   verifySignedRequest,
   persistTradingIdea,
   toDatabaseRow,
+  computePayloadSha256,
   createSupabasePersistence,
   getSupabaseServerKey,
   readRawBody,
