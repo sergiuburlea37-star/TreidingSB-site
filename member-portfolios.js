@@ -829,7 +829,7 @@
   }
 
   function loadEmailHeader(token) {
-    fetch("/api/auth-me", { headers: { Authorization: "Bearer " + token } })
+    fetch("/api/auth/me", { headers: { Authorization: "Bearer " + token } })
       .then(function (r) {
         return r.json().then(function (data) {
           return { ok: r.ok, data: data };

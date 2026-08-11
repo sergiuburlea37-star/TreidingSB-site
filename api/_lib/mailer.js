@@ -2,7 +2,7 @@
 // Trimite emailul de resetare a parolei prin Resend. Separat de
 // api/send-email.js (care e un endpoint public ce trimite doar sabloane
 // predefinite, declansate de pe formularul de abonare) - aici linkul contine
-// un token generat exclusiv server-side in auth-forgot-password.js, deci
+// un token generat exclusiv server-side in api/auth/[action].js (ruta "forgot-password"), deci
 // logica de trimitere n-are ce cauta intr-un endpoint public reutilizabil.
 
 const i18n = {
