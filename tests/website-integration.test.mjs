@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import test from "node:test";
 import fs from "node:fs";
 import path from "node:path";
+import { Readable } from "node:stream";
 
 import { canonicalFingerprint } from "../lib/canonical-fingerprint.mjs";
 import { handleIngest } from "../lib/handle-ingest.mjs";
@@ -433,4 +434,80 @@ test("real handler's payload_sha256 matches lib/canonical-fingerprint.mjs comput
   const independentFingerprint = canonicalFingerprint(normalizedPayload);
 
   assert.equal(row.payload_sha256, independentFingerprint);
+});
+
+// =============================================================================
+// Vercel runtime raw-body regression tests. api/tsb/trading-ideas.js must
+// read the exact raw HTTP bytes for HMAC verification - it must never read
+// req.body, which Vercel's Node.js bodyParser would otherwise have already
+// consumed/re-parsed before the handler runs (see module.exports.config
+// = { api: { bodyParser: false } } in that file). req.rawBody stays an
+// explicit test/mock-only convenience.
+// =============================================================================
+
+test("real handler: never accesses req.body when reading a live-shaped stream request", async () => {
+  const payload = realHandlerValidPayload({ event_id: "real-event-streamed" });
+  const rawBody = JSON.stringify(payload);
+  const timestamp = "2026-08-10T12:00:00.000Z";
+
+  // A real Vercel/Node request: an actual Readable stream, no req.rawBody
+  // property at all (that only exists in our other mocks for convenience).
+  const req = Readable.from([Buffer.from(rawBody, "utf8")]);
+  req.method = "POST";
+  req.headers = {
+    "content-type": "application/json",
+    "x-tsb-timestamp": timestamp,
+    "x-tsb-signature": signRealHandlerBody(rawBody, timestamp),
+  };
+  // Proves the handler's code path never touches req.body: accessing it
+  // throws immediately instead of returning a (mis)parsed value.
+  Object.defineProperty(req, "body", {
+    configurable: true,
+    get() {
+      throw new Error("req.body must not be accessed for signed ingest");
+    },
+  });
+  req.tsbPersistence = makeMockPersistence();
+
+  const res = new MockResponse();
+  const oldSecret = process.env.TSB_INGEST_SECRET;
+  const oldNow = Date.now;
+  process.env.TSB_INGEST_SECRET = REAL_SECRET;
+  Date.now = () => REAL_NOW;
+  try {
+    await realHandler(req, res);
+  } finally {
+    Date.now = oldNow;
+    if (oldSecret === undefined) {
+      delete process.env.TSB_INGEST_SECRET;
+    } else {
+      process.env.TSB_INGEST_SECRET = oldSecret;
+    }
+  }
+
+  assert.equal(res.statusCode, 200, res.body);
+  assert.equal(res.json().success, true);
+  assert.equal(req.tsbPersistence.writes.length, 1);
+});
+
+test("real handler: config disables Vercel's automatic bodyParser", () => {
+  assert.equal(realHandler.config.api.bodyParser, false);
+});
+
+test("real handler: a single extra byte in the raw body without recomputing the signature is rejected with 401", async () => {
+  const payload = realHandlerValidPayload({ event_id: "real-event-tamper" });
+  const originalRawBody = JSON.stringify(payload);
+  const timestamp = "2026-08-10T12:00:00.000Z";
+  const signature = signRealHandlerBody(originalRawBody, timestamp); // signed over the ORIGINAL bytes
+
+  const tamperedRawBody = `${originalRawBody} `; // one extra trailing space, signature left as-is
+
+  const { res, persistence } = await callRealHandler({
+    rawBody: tamperedRawBody,
+    timestamp,
+    headers: { "x-tsb-timestamp": timestamp, "x-tsb-signature": signature },
+  });
+
+  assert.equal(res.statusCode, 401);
+  assert.equal(persistence.writes.length, 0);
 });

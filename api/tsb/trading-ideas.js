@@ -182,16 +182,15 @@ function isJsonContentType(value) {
 }
 
 async function readRawBody(req, limitBytes = MAX_BODY_BYTES) {
+  // req.rawBody is an explicit test/mock convenience only - Vercel's runtime
+  // never sets it. req.body must NEVER be read here for a live request: HMAC
+  // verification needs the exact bytes the client signed, and with
+  // config.api.bodyParser=false (see module.exports.config below) req stays
+  // an unconsumed Node request stream - req.body is simply never populated
+  // by the platform, so reading it would either throw (in tests that guard
+  // against this) or silently return nothing useful in production.
   if (typeof req.rawBody === "string" || Buffer.isBuffer(req.rawBody)) {
     const value = Buffer.isBuffer(req.rawBody) ? req.rawBody.toString("utf8") : req.rawBody;
-    if (Buffer.byteLength(value, "utf8") > limitBytes) {
-      throw new BodyTooLargeError();
-    }
-    return value;
-  }
-
-  if (typeof req.body === "string" || Buffer.isBuffer(req.body)) {
-    const value = Buffer.isBuffer(req.body) ? req.body.toString("utf8") : req.body;
     if (Buffer.byteLength(value, "utf8") > limitBytes) {
       throw new BodyTooLargeError();
     }
@@ -646,6 +645,19 @@ function sendJson(res, statusCode, payload, extraHeaders = {}) {
 }
 
 module.exports = handler;
+// Required so Vercel's Node.js runtime does NOT pre-parse/consume the
+// request stream into req.body before this handler runs (its default
+// bodyParser reads the whole body for application/json, which leaves
+// nothing for readRawBody() to read and breaks HMAC verification - the
+// signature is computed over exact raw bytes, not a re-parsed payload).
+// Same convention already used by api/admin/[name].js in this repo. Must be
+// set AFTER `module.exports = handler` above, not before - reassigning
+// module.exports replaces whatever was previously attached to it.
+module.exports.config = {
+  api: {
+    bodyParser: false,
+  },
+};
 module.exports._internals = {
   ALLOWED_FIELDS,
   REQUIRED_FIELDS,
