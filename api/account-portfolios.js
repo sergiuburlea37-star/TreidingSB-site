@@ -116,13 +116,40 @@
 // completa - vezi testele din tests/portfolio-weights.test.mjs pentru cifrele
 // exacte asteptate.
 
+// Nota (2026-08-14, Etapa 4 - integrare EODHD Live Delayed): schimbare de
+// sens pentru currentValueBaseCcy - acum reprezinta NAV-ul TOTAL (pozitii +
+// cash din ledger), nu doar valoarea pozitiilor ca inainte. Valoarea DOAR a
+// pozitiilor e acum expusa separat, in holdingsValueBaseCcy. Cash-ul care
+// intra in NAV vine din ledger (portfolio_transactions + portfolio_dividends,
+// vezi api/_lib/portfolio-math.js), NU din portfolio_cash_reserves (acela
+// ramane doar o eticheta/clasificare informativa, nu se mai aduna la NAV).
+// profitSinceFoundedBaseCcy foloseste acum capitalul NET CONTRIBUIT (DEPOSIT-
+// WITHDRAWAL) ca baza, nu initial_capital fix. totalReturnPct devine string-ul
+// 'pending' (nu un numar) daca a existat vreun DEPOSIT/WITHDRAWAL dupa
+// fondare - formula simpla nu mai e randament money-weighted corect in acel
+// caz. Vezi comentariile inline de mai jos pentru fiecare camp in parte.
 import { getAccessInfo } from './_lib/access.js';
 import { createFxConverter } from './_lib/fx-convert.js';
+import {
+  computeLedgerCashBaseCcy,
+  computeNetCapitalContributedBaseCcy,
+  hasPostFoundingCashFlow
+} from './_lib/portfolio-math.js';
 
 const RECENT_TRANSACTIONS_LIMIT = 15;
 const RECENT_DIVIDENDS_LIMIT = 15;
+// Etapa 4: EODHD Live Delayed - intarziere reala 15-20 min. Pastram 15 ca
+// valoare implicita/minima afisata (STATE.delayedDataMinutes din
+// member-portfolios.js), UI-ul afiseaza intervalul complet "~15-20 min".
 const DELAYED_DATA_MINUTES = 15;
 const INVALID_SESSION_RESPONSE = { error: 'Sesiune invalida sau expirata' };
+
+export function isSyncPublicationIssue(reason) {
+  return [
+    'partial', 'fetch_failed', 'quota_unconfigured',
+    'quota_exhausted', 'server_error', 'state_changed'
+  ].includes(reason);
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -162,7 +189,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, portfolios: [], delayedDataMinutes: DELAYED_DATA_MINUTES });
     }
 
-    const [positionsRes, txRes, buyTxRes, divRes, perfRes, fxRes, cashRes] = await Promise.all([
+    const [positionsRes, txRes, ledgerTxRes, divRes, allDivRes, perfRes, fxRes, cashRes, syncRunRes] = await Promise.all([
       access.client
         .from('portfolio_positions')
         .select('id, portfolio_id, position_no, ticker, name, category, sector_or_market, instrument_currency, quantity, avg_price, current_price, price_updated_at, price_source, risk_level, group_label, active, sort_order')
@@ -175,24 +202,30 @@ export default async function handler(req, res) {
         .in('portfolio_id', ids)
         .order('executed_at', { ascending: false })
         .limit(RECENT_TRANSACTIONS_LIMIT * ids.length),
-      // Toate tranzactiile BUY, NElimitate - sursa pentru "Pondere initiala".
-      // Interogare separata de txRes (care e doar pt. lista "recente" afisata
-      // in UI si e limitata) tocmai ca sa nu se piarda BUY-uri vechi daca
-      // volumul de tranzactii creste.
+      // Toate tranzactiile (orice tip), NElimitate - sursa pt. "Pondere
+      // initiala" (doar BUY, filtrat mai jos) SI pt. cash-ul din ledger /
+      // capitalul net contribuit (toate tipurile - cerinta 9/12, vezi
+      // api/_lib/portfolio-math.js). Interogare separata de txRes (care e
+      // doar pt. lista "recente" afisata in UI si e limitata) tocmai ca sa
+      // nu se piarda tranzactii vechi daca volumul creste.
       access.client
         .from('portfolio_transactions')
-        .select('id, portfolio_id, position_id, amount, currency, executed_at')
-        .in('portfolio_id', ids)
-        .eq('type', 'BUY'),
+        .select('id, portfolio_id, position_id, type, amount, currency, executed_at'),
       access.client
         .from('portfolio_dividends')
         .select('id, portfolio_id, position_id, ticker, amount, currency, ex_date, pay_date, note')
         .in('portfolio_id', ids)
         .order('pay_date', { ascending: false })
         .limit(RECENT_DIVIDENDS_LIMIT * ids.length),
+      // Toate dividendele, NElimitate - la fel ca ledgerTxRes, necesare
+      // pentru cash-ul din ledger (cerinta 9), separat de lista "recente"
+      // afisata in UI (divRes, limitata).
+      access.client
+        .from('portfolio_dividends')
+        .select('portfolio_id, amount, currency'),
       access.client
         .from('portfolio_performance_history')
-        .select('portfolio_id, as_of_date, nav_value, capital_contributed, cumulative_return_pct, currency')
+        .select('portfolio_id, as_of_date, nav_value, capital_contributed, cumulative_return_pct, return_is_pending, currency')
         .in('portfolio_id', ids)
         .order('as_of_date', { ascending: true }),
       access.client
@@ -204,16 +237,29 @@ export default async function handler(req, res) {
         .select('id, portfolio_id, category, amount, currency, reserved_for_ticker, status, note')
         .in('portfolio_id', ids)
         .eq('status', 'reserved')
-        .order('category', { ascending: true })
+        .order('category', { ascending: true }),
+      // Ultima rulare a sincronizarii de preturi (orice rezultat) - pt.
+      // banner-ul "sincronizare partiala" (cerinta 16). Tabel nou, poate
+      // lipsi complet inainte de prima rulare - eroarea (ex. tabel
+      // inexistent inainte de migrare) NU trebuie sa blocheze restul
+      // raspunsului, vezi tratarea separata mai jos (nu in blocul comun
+      // de erori 500 ca restul interogarilor).
+      access.client
+        .from('portfolio_sync_runs')
+        .select('finished_at, applied, reason, problems')
+        .order('finished_at', { ascending: false })
+        .limit(1)
     ]);
 
     if (positionsRes.error) return res.status(500).json({ error: 'Server error: ' + positionsRes.error.message });
     if (txRes.error) return res.status(500).json({ error: 'Server error: ' + txRes.error.message });
-    if (buyTxRes.error) return res.status(500).json({ error: 'Server error: ' + buyTxRes.error.message });
+    if (ledgerTxRes.error) return res.status(500).json({ error: 'Server error: ' + ledgerTxRes.error.message });
     if (divRes.error) return res.status(500).json({ error: 'Server error: ' + divRes.error.message });
+    if (allDivRes.error) return res.status(500).json({ error: 'Server error: ' + allDivRes.error.message });
     if (perfRes.error) return res.status(500).json({ error: 'Server error: ' + perfRes.error.message });
     if (fxRes.error) return res.status(500).json({ error: 'Server error: ' + fxRes.error.message });
     if (cashRes.error) return res.status(500).json({ error: 'Server error: ' + cashRes.error.message });
+    // syncRunRes.error tratat ca "necunoscut", nu ca 500 - vezi mai jos.
 
     // convert() / convertAsOf(): extrase in api/_lib/fx-convert.js
     // (2026-07-30, v2) ca functii pure, testabile izolat - vezi
@@ -221,19 +267,27 @@ export default async function handler(req, res) {
     // versiunea inline anterioara; vezi acel fisier pentru detalii complete.
     const { convert, convertAsOf } = createFxConverter(fxRes.data);
 
+    const lastSyncRun = (!syncRunRes.error && syncRunRes.data && syncRunRes.data[0]) || null;
+
     const result = (portfolios || []).map((p) => {
-      const buysForPortfolio = (buyTxRes.data || []).filter((t) => t.portfolio_id === p.id);
+      const buysForPortfolio = (ledgerTxRes.data || []).filter((t) => t.portfolio_id === p.id && t.type === 'BUY');
 
       const positionsRaw = (positionsRes.data || [])
         .filter((x) => x.portfolio_id === p.id)
         .map((x) => {
-          const marketValueInstrumentCcy = x.current_price != null ? x.quantity * x.current_price : null;
+          const quantity = Number(x.quantity);
+          const avgPrice = Number(x.avg_price);
+          const currentPrice = x.current_price == null ? null : Number(x.current_price);
+          const quantityValid = Number.isFinite(quantity) && quantity >= 0;
+          const avgPriceValid = Number.isFinite(avgPrice) && avgPrice >= 0;
+          const currentPriceValid = currentPrice != null && Number.isFinite(currentPrice) && currentPrice > 0;
+          const marketValueInstrumentCcy = quantityValid && currentPriceValid ? quantity * currentPrice : null;
           const marketValueBaseCcy = marketValueInstrumentCcy != null
             ? convert(marketValueInstrumentCcy, x.instrument_currency, p.base_currency)
             : null;
-          const costBasis = x.quantity * x.avg_price;
-          const plInstrumentCcy = marketValueInstrumentCcy != null ? marketValueInstrumentCcy - costBasis : null;
-          const isReferencePrice = x.current_price != null && x.current_price === x.avg_price;
+          const costBasis = quantityValid && avgPriceValid ? quantity * avgPrice : null;
+          const plInstrumentCcy = marketValueInstrumentCcy != null && costBasis != null ? marketValueInstrumentCcy - costBasis : null;
+          const isReferencePrice = currentPriceValid && avgPriceValid && currentPrice === avgPrice;
 
           // Pondere initiala: suma tranzactiilor BUY ale acestei pozitii,
           // convertita in moneda de baza a portofoliului. null (nu 0) daca
@@ -245,9 +299,11 @@ export default async function handler(req, res) {
           // (care ar putea fi ulterior tranzactiei si deci necunoscut la acel
           // moment). Vezi nota din antetul fisierului (2026-07-30, v2).
           const buysForPosition = buysForPortfolio.filter((t) => t.position_id === x.id);
-          const convertedBuyAmounts = buysForPosition.map((t) =>
-            convertAsOf(t.amount, t.currency, p.base_currency, (t.executed_at || '').slice(0, 10))
-          );
+          const convertedBuyAmounts = buysForPosition.map((t) => {
+            const amount = Number(t.amount);
+            if (!Number.isFinite(amount) || amount <= 0) return null;
+            return convertAsOf(amount, t.currency, p.base_currency, (t.executed_at || '').slice(0, 10));
+          });
           const initialWeightDataComplete = buysForPosition.length > 0 && convertedBuyAmounts.every((v) => v != null);
           const initialBuySumBaseCcy = initialWeightDataComplete
             ? convertedBuyAmounts.reduce((sum, v) => sum + v, 0)
@@ -259,9 +315,9 @@ export default async function handler(req, res) {
             category: x.category,
             sectorOrMarket: x.sector_or_market,
             instrumentCurrency: x.instrument_currency,
-            quantity: x.quantity,
-            avgPrice: x.avg_price,
-            currentPrice: x.current_price,
+            quantity: quantityValid ? quantity : null,
+            avgPrice: avgPriceValid ? avgPrice : null,
+            currentPrice: currentPriceValid ? currentPrice : null,
             // true cand pretul curent afisat e de fapt pretul mediu de achizitie
             // (nicio integrare de piata live inca - vezi price_source = 'manual').
             // UI-ul trebuie sa afiseze "In asteptarea datelor live" cat timp
@@ -274,16 +330,49 @@ export default async function handler(req, res) {
             marketValueInstrumentCcy,
             marketValueBaseCcy,
             plInstrumentCcy,
-            plPct: costBasis ? (plInstrumentCcy / costBasis) * 100 : null,
+            plPct: costBasis && plInstrumentCcy != null ? (plInstrumentCcy / costBasis) * 100 : null,
             initialBuySumBaseCcy,
             initialWeightDataComplete
           };
         });
 
-      const totalMarketValueBaseCcy = positionsRaw.reduce((sum, x) => sum + (x.marketValueBaseCcy || 0), 0);
+      // holdingsValueBaseCcy: valoarea DOAR a pozitiilor (fost totalMarketValueBaseCcy /
+      // fosta semantica a lui currentValueBaseCcy) - cerinta 14 cere ca acest
+      // total sa fie expus separat, NAV-ul total fiind acum currentValueBaseCcy.
+      const holdingsValueBaseCcy = positionsRaw.reduce(
+        (sum, x) => sum + (Number.isFinite(x.marketValueBaseCcy) ? x.marketValueBaseCcy : 0),
+        0
+      );
       const totalWithKnownValue = positionsRaw.filter((x) => x.marketValueBaseCcy != null).length;
       const positionsDataComplete = positionsRaw.length === 0 || totalWithKnownValue === positionsRaw.length;
-      const allPricesLive = positionsRaw.length > 0 && positionsRaw.every((x) => x.priceSource === 'live_feed');
+      const allPricesLive = positionsRaw.length > 0 && positionsRaw.every(
+        (x) => x.priceSource === 'delayed_feed' || x.priceSource === 'live_feed'
+      );
+
+      // Cerinta 9/11: cash-ul care intra in NAV vine din ledger (DEPOSIT +
+      // SELL + dividende - BUY - WITHDRAWAL - FEE), NU din portfolio_cash_reserves
+      // (acela ramane doar o eticheta/clasificare - vezi comentariul din
+      // migrarea 202607290004_add_portfolio_cash_reserves.sql si cerinta 10).
+      // Foloseste convert() (valoare curenta), la fel ca restul cash-ului
+      // curent din acest fisier.
+      const ledgerCash = computeLedgerCashBaseCcy(ledgerTxRes.data, allDivRes.data, p.id, p.base_currency, convert);
+
+      // Cerinta 12: capitalul net contribuit (DEPOSIT - WITHDRAWAL, fiecare
+      // convertit la cursul PROPRIEI date de executie) - baza corecta pentru
+      // profit, nu initial_capital (care ramane fix chiar daca membrul
+      // depune/retrage ulterior).
+      const netContributed = computeNetCapitalContributedBaseCcy(ledgerTxRes.data, p.id, p.base_currency, convertAsOf);
+
+      // Cerinta 13: daca a existat vreun DEPOSIT/WITHDRAWAL dupa fondare,
+      // formula simpla (nav/capital-1)*100 nu mai e randament money-weighted
+      // corect - raportam 'pending' in loc, pana la TWR/XIRR (nu implementat
+      // inca). Calculat live din ledger, independent de coloana
+      // return_is_pending din portfolio_performance_history (care poate fi
+      // "in urma" fata de ultima tranzactie, intre doua sincronizari).
+      const isReturnPending = hasPostFoundingCashFlow(ledgerTxRes.data, p.id, p.founded_date);
+
+      const navDataComplete = positionsDataComplete && ledgerCash.complete;
+      const navValueBaseCcy = navDataComplete ? (holdingsValueBaseCcy + ledgerCash.value) : null;
 
       const cashReservesRaw = (cashRes.data || [])
         .filter((x) => x.portfolio_id === p.id)
@@ -303,12 +392,15 @@ export default async function handler(req, res) {
       const totalCashWithKnownValue = cashReservesRaw.filter((x) => x.amountBaseCcy != null).length;
       const cashDataComplete = cashReservesRaw.length === 0 || totalCashWithKnownValue === cashReservesRaw.length;
 
-      // Numitorul ponderii CURENTE (uz intern/admin) = capitalul TOTAL al
-      // portofoliului (pozitii cu valoare cunoscuta + cash cu valoare
-      // cunoscuta), in moneda de baza. NU e folosit pentru pondere initiala
-      // (acolo numitorul e intotdeauna capitalul initial - fix, istoric).
+      // Numitorul ponderii CURENTE (uz intern/admin) = pozitii + rezervele
+      // cash ETICHETATE (portfolio_cash_reserves), NESCHIMBAT fata de
+      // versiunea anterioara - concept diferit de NAV (care foloseste
+      // cash-ul din ledger, nu etichetele). NU e folosit pentru pondere
+      // initiala (acolo numitorul e intotdeauna capitalul initial - fix,
+      // istoric) si NU e acelasi lucru cu navValueBaseCcy de mai sus -
+      // pastrat neschimbat, in afara scopului cerintelor 9-14 (vezi header).
       const hasAnyKnownValue = totalWithKnownValue > 0 || totalCashWithKnownValue > 0;
-      const totalCapitalBaseCcy = hasAnyKnownValue ? (totalMarketValueBaseCcy + totalCashBaseCcy) : null;
+      const totalCapitalBaseCcy = hasAnyKnownValue ? (holdingsValueBaseCcy + totalCashBaseCcy) : null;
       const dataComplete = positionsDataComplete && cashDataComplete;
 
       const positions = positionsRaw.map((x) => ({
@@ -360,7 +452,9 @@ export default async function handler(req, res) {
         .map((x) => ({
           asOfDate: x.as_of_date, navValue: x.nav_value,
           capitalContributed: x.capital_contributed,
-          cumulativeReturnPct: x.cumulative_return_pct, currency: x.currency
+          cumulativeReturnPct: x.cumulative_return_pct,
+          returnIsPending: x.return_is_pending === true,
+          currency: x.currency
         }));
 
       const lastPriceUpdate = positions.reduce((latest, x) => {
@@ -385,17 +479,49 @@ export default async function handler(req, res) {
         // datelor live" pentru valoare curenta / profit / randament - NU
         // cifrele de mai jos, care raman calculate din pretul de referinta.
         hasLivePriceData: allPricesLive,
-        currentValueBaseCcy: totalWithKnownValue ? totalMarketValueBaseCcy : null,
+        // Cerinta 14: currentValueBaseCcy e acum NAV-ul TOTAL (pozitii +
+        // cash din ledger), NU doar valoarea pozitiilor - schimbare de
+        // sens fata de versiunea anterioara, actualizata si in
+        // member-portfolios.js/script.js in acelasi commit. holdingsValueBaseCcy
+        // e noul camp separat, cu semantica veche (doar pozitii).
+        currentValueBaseCcy: navValueBaseCcy,
+        holdingsValueBaseCcy: totalWithKnownValue ? holdingsValueBaseCcy : null,
+        // Cerinta 9/11: cash-ul care intra efectiv in NAV, calculat din
+        // ledger - distinct de totalCashBaseCcy de mai jos (care ramane
+        // suma etichetelor din portfolio_cash_reserves, informativ, NU se
+        // mai aduna separat la NAV - cerinta 10).
+        ledgerCashBaseCcy: ledgerCash.complete ? ledgerCash.value : null,
         totalCashBaseCcy: totalCashWithKnownValue ? totalCashBaseCcy : null,
         totalCapitalBaseCcy,
-        profitSinceFoundedBaseCcy: (totalWithKnownValue && p.initial_capital != null)
-          ? totalMarketValueBaseCcy - p.initial_capital : null,
-        totalReturnPct: latestPerf ? latestPerf.cumulativeReturnPct : null,
+        // Cerinta 12: profit = NAV - capitalul net contribuit (nu mai
+        // initial_capital fix - un membru care depune/retrage ulterior ar
+        // fi altfel raportat cu un profit fals).
+        profitSinceFoundedBaseCcy: (navValueBaseCcy != null && netContributed.complete)
+          ? navValueBaseCcy - netContributed.value
+          : null,
+        // Cerinta 13: 'pending' (nu un numar) daca a existat vreun
+        // DEPOSIT/WITHDRAWAL dupa fondare - formula simpla nu mai e
+        // randament money-weighted corect pana la TWR/XIRR.
+        totalReturnPct: isReturnPending ? 'pending' : (latestPerf ? latestPerf.cumulativeReturnPct : null),
         // true doar daca TOATE pozitiile si TOATE rezervele cash au putut fi
         // convertite in moneda de baza (pretul curent). Uz intern/admin -
         // nu mai controleaza banner-ul din UI-ul membrilor (vezi
         // initialWeightsComplete mai jos, care controleaza banner-ul nou).
         dataComplete,
+        // Cerinta 16: rezultatul ULTIMEI rulari de sincronizare (ambele
+        // portofolii impreuna, vezi api/cron/sync-portfolio-prices.js) -
+        // null inainte de prima rulare sau daca tabelul inca nu exista
+        // (migrare neaplicata). wasPartial acopera orice esec operational
+        // relevant care a lasat datele vechi: partial/fetch/quota/server.
+        // 'locked' este auditat, dar nu aprinde bannerul: runul care detine
+        // lease-ul va publica sau va lasa propriul rezultat final.
+        lastSyncStatus: lastSyncRun
+          ? {
+              lastRunAt: lastSyncRun.finished_at,
+              wasPartial: isSyncPublicationIssue(lastSyncRun.reason),
+              reason: lastSyncRun.reason
+            }
+          : null,
         // true doar daca TOATE pozitiile au putut sa isi calculeze
         // "pondere initiala" (adica au cel putin o tranzactie BUY si
         // cursul de conversie necesar exista in fx_rates). UI-ul membrilor

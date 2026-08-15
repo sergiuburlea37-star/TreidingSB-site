@@ -664,11 +664,18 @@ var adminPositionsSection = adminMakeCrudSection({
     { id: "positionCurrency", key: "instrument_currency" }, { id: "positionQuantity", key: "quantity", type: "number" },
     { id: "positionAvgPrice", key: "avg_price", type: "number" }, { id: "positionCurrentPrice", key: "current_price", type: "number" },
     { id: "positionRiskLevel", key: "risk_level" }, { id: "positionGroupLabel", key: "group_label" },
-    { id: "positionSortOrder", key: "sort_order", type: "number" }, { id: "positionActive", key: "active", type: "checkbox" }
+    { id: "positionSortOrder", key: "sort_order", type: "number" }, { id: "positionActive", key: "active", type: "checkbox" },
+    // Etapa 4 (EODHD Live Delayed): mapare pret automat, per pozitie. Nicio
+    // ruta noua nu e necesara - handleCrudTable din api/admin/[name].js
+    // accepta orice camp existent pe portfolio_positions (vezi migrarea
+    // 202608140001_add_provider_symbol_mapping.sql).
+    { id: "positionProviderSymbol", key: "provider_symbol" },
+    { id: "positionProviderMultiplier", key: "provider_price_multiplier", type: "number" }
   ],
   columns: [
     { key: "portfolio_id", label: "Portofoliu" }, { key: "ticker" }, { key: "quantity" },
-    { key: "avg_price" }, { key: "current_price" }, { key: "active", format: function (v) { return v ? "Da" : "Nu"; } }
+    { key: "avg_price" }, { key: "current_price" }, { key: "provider_symbol", label: "Cod EODHD" },
+    { key: "active", format: function (v) { return v ? "Da" : "Nu"; } }
   ]
 });
 

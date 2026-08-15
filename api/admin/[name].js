@@ -24,12 +24,103 @@
 import { requireAdmin } from '../_lib/require-admin.js';
 import { getSupabaseAdmin } from '../_lib/supabase.js';
 import { listSubscribersForAdmin } from '../_lib/newsletter.js';
+import { hasMarketSessionPolicy, normalizeProviderSymbol } from '../_lib/eodhd.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '20mb' } } };
 
 const REPORT_LANGS = ['ro', 'en', 'ru', 'uk', 'pl'];
 const VALID_STATUS = ['inactive', 'active', 'cancelled', 'past_due'];
 const VALID_ROLE = ['free', 'member', 'admin'];
+const VALID_INSTRUMENT_CURRENCIES = ['GBP', 'EUR', 'USD', 'CHF', 'DKK', 'SEK'];
+
+function positive(value) {
+  return Number.isFinite(Number(value)) && Number(value) > 0;
+}
+
+function nonNegative(value) {
+  return Number.isFinite(Number(value)) && Number(value) >= 0;
+}
+
+export function validatePortfolioPositionState(body) {
+  if (!VALID_INSTRUMENT_CURRENCIES.includes(body.instrument_currency)) return 'instrument_currency invalida';
+  const quantity = body.quantity == null ? 0 : Number(body.quantity);
+  const avgPrice = body.avg_price == null ? 0 : Number(body.avg_price);
+  if (!nonNegative(quantity)) return 'quantity trebuie sa fie finit si >= 0';
+  if (!nonNegative(avgPrice)) return 'avg_price trebuie sa fie finit si >= 0';
+  if (quantity > 0 && avgPrice <= 0) return 'avg_price trebuie sa fie strict pozitiv cand quantity > 0';
+  if (body.current_price != null && body.current_price !== '' && !positive(body.current_price)) {
+    return 'current_price trebuie sa fie finit si strict pozitiv';
+  }
+  const multiplier = body.provider_price_multiplier == null ? 1 : Number(body.provider_price_multiplier);
+  if (!Number.isFinite(multiplier) || multiplier <= 0) return 'provider_price_multiplier trebuie sa fie strict pozitiv';
+  if (body.active !== false && (!body.provider_symbol || !String(body.provider_symbol).trim())) {
+    return 'O pozitie activa trebuie sa aiba cod EODHD';
+  }
+  if (body.active !== false && !hasMarketSessionPolicy(body.provider_symbol)) {
+    return 'Codul EODHD foloseste o piata fara politica de sesiune suportata';
+  }
+  return null;
+}
+
+export function normalizePortfolioPositionBody(body) {
+  if (!Object.hasOwn(body || {}, 'provider_symbol')) return { ...(body || {}) };
+  return {
+    ...body,
+    provider_symbol: body.provider_symbol == null ? body.provider_symbol : normalizeProviderSymbol(body.provider_symbol)
+  };
+}
+
+export const PORTFOLIO_POSITION_CRUD_OPTIONS = Object.freeze({
+  table: 'portfolio_positions',
+  requiredFields: ['portfolio_id', 'ticker', 'name', 'instrument_currency'],
+  normalize: normalizePortfolioPositionBody,
+  validate: validatePortfolioPositionState,
+  validateMergedPatch: true,
+  order: { column: 'sort_order', ascending: true }
+});
+
+export function validatePortfolioTransactionState(body) {
+  if (!['BUY', 'SELL', 'FEE', 'DEPOSIT', 'WITHDRAWAL'].includes(body.type)) return 'type invalid';
+  if (!VALID_INSTRUMENT_CURRENCIES.includes(body.currency)) return 'currency invalida';
+  if (!positive(body.amount)) return 'amount trebuie sa fie finit si strict pozitiv';
+  if (body.executed_at != null && body.executed_at !== '' && !Number.isFinite(new Date(body.executed_at).getTime())) {
+    return 'executed_at invalid';
+  }
+  if (body.fee_amount != null && body.fee_amount !== '' && !nonNegative(body.fee_amount)) {
+    return 'fee_amount trebuie sa fie finit si >= 0';
+  }
+  if (body.type === 'BUY' || body.type === 'SELL') {
+    if (!positive(body.quantity)) return 'BUY/SELL quantity trebuie sa fie strict pozitiva';
+    if (!positive(body.price)) return 'BUY/SELL price trebuie sa fie strict pozitiv';
+  } else {
+    if (body.quantity != null && body.quantity !== '' && !positive(body.quantity)) return 'quantity trebuie sa fie strict pozitiva';
+    if (body.price != null && body.price !== '' && !positive(body.price)) return 'price trebuie sa fie strict pozitiv';
+  }
+  return null;
+}
+
+export function validatePortfolioDividendState(body) {
+  if (!VALID_INSTRUMENT_CURRENCIES.includes(body.currency)) return 'currency invalida';
+  if (!positive(body.amount)) return 'amount trebuie sa fie finit si strict pozitiv';
+  if (body.pay_date != null && body.pay_date !== '' && !Number.isFinite(new Date(body.pay_date).getTime())) return 'pay_date invalid';
+  return null;
+}
+
+export function validatePortfolioPerformanceState(body) {
+  if (!['GBP', 'EUR', 'USD'].includes(body.currency)) return 'currency invalida';
+  if (body.nav_value == null || body.nav_value === '' || !nonNegative(body.nav_value)) return 'nav_value trebuie sa fie finit si >= 0';
+  if (!positive(body.capital_contributed)) return 'capital_contributed trebuie sa fie strict pozitiv';
+  if (body.return_is_pending != null && typeof body.return_is_pending !== 'boolean') {
+    return 'return_is_pending trebuie sa fie boolean';
+  }
+  const pending = body.return_is_pending === true;
+  const hasReturn = body.cumulative_return_pct != null && body.cumulative_return_pct !== '';
+  if (pending && hasReturn) return 'cumulative_return_pct trebuie sa fie null cand return_is_pending este true';
+  if (!pending && (!hasReturn || !Number.isFinite(Number(body.cumulative_return_pct)))) {
+    return 'cumulative_return_pct trebuie sa fie finit cand return_is_pending este false';
+  }
+  return null;
+}
 
 export default async function handler(req, res) {
   const { name } = req.query;
@@ -49,51 +140,38 @@ export default async function handler(req, res) {
     },
     order: { column: 'code', ascending: true }
   });
-  if (name === 'portfolio-positions') return handleCrudTable(req, res, {
-    table: 'portfolio_positions',
-    requiredFields: ['portfolio_id', 'ticker', 'name', 'instrument_currency'],
-    validate: (body) => {
-      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.instrument_currency)) return 'instrument_currency invalida';
-      return null;
-    },
-    order: { column: 'sort_order', ascending: true }
-  });
+  if (name === 'portfolio-positions') return handleCrudTable(req, res, PORTFOLIO_POSITION_CRUD_OPTIONS);
   if (name === 'portfolio-transactions') return handleCrudTable(req, res, {
     table: 'portfolio_transactions',
     requiredFields: ['portfolio_id', 'type', 'amount', 'currency'],
-    validate: (body) => {
-      if (!['BUY', 'SELL', 'FEE', 'DEPOSIT', 'WITHDRAWAL'].includes(body.type)) return 'type invalid';
-      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.currency)) return 'currency invalida';
-      return null;
-    },
+    validate: validatePortfolioTransactionState,
+    validateMergedPatch: true,
     order: { column: 'executed_at', ascending: false }
   });
   if (name === 'portfolio-dividends') return handleCrudTable(req, res, {
     table: 'portfolio_dividends',
     requiredFields: ['portfolio_id', 'ticker', 'amount', 'currency', 'pay_date'],
-    validate: (body) => {
-      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.currency)) return 'currency invalida';
-      return null;
-    },
+    validate: validatePortfolioDividendState,
+    validateMergedPatch: true,
     order: { column: 'pay_date', ascending: false }
   });
   if (name === 'portfolio-performance') return handleCrudTable(req, res, {
     table: 'portfolio_performance_history',
     requiredFields: ['portfolio_id', 'as_of_date', 'nav_value', 'capital_contributed', 'currency'],
-    validate: (body) => {
-      if (!['GBP', 'EUR', 'USD'].includes(body.currency)) return 'currency invalida';
-      return null;
-    },
+    validate: validatePortfolioPerformanceState,
+    validateMergedPatch: true,
     order: { column: 'as_of_date', ascending: true }
   });
   if (name === 'fx-rates') return handleCrudTable(req, res, {
     table: 'fx_rates',
     requiredFields: ['base_currency', 'quote_currency', 'rate'],
     validate: (body) => {
-      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.base_currency)) return 'base_currency invalida';
-      if (!['GBP', 'EUR', 'USD', 'CHF'].includes(body.quote_currency)) return 'quote_currency invalida';
+      if (!VALID_INSTRUMENT_CURRENCIES.includes(body.base_currency)) return 'base_currency invalida';
+      if (!VALID_INSTRUMENT_CURRENCIES.includes(body.quote_currency)) return 'quote_currency invalida';
+      if (!Number.isFinite(Number(body.rate)) || Number(body.rate) <= 0) return 'rate trebuie sa fie strict pozitiv';
       return null;
     },
+    validateMergedPatch: true,
     order: { column: 'as_of_date', ascending: false }
   });
 
@@ -105,8 +183,8 @@ export default async function handler(req, res) {
 // Fiecare tabela isi ramane complet izolata (RLS pe tabela reala din Postgres,
 // nu doar filtrare in cod); acest handler doar evita duplicarea codului de
 // rutare/validare de baza.
-async function handleCrudTable(req, res, opts) {
-  const access = await requireAdmin(req, res);
+export async function handleCrudTable(req, res, opts, { requireAdminImpl = requireAdmin } = {}) {
+  const access = await requireAdminImpl(req, res);
   if (!access) return;
 
   try {
@@ -128,6 +206,7 @@ async function handleCrudTable(req, res, opts) {
       }
     }
     body = body || {};
+    if (opts.normalize) body = opts.normalize(body);
 
     if (req.method === 'POST') {
       const missing = opts.requiredFields.filter((f) => body[f] === undefined || body[f] === null || body[f] === '');
@@ -147,7 +226,16 @@ async function handleCrudTable(req, res, opts) {
     if (req.method === 'PATCH') {
       const { id, ...patch } = body;
       if (!id) return res.status(400).json({ error: 'ID lipsa' });
-      if (opts.validate) {
+      if (opts.validateMergedPatch) {
+        const { data: existing, error: existingError } = await access.client
+          .from(opts.table)
+          .select('*')
+          .eq('id', id)
+          .single();
+        if (existingError) return res.status(500).json({ error: existingError.message });
+        const validationError = opts.validate({ ...existing, ...patch });
+        if (validationError) return res.status(400).json({ error: validationError });
+      } else if (opts.validate) {
         const validationError = opts.validate({ ...patch });
         if (validationError && Object.keys(patch).some((k) => opts.requiredFields.includes(k))) {
           return res.status(400).json({ error: validationError });

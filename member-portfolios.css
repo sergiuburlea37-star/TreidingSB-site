@@ -147,6 +147,24 @@
 }
 .mp-incomplete-note[hidden]{display:none}
 
+/* Sincronizare partiala (Etapa 4 - EODHD Live Delayed): distinct de
+   mp-incomplete-note (care e despre "Pondere initiala"/curs istoric
+   indisponibil) - acesta semnaleaza ca ultima RULARE de sincronizare a
+   preturilor nu a putut publica un instantaneu complet, deci datele
+   afisate raman cele din ultima sincronizare reusita. Ton similar
+   (avertisment, nu eroare), aceeasi paleta ca mp-incomplete-note. */
+.mp-sync-partial-note{
+  margin:0 0 18px;
+  padding:10px 14px;
+  border:1px solid rgba(255,159,22,.4);
+  background:rgba(255,159,22,.08);
+  border-radius:10px;
+  font-size:12.5px;
+  color:#ffd493;
+  line-height:1.6;
+}
+.mp-sync-partial-note[hidden]{display:none}
+
 /* ---------- stat cards row ---------- */
 .mp-cards-row{
   display:grid;

@@ -31,9 +31,14 @@
 // afiseze explicit "curs indisponibil", nu o aproximare.
 
 export function createFxConverter(fxRows) {
+  const validRows = (fxRows || []).filter((r) => {
+    const rate = Number(r && r.rate);
+    return r && r.base_currency && r.quote_currency && r.as_of_date && Number.isFinite(rate) && rate > 0;
+  }).map((r) => ({ ...r, rate: Number(r.rate) }));
+
   // Cel mai recent curs disponibil per pereche valutara, indiferent de data.
   const latestFx = {};
-  (fxRows || []).forEach((r) => {
+  validRows.forEach((r) => {
     const key = r.base_currency + '_' + r.quote_currency;
     if (!latestFx[key]) latestFx[key] = r; // primul intalnit e cel mai recent, DACA fxRows e sortat desc dupa as_of_date
   });
@@ -43,7 +48,7 @@ export function createFxConverter(fxRows) {
   // niciodata un curs EUR/X de la o data cu un curs EUR/Y de la alta data
   // intr-un curs derivat artificial.
   const fxByDate = {}; // as_of_date -> { 'BASE_QUOTE': rate }
-  (fxRows || []).forEach((r) => {
+  validRows.forEach((r) => {
     const d = r.as_of_date;
     if (!fxByDate[d]) fxByDate[d] = {};
     const key = r.base_currency + '_' + r.quote_currency;

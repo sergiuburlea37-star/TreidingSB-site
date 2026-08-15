@@ -1,0 +1,93 @@
+-- 202608140005_pgcron_pgnet_portfolio_sync_dormant.sql
+--
+-- Etapa 4 (integrare EODHD Live Delayed): programarea Supabase Cron pentru
+-- sincronizarea automata la fiecare 15 minute, luni-vineri. INTENTIONAT
+-- DORMANTA - vezi cerinta explicita a proiectului: "Nu activa cronul
+-- inainte de testarea manuala".
+--
+-- Aceasta migrare instaleaza DOAR extensiile necesare (pg_cron, pg_net).
+-- Apelul cron.schedule(...) propriu-zis ramane COMENTAT mai jos si NU
+-- trebuie decomentat/rulat decat dupa ce toti pasii de verificare manuala
+-- din raportul insotitor (rulare unica manuala reusita, verificare pret/
+-- FX/cash/NAV/profit, confirmare "un simbol stricat -> zero snapshoturi",
+-- confirmare "doua rulari concurente -> fara publicare dubla") au trecut -
+-- separat pentru mediul de test SI, din nou, separat pentru productie.
+--
+-- De ce Supabase Cron (pg_cron + pg_net) si nu vercel.json "crons": site-ul
+-- ruleaza pe planul Vercel Hobby (vezi comentariul din api/admin/[name].js),
+-- unde cron-ul nativ Vercel e limitat la cel mult o rulare pe zi - insuficient
+-- pentru cadenta ceruta (15 min, doar zile lucratoare). pg_net poate trimite
+-- cereri HTTP catre orice URL HTTPS, deci apeleaza direct endpoint-ul deja
+-- existent pe Vercel (api/cron/sync-portfolio-prices.js), nu o functie
+-- Supabase Edge separata.
+--
+-- Fereastra orara aleasa (07:00-21:45 UTC, luni-vineri) plus o singura
+-- rulare weekly-final vineri la 22:30 UTC: acopera cu marja
+-- orele de tranzactionare ale tuturor burselor implicate (LSE 08:00-16:30,
+-- Xetra/Euronext/SIX/BME/Borsa Italiana/Nasdaq Stockholm ~07:00-15:30/16:30
+-- CET/CEST, Nasdaq US 13:30-20:00 UTC), inclusiv variatia DST pe ambele
+-- maluri ale Atlanticului. Rularea 22:30 este dupa close-ul US/FX inclusiv
+-- iarna si dupa intarzierea documentata; doar ea poate accepta close-ul EU
+-- mai vechi de o ora drept close oficial de vineri. Toate rularile intraday
+-- raman fail-closed la date mai vechi de o ora.
+--
+-- Secretul (PORTFOLIO_CRON_SECRET) NU e scris niciodata in acest fisier -
+-- se citeste din Supabase Vault la momentul rularii. Configurarea Vault
+-- (`select vault.create_secret(...)`) e un pas manual, separat, facut din
+-- Supabase Dashboard/SQL Editor DUPA aprobare, nu face parte din migrare.
+--
+-- NU se executa automat (nici partea de extensii, nici - cu atat mai putin -
+-- programarea efectiva). Rulare manuala dupa aprobare explicita.
+
+begin;
+
+create extension if not exists pg_cron with schema pg_catalog;
+create extension if not exists pg_net with schema extensions;
+
+commit;
+
+-- ---------------------------------------------------------------------------
+-- DORMANT - NU decomenta si NU rula pana dupa aprobarea separata mentionata
+-- mai sus. Inlocuieste <PRODUCTION_DOMAIN> cu domeniul real de productie
+-- (ex. treidingsb.com) inainte de a rula.
+-- ---------------------------------------------------------------------------
+--
+-- select vault.create_secret('<VALOAREA_REALA_A_PORTFOLIO_CRON_SECRET>', 'portfolio_cron_secret');
+--
+-- select cron.schedule(
+--   'portfolio-price-sync',
+--   '*/15 7-21 * * 1-5',
+--   $$
+--   select net.http_post(
+--     url := 'https://<PRODUCTION_DOMAIN>/api/cron/sync-portfolio-prices',
+--     headers := jsonb_build_object(
+--       'Content-Type', 'application/json',
+--       'Authorization', 'Bearer ' || (
+--         select decrypted_secret from vault.decrypted_secrets where name = 'portfolio_cron_secret'
+--       )
+--     ),
+--     body := '{}'::jsonb
+--   );
+--   $$
+-- );
+--
+-- select cron.schedule(
+--   'portfolio-price-sync-weekly-final',
+--   '30 22 * * 5',
+--   $$
+--   select net.http_post(
+--     url := 'https://<PRODUCTION_DOMAIN>/api/cron/sync-portfolio-prices',
+--     headers := jsonb_build_object(
+--       'Content-Type', 'application/json',
+--       'Authorization', 'Bearer ' || (
+--         select decrypted_secret from vault.decrypted_secrets where name = 'portfolio_cron_secret'
+--       )
+--     ),
+--     body := '{}'::jsonb
+--   );
+--   $$
+-- );
+--
+-- Dezactivare (daca e vreodata necesar): select cron.unschedule('portfolio-price-sync');
+-- select cron.unschedule('portfolio-price-sync-weekly-final');
+-- ---------------------------------------------------------------------------
