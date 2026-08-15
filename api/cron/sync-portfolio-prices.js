@@ -11,7 +11,8 @@ import {
   classifyQuoteFreshness,
   hasMarketSessionPolicy,
   isWeeklyFinalWindow,
-  normalizeProviderSymbol
+  normalizeProviderSymbol,
+  EODHD_FETCH_ERROR_CATEGORIES
 } from '../_lib/eodhd.js';
 import {
   computeLedgerCashBaseCcy,
@@ -366,14 +367,20 @@ export function createSyncHandler({
         fetchPrices(requestPlan.symbols),
         fetchFxRates(requestPlan.fxPairs)
       ]);
-    } catch (_) {
+    } catch (err) {
+      // Doar categoria sanitizata ajunge in audit/raspuns - niciodata
+      // err.message brut (poate contine detalii de la EODHD).
+      const category = (err && typeof err.category === 'string' && EODHD_FETCH_ERROR_CATEGORIES.includes(err.category))
+        ? err.category
+        : 'eodhd_unknown_fetch_error';
+      const fetchProblems = [{ ticker: null, portfolio: null, status: category }];
       await logSyncRun(admin, {
-        runId, applied: false, reason: 'fetch_failed', problems: [],
+        runId, applied: false, reason: 'fetch_failed', problems: fetchProblems,
         providerCallUnits: requestPlan.providerCallUnits,
         providerSymbolsRequested: requestPlan.providerCallUnits,
         quotaLimit: quota.limit, quotaProjected: quota.projected
       });
-      return res.status(200).json({ success: true, applied: false, reason: 'fetch_failed' });
+      return res.status(200).json({ success: true, applied: false, reason: 'fetch_failed', problems: fetchProblems });
     }
 
     const allowOfficialClose = isWeeklyFinalWindow(now);

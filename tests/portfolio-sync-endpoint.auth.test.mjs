@@ -19,12 +19,15 @@
 const BASE_URL = process.env.BASE_URL || 'https://treidingsb-l7x6myy28-treiding-sb.vercel.app';
 const ENDPOINT = BASE_URL.replace(/\/$/, '') + '/api/cron/sync-portfolio-prices';
 const REAL_SECRET = process.env.PORTFOLIO_CRON_SECRET || '';
+const BYPASS = process.env.VERCEL_PROTECTION_BYPASS || '';
 
 let passed = 0;
 let failed = 0;
 
 async function check(name, expectedStatus, { method = 'POST', headers } = {}) {
-  const res = await fetch(ENDPOINT, { method, headers: headers || {} });
+  const mergedHeaders = { ...(headers || {}) };
+  if (BYPASS) mergedHeaders['x-vercel-protection-bypass'] = BYPASS;
+  const res = await fetch(ENDPOINT, { method, headers: mergedHeaders });
   const text = await res.text();
   let body;
   try { body = JSON.parse(text); } catch (e) { body = text.slice(0, 200); }

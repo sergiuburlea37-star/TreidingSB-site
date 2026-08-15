@@ -15,6 +15,33 @@
 const EODHD_BASE = 'https://eodhd.com/api/real-time';
 const FETCH_TIMEOUT_MS = 8000;
 
+// Categorii sanitizate pentru esecurile de fetch - niciodata mesajul brut de
+// eroare (poate contine URL-ul, deci tokenul, pe unele implementari de
+// fetch). Folosite in audit (portfolio_sync_runs.problems) si in raspunsul
+// HTTP al endpoint-ului de sync, niciodata in loguri cu detalii brute.
+export const EODHD_FETCH_ERROR_CATEGORIES = Object.freeze([
+  'eodhd_token_missing',
+  'eodhd_http_401',
+  'eodhd_http_403',
+  'eodhd_http_429',
+  'eodhd_http_other',
+  'eodhd_timeout',
+  'eodhd_invalid_json',
+  'eodhd_network_error',
+  'eodhd_unknown_fetch_error'
+]);
+
+export class EodhdFetchError extends Error {
+  constructor(category) {
+    const safeCategory = EODHD_FETCH_ERROR_CATEGORIES.includes(category)
+      ? category
+      : 'eodhd_unknown_fetch_error';
+    super(safeCategory);
+    this.name = 'EodhdFetchError';
+    this.category = safeCategory;
+  }
+}
+
 // Toleranta pt. drift de ceas intre serverul nostru si EODHD - NU o licenta
 // de a accepta date cu adevarat viitoare; orice depaseste asta e tratat ca
 // 'future' (semnal de problema de date, echivalent cu 'missing' pt. runul
@@ -69,8 +96,20 @@ export function dedupeProviderSymbols(symbols) {
   return [...new Set((symbols || []).map(normalizeProviderSymbol).filter(Boolean))];
 }
 
-async function fetchQuotes(symbols, { token = process.env.EODHD_API_TOKEN, fetchImpl = fetch } = {}) {
-  if (!token) throw new Error('EODHD not configured (EODHD_API_TOKEN missing)');
+async function fetchQuotes(symbols, opts = {}) {
+  // Plasa de siguranta: orice eroare care ar scapa nesanitizata din
+  // fetchQuotesUnsafe (schimbare viitoare de cod, dependinta noua etc.) e
+  // prinsa aici si redusa la categoria generica, niciodata propagata bruta.
+  try {
+    return await fetchQuotesUnsafe(symbols, opts);
+  } catch (err) {
+    if (err instanceof EodhdFetchError) throw err;
+    throw new EodhdFetchError('eodhd_unknown_fetch_error');
+  }
+}
+
+async function fetchQuotesUnsafe(symbols, { token = process.env.EODHD_API_TOKEN, fetchImpl = fetch } = {}) {
+  if (!token) throw new EodhdFetchError('eodhd_token_missing');
   const uniqueSymbols = dedupeProviderSymbols(symbols);
   if (!uniqueSymbols.length) return [];
 
@@ -87,19 +126,25 @@ async function fetchQuotes(symbols, { token = process.env.EODHD_API_TOKEN, fetch
     res = await fetchImpl(url, { signal: controller.signal });
   } catch (err) {
     // Nu propaga err direct - poate contine URL-ul (deci tokenul) pe unele
-    // implementari de fetch la abort/eroare de retea.
-    throw new Error('EODHD request failed or timed out');
+    // implementari de fetch la abort/eroare de retea. Categorisit sanitizat,
+    // fara mesajul brut.
+    throw new EodhdFetchError(err && err.name === 'AbortError' ? 'eodhd_timeout' : 'eodhd_network_error');
   } finally {
     clearTimeout(timer);
   }
 
-  if (!res.ok) throw new Error(`EODHD HTTP ${res.status}`);
+  if (!res.ok) {
+    if (res.status === 401) throw new EodhdFetchError('eodhd_http_401');
+    if (res.status === 403) throw new EodhdFetchError('eodhd_http_403');
+    if (res.status === 429) throw new EodhdFetchError('eodhd_http_429');
+    throw new EodhdFetchError('eodhd_http_other');
+  }
 
   let body;
   try {
     body = await res.json();
   } catch (err) {
-    throw new Error('EODHD returned malformed JSON');
+    throw new EodhdFetchError('eodhd_invalid_json');
   }
 
   const rows = Array.isArray(body) ? body : [body];

@@ -11,7 +11,7 @@
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { fetchLiveDelayedPrices, fetchLiveDelayedFxRates } from '../api/_lib/eodhd.js';
+import { fetchLiveDelayedPrices, fetchLiveDelayedFxRates, EODHD_FETCH_ERROR_CATEGORIES } from '../api/_lib/eodhd.js';
 
 function fakeFetch(handler) {
   return async (url, opts) => handler(url, opts);
@@ -22,10 +22,13 @@ function jsonResponse(body, { ok = true, status = 200 } = {}) {
 }
 
 describe('fetchLiveDelayedPrices', () => {
-  test('arunca eroare clara daca tokenul lipseste', async () => {
+  test('arunca eroare categorisita daca tokenul lipseste, fara sa expuna vreun detaliu', async () => {
     await assert.rejects(
       () => fetchLiveDelayedPrices(['AAPL.US'], { token: '', fetchImpl: fakeFetch(() => jsonResponse([])) }),
-      /EODHD_API_TOKEN/
+      (err) => {
+        assert.equal(err.category, 'eodhd_token_missing');
+        return true;
+      }
     );
   });
 
@@ -100,42 +103,110 @@ describe('fetchLiveDelayedPrices', () => {
     }
   });
 
-  test('status HTTP non-ok -> arunca eroare cu statusul, fara sa expuna URL-ul', async () => {
+  test('status HTTP non-ok necunoscut (503) -> eodhd_http_other, fara sa expuna URL-ul/tokenul', async () => {
     await assert.rejects(
       () => fetchLiveDelayedPrices(['AAPL.US'], {
         token: 'secret-token',
         fetchImpl: fakeFetch(() => jsonResponse(null, { ok: false, status: 503 }))
       }),
       (err) => {
-        assert.match(err.message, /503/);
+        assert.equal(err.category, 'eodhd_http_other');
         assert.doesNotMatch(err.message, /secret-token/);
+        assert.doesNotMatch(err.message, /503/); // statusul brut nu trebuie sa apara in mesaj, doar categoria
         return true;
       }
     );
   });
 
-  test('JSON malformat -> eroare clara, nu propaga exceptia bruta de parsare', async () => {
+  test('status HTTP 401/403/429 -> categorii distincte, dedicate', async () => {
+    const cases = [[401, 'eodhd_http_401'], [403, 'eodhd_http_403'], [429, 'eodhd_http_429']];
+    for (const [status, expectedCategory] of cases) {
+      await assert.rejects(
+        () => fetchLiveDelayedPrices(['AAPL.US'], {
+          token: 'secret-token',
+          fetchImpl: fakeFetch(() => jsonResponse(null, { ok: false, status }))
+        }),
+        (err) => {
+          assert.equal(err.category, expectedCategory, `status ${status}`);
+          assert.doesNotMatch(err.message, /secret-token/);
+          return true;
+        }
+      );
+    }
+  });
+
+  test('JSON malformat -> eodhd_invalid_json, nu propaga exceptia bruta de parsare', async () => {
     await assert.rejects(
       () => fetchLiveDelayedPrices(['AAPL.US'], {
         token: 'tok',
         fetchImpl: fakeFetch(() => ({ ok: true, status: 200, json: async () => { throw new SyntaxError('Unexpected token'); } }))
       }),
-      /malformed JSON/
+      (err) => {
+        assert.equal(err.category, 'eodhd_invalid_json');
+        return true;
+      }
     );
   });
 
-  test('eroare de retea/abort a fetch-ului -> mesaj normalizat, nu obiectul brut (poate contine tokenul in URL)', async () => {
+  test('abort real (AbortError) -> eodhd_timeout, nu obiectul brut (poate contine tokenul in URL)', async () => {
     await assert.rejects(
       () => fetchLiveDelayedPrices(['AAPL.US'], {
         token: 'secret-token',
-        fetchImpl: fakeFetch(() => { throw new Error('AbortError: fetch https://eodhd.com/...?api_token=secret-token'); })
+        fetchImpl: fakeFetch(() => {
+          const err = new Error('The operation was aborted');
+          err.name = 'AbortError';
+          throw err;
+        })
       }),
       (err) => {
-        assert.match(err.message, /timed out|failed/);
+        assert.equal(err.category, 'eodhd_timeout');
         assert.doesNotMatch(err.message, /secret-token/);
         return true;
       }
     );
+  });
+
+  test('eroare de retea generica (non-abort) -> eodhd_network_error, nu obiectul brut', async () => {
+    await assert.rejects(
+      () => fetchLiveDelayedPrices(['AAPL.US'], {
+        token: 'secret-token',
+        fetchImpl: fakeFetch(() => { throw new Error('fetch failed: getaddrinfo ENOTFOUND eodhd.com?api_token=secret-token'); })
+      }),
+      (err) => {
+        assert.equal(err.category, 'eodhd_network_error');
+        assert.doesNotMatch(err.message, /secret-token/);
+        return true;
+      }
+    );
+  });
+
+  test('eroare aruncata inainte de orice fetch (input nevalid) -> plasa de siguranta o categorizeaza generic', async () => {
+    // symbols nevalid (nu array) rupe dedupeProviderSymbols() inainte de a
+    // ajunge la vreun bloc try/catch categorizat - exact scenariul pe care
+    // wrapper-ul de siguranta din fetchQuotes() trebuie sa-l prinda.
+    await assert.rejects(
+      () => fetchLiveDelayedPrices(/** @type {any} */ (123), { token: 'tok', fetchImpl: fakeFetch(() => jsonResponse([])) }),
+      (err) => {
+        assert.equal(err.category, 'eodhd_unknown_fetch_error');
+        return true;
+      }
+    );
+  });
+});
+
+describe('EODHD_FETCH_ERROR_CATEGORIES', () => {
+  test('lista de categorii sanitizate e completa si stabila', () => {
+    assert.deepEqual([...EODHD_FETCH_ERROR_CATEGORIES].sort(), [
+      'eodhd_http_401',
+      'eodhd_http_403',
+      'eodhd_http_429',
+      'eodhd_http_other',
+      'eodhd_invalid_json',
+      'eodhd_network_error',
+      'eodhd_timeout',
+      'eodhd_token_missing',
+      'eodhd_unknown_fetch_error'
+    ].sort());
   });
 });
 
