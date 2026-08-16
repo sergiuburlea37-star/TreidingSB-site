@@ -121,14 +121,37 @@ async function fetchQuotes(symbols, opts = {}) {
   }
 }
 
+// Confirmat experimental (2026-08-16): EODHD accepta bulk-quote cu cel mult
+// 9 simboluri intr-un singur request (10+ -> HTTP 404). Peste aceasta
+// limita, cererea trebuie impartita in batch-uri separate.
+export const EODHD_MAX_SYMBOLS_PER_REQUEST = 9;
+
+function chunkSymbols(symbols, size) {
+  const chunks = [];
+  for (let i = 0; i < symbols.length; i += size) {
+    chunks.push(symbols.slice(i, i + size));
+  }
+  return chunks;
+}
+
 async function fetchQuotesUnsafe(symbols, { token = process.env.EODHD_API_TOKEN, fetchImpl = fetch } = {}) {
   if (!token) throw new EodhdFetchError('eodhd_token_missing');
   const uniqueSymbols = dedupeProviderSymbols(symbols);
   if (!uniqueSymbols.length) return [];
 
+  const batches = chunkSymbols(uniqueSymbols, EODHD_MAX_SYMBOLS_PER_REQUEST);
+  // Promise.all: daca oricare batch esueaza, intreaga cerere e respinsa
+  // (fail-closed) - nu se returneaza niciodata un rezultat partial compus
+  // doar din batch-urile reusite.
+  const batchResults = await Promise.all(batches.map((batch) => fetchQuoteBatch(batch, { token, fetchImpl })));
+  return batchResults.flat();
+}
+
+async function fetchQuoteBatch(batchSymbols, { token, fetchImpl }) {
   // EODHD real-time (bulk quote): primul simbol e param de path, restul
-  // via &s=SYM1,SYM2,...
-  const [first, ...rest] = uniqueSymbols;
+  // via &s=SYM1,SYM2,... (maxim EODHD_MAX_SYMBOLS_PER_REQUEST simboluri
+  // per batch, impus de apelant).
+  const [first, ...rest] = batchSymbols;
   const url = `${EODHD_BASE}/${encodeURIComponent(first)}?api_token=${encodeURIComponent(token)}&fmt=json` +
     (rest.length ? `&s=${rest.map(encodeURIComponent).join(',')}` : '');
 

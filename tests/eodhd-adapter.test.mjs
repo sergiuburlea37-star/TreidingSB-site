@@ -15,6 +15,7 @@ import {
   fetchLiveDelayedPrices,
   fetchLiveDelayedFxRates,
   EODHD_FETCH_ERROR_FIXED_CATEGORIES,
+  EODHD_MAX_SYMBOLS_PER_REQUEST,
   isKnownEodhdFetchErrorCategory
 } from '../api/_lib/eodhd.js';
 
@@ -182,6 +183,78 @@ describe('fetchLiveDelayedPrices', () => {
         return true;
       }
     );
+  });
+});
+
+describe('batching bulk-quote (limita EODHD de 9 simboluri/request, confirmata experimental)', () => {
+  function echoFetch(capturedUrls) {
+    return fakeFetch((url) => {
+      capturedUrls.push(url);
+      const first = decodeURIComponent(url.split('/real-time/')[1].split('?')[0]);
+      const sMatch = url.match(/[?&]s=([^&]*)/);
+      const rest = sMatch ? decodeURIComponent(sMatch[1]).split(',') : [];
+      const requested = [first, ...rest];
+      return jsonResponse(requested.map((code) => ({ code, close: 1, timestamp: 1755172800 })));
+    });
+  }
+
+  test(`${EODHD_MAX_SYMBOLS_PER_REQUEST} simboluri exact -> un singur request, fara impartire`, async () => {
+    const symbols = Array.from({ length: EODHD_MAX_SYMBOLS_PER_REQUEST }, (_, i) => `SYM${i}.US`);
+    const capturedUrls = [];
+    const result = await fetchLiveDelayedPrices(symbols, { token: 'tok', fetchImpl: echoFetch(capturedUrls) });
+    assert.equal(capturedUrls.length, 1);
+    assert.match(capturedUrls[0], /^https:\/\/eodhd\.com\/api\/real-time\/SYM0\.US\?/);
+    assert.equal(result.length, EODHD_MAX_SYMBOLS_PER_REQUEST);
+    assert.deepEqual(result.map((r) => r.providerSymbol), symbols);
+  });
+
+  test(`${EODHD_MAX_SYMBOLS_PER_REQUEST + 1} simboluri -> 2 request-uri (9+1), rezultate combinate in ordine`, async () => {
+    const symbols = Array.from({ length: EODHD_MAX_SYMBOLS_PER_REQUEST + 1 }, (_, i) => `SYM${i}.US`);
+    const capturedUrls = [];
+    const result = await fetchLiveDelayedPrices(symbols, { token: 'tok', fetchImpl: echoFetch(capturedUrls) });
+    assert.equal(capturedUrls.length, 2);
+    assert.match(capturedUrls[0], /^https:\/\/eodhd\.com\/api\/real-time\/SYM0\.US\?/);
+    assert.match(capturedUrls[0], /s=SYM1\.US,SYM2\.US,SYM3\.US,SYM4\.US,SYM5\.US,SYM6\.US,SYM7\.US,SYM8\.US/);
+    assert.match(capturedUrls[1], /^https:\/\/eodhd\.com\/api\/real-time\/SYM9\.US\?/);
+    assert.doesNotMatch(capturedUrls[1], /[?&]s=/); // al doilea batch are un singur simbol, fara &s=
+    assert.equal(result.length, EODHD_MAX_SYMBOLS_PER_REQUEST + 1);
+    assert.deepEqual(result.map((r) => r.providerSymbol), symbols);
+  });
+
+  test('19 simboluri -> 3 request-uri (9+9+1), rezultate combinate in ordine', async () => {
+    const symbols = Array.from({ length: 19 }, (_, i) => `SYM${i}.US`);
+    const capturedUrls = [];
+    const result = await fetchLiveDelayedPrices(symbols, { token: 'tok', fetchImpl: echoFetch(capturedUrls) });
+    assert.equal(capturedUrls.length, 3);
+    assert.match(capturedUrls[0], /^https:\/\/eodhd\.com\/api\/real-time\/SYM0\.US\?/);
+    assert.match(capturedUrls[1], /^https:\/\/eodhd\.com\/api\/real-time\/SYM9\.US\?/);
+    assert.match(capturedUrls[2], /^https:\/\/eodhd\.com\/api\/real-time\/SYM18\.US\?/);
+    assert.doesNotMatch(capturedUrls[2], /[?&]s=/); // al treilea batch are un singur simbol (19 = 9+9+1)
+    assert.equal(result.length, 19);
+    assert.deepEqual(result.map((r) => r.providerSymbol), symbols);
+  });
+
+  test('daca orice batch esueaza (ex. al 2-lea din 3), tot fetch-ul e respins - fara rezultate partiale', async () => {
+    const symbols = Array.from({ length: 19 }, (_, i) => `SYM${i}.US`);
+    let callCount = 0;
+    await assert.rejects(
+      () => fetchLiveDelayedPrices(symbols, {
+        token: 'tok',
+        fetchImpl: fakeFetch((url) => {
+          callCount += 1;
+          if (url.includes('/real-time/SYM9.US')) return jsonResponse(null, { ok: false, status: 500 });
+          const first = decodeURIComponent(url.split('/real-time/')[1].split('?')[0]);
+          const sMatch = url.match(/[?&]s=([^&]*)/);
+          const rest = sMatch ? decodeURIComponent(sMatch[1]).split(',') : [];
+          return jsonResponse([first, ...rest].map((code) => ({ code, close: 1, timestamp: 1755172800 })));
+        })
+      }),
+      (err) => {
+        assert.equal(err.category, 'eodhd_http_500');
+        return true;
+      }
+    );
+    assert.equal(callCount, 3, 'toate cele 3 batch-uri sunt incercate (Promise.all le porneste pe toate deodata)');
   });
 });
 
