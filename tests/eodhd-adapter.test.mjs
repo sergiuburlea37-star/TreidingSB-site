@@ -11,7 +11,12 @@
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { fetchLiveDelayedPrices, fetchLiveDelayedFxRates, EODHD_FETCH_ERROR_CATEGORIES } from '../api/_lib/eodhd.js';
+import {
+  fetchLiveDelayedPrices,
+  fetchLiveDelayedFxRates,
+  EODHD_FETCH_ERROR_FIXED_CATEGORIES,
+  isKnownEodhdFetchErrorCategory
+} from '../api/_lib/eodhd.js';
 
 function fakeFetch(handler) {
   return async (url, opts) => handler(url, opts);
@@ -103,31 +108,17 @@ describe('fetchLiveDelayedPrices', () => {
     }
   });
 
-  test('status HTTP non-ok necunoscut (503) -> eodhd_http_other, fara sa expuna URL-ul/tokenul', async () => {
-    await assert.rejects(
-      () => fetchLiveDelayedPrices(['AAPL.US'], {
-        token: 'secret-token',
-        fetchImpl: fakeFetch(() => jsonResponse(null, { ok: false, status: 503 }))
-      }),
-      (err) => {
-        assert.equal(err.category, 'eodhd_http_other');
-        assert.doesNotMatch(err.message, /secret-token/);
-        assert.doesNotMatch(err.message, /503/); // statusul brut nu trebuie sa apara in mesaj, doar categoria
-        return true;
-      }
-    );
-  });
-
-  test('status HTTP 401/403/429 -> categorii distincte, dedicate', async () => {
-    const cases = [[401, 'eodhd_http_401'], [403, 'eodhd_http_403'], [429, 'eodhd_http_429']];
-    for (const [status, expectedCategory] of cases) {
+  test('orice status HTTP non-ok -> eodhd_http_<status> exact, fara text/reason-phrase, fara URL/token', async () => {
+    const statuses = [400, 401, 403, 404, 429, 500, 503];
+    for (const status of statuses) {
       await assert.rejects(
         () => fetchLiveDelayedPrices(['AAPL.US'], {
           token: 'secret-token',
           fetchImpl: fakeFetch(() => jsonResponse(null, { ok: false, status }))
         }),
         (err) => {
-          assert.equal(err.category, expectedCategory, `status ${status}`);
+          assert.equal(err.category, `eodhd_http_${status}`, `status ${status}`);
+          assert.equal(err.message, `eodhd_http_${status}`);
           assert.doesNotMatch(err.message, /secret-token/);
           return true;
         }
@@ -194,19 +185,36 @@ describe('fetchLiveDelayedPrices', () => {
   });
 });
 
-describe('EODHD_FETCH_ERROR_CATEGORIES', () => {
-  test('lista de categorii sanitizate e completa si stabila', () => {
-    assert.deepEqual([...EODHD_FETCH_ERROR_CATEGORIES].sort(), [
-      'eodhd_http_401',
-      'eodhd_http_403',
-      'eodhd_http_429',
-      'eodhd_http_other',
+describe('EODHD_FETCH_ERROR_FIXED_CATEGORIES / isKnownEodhdFetchErrorCategory', () => {
+  test('lista fixa (non-HTTP) e completa si stabila', () => {
+    assert.deepEqual([...EODHD_FETCH_ERROR_FIXED_CATEGORIES].sort(), [
       'eodhd_invalid_json',
       'eodhd_network_error',
       'eodhd_timeout',
       'eodhd_token_missing',
       'eodhd_unknown_fetch_error'
     ].sort());
+  });
+
+  test('accepta orice categorie HTTP cu 3 cifre in intervalul 1xx-5xx', () => {
+    for (const status of [100, 200, 301, 400, 404, 429, 500, 599]) {
+      assert.equal(isKnownEodhdFetchErrorCategory(`eodhd_http_${status}`), true, `eodhd_http_${status}`);
+    }
+  });
+
+  test('respinge categorii HTTP nevalide (fara sa arunce)', () => {
+    for (const bad of [
+      'eodhd_http_0', 'eodhd_http_99', 'eodhd_http_600', 'eodhd_http_1000',
+      'eodhd_http_abc', 'eodhd_http_', 'eodhd_http_404x', 'not_a_category', '', null, undefined
+    ]) {
+      assert.equal(isKnownEodhdFetchErrorCategory(bad), false, String(bad));
+    }
+  });
+
+  test('accepta toate cele 5 categorii fixe', () => {
+    for (const category of EODHD_FETCH_ERROR_FIXED_CATEGORIES) {
+      assert.equal(isKnownEodhdFetchErrorCategory(category), true, category);
+    }
   });
 });
 

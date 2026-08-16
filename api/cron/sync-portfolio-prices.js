@@ -12,7 +12,7 @@ import {
   hasMarketSessionPolicy,
   isWeeklyFinalWindow,
   normalizeProviderSymbol,
-  EODHD_FETCH_ERROR_CATEGORIES
+  isKnownEodhdFetchErrorCategory
 } from '../_lib/eodhd.js';
 import {
   computeLedgerCashBaseCcy,
@@ -370,7 +370,7 @@ export function createSyncHandler({
     } catch (err) {
       // Doar categoria sanitizata ajunge in audit/raspuns - niciodata
       // err.message brut (poate contine detalii de la EODHD).
-      const category = (err && typeof err.category === 'string' && EODHD_FETCH_ERROR_CATEGORIES.includes(err.category))
+      const category = (err && isKnownEodhdFetchErrorCategory(err.category))
         ? err.category
         : 'eodhd_unknown_fetch_error';
       const fetchProblems = [{ ticker: null, portfolio: null, status: category }];

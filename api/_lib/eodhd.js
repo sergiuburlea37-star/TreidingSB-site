@@ -19,21 +19,34 @@ const FETCH_TIMEOUT_MS = 8000;
 // eroare (poate contine URL-ul, deci tokenul, pe unele implementari de
 // fetch). Folosite in audit (portfolio_sync_runs.problems) si in raspunsul
 // HTTP al endpoint-ului de sync, niciodata in loguri cu detalii brute.
-export const EODHD_FETCH_ERROR_CATEGORIES = Object.freeze([
+//
+// Categoriile non-HTTP raman o lista inchisa (5 valori fixe). Categoriile
+// HTTP sunt generate dinamic ca `eodhd_http_<status>` (ex. eodhd_http_404,
+// eodhd_http_500) pentru orice cod non-2xx - inclusiv 401/403/429, fara
+// ramuri speciale - si validate printr-un pattern (nu o lista enumerata,
+// imposibil de exhaustivat pt. toate codurile HTTP posibile), care admite
+// STRICT 3 cifre in intervalul valid 1xx-5xx. Niciodata statusul brut nu
+// ajunge in alta forma (fara text/reason-phrase de la server).
+export const EODHD_FETCH_ERROR_FIXED_CATEGORIES = Object.freeze([
   'eodhd_token_missing',
-  'eodhd_http_401',
-  'eodhd_http_403',
-  'eodhd_http_429',
-  'eodhd_http_other',
   'eodhd_timeout',
   'eodhd_invalid_json',
   'eodhd_network_error',
   'eodhd_unknown_fetch_error'
 ]);
 
+const EODHD_HTTP_CATEGORY_PATTERN = /^eodhd_http_[1-5]\d{2}$/;
+
+export function isKnownEodhdFetchErrorCategory(category) {
+  return typeof category === 'string' && (
+    EODHD_FETCH_ERROR_FIXED_CATEGORIES.includes(category) ||
+    EODHD_HTTP_CATEGORY_PATTERN.test(category)
+  );
+}
+
 export class EodhdFetchError extends Error {
   constructor(category) {
-    const safeCategory = EODHD_FETCH_ERROR_CATEGORIES.includes(category)
+    const safeCategory = isKnownEodhdFetchErrorCategory(category)
       ? category
       : 'eodhd_unknown_fetch_error';
     super(safeCategory);
@@ -133,12 +146,12 @@ async function fetchQuotesUnsafe(symbols, { token = process.env.EODHD_API_TOKEN,
     clearTimeout(timer);
   }
 
-  if (!res.ok) {
-    if (res.status === 401) throw new EodhdFetchError('eodhd_http_401');
-    if (res.status === 403) throw new EodhdFetchError('eodhd_http_403');
-    if (res.status === 429) throw new EodhdFetchError('eodhd_http_429');
-    throw new EodhdFetchError('eodhd_http_other');
-  }
+  // Statusul numeric intra direct in categorie (ex. eodhd_http_404,
+  // eodhd_http_500) - fara text/reason-phrase de la server, doar codul.
+  // EodhdFetchError valideaza oricum categoria contra pattern-ului inainte
+  // s-o accepte, deci un status neasteptat (in afara 1xx-5xx) cade sigur pe
+  // eodhd_unknown_fetch_error.
+  if (!res.ok) throw new EodhdFetchError(`eodhd_http_${res.status}`);
 
   let body;
   try {
