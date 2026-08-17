@@ -23,6 +23,44 @@ import {
 export const SYNC_LEASE_TTL_SECONDS = 180;
 const REQUIRED_PORTFOLIO_CODES = ['EU', 'US'];
 
+// Categorii sanitizate pentru mesajele statice, cunoscute, aruncate de RPC-ul
+// apply_portfolio_price_snapshot (supabase/migrations/202608140004_...).
+// Toate mesajele RPC sunt string-uri fixe, fara interpolare (verificat in
+// migrare - niciun `format()`/`%s`), deci maparea de mai jos e completa si
+// stabila fata de acel fisier. NU se loghaza niciodata rpcError.message brut
+// - doar categoria din acest allowlist, sau 'rpc_unknown' pt. orice mesaj
+// necunoscut (inclusiv erori de contract/lock/domain care nu se incadreaza
+// clar in categoriile de mai jos, ca sa nu inducem un diagnostic gresit).
+const RPC_ERROR_CATEGORIES = {
+  'active sync lease does not match run_id': 'lease_mismatch',
+  'positions must contain every active position exactly once': 'position_inactive',
+  'snapshot contains unknown or inactive position': 'position_inactive',
+  'position quantity or multiplier is incomplete/invalid': 'price_multiplier',
+  'position financial domain is invalid': 'price_multiplier',
+  'active position is unmapped': 'provider_symbol',
+  'position price must be finite and strictly positive': 'price_multiplier',
+  'EODHD snapshots must use delayed_feed': 'price_source',
+  'provider timestamp is required': 'provider_timestamp',
+  'provider timestamp regresses stored position timestamp': 'provider_timestamp',
+  'FX rate must be finite and strictly positive': 'fx_rows',
+  'FX row is incomplete': 'fx_rows',
+  'existing FX financial domain is invalid': 'fx_rows',
+  'performance_rows must contain exactly US and EU snapshots': 'performance_rows',
+  'performance row must reference US or EU portfolio': 'performance_rows',
+  'performance portfolio code/currency is invalid or duplicated': 'performance_rows',
+  'US and EU snapshots must share as_of_date': 'performance_rows',
+  'NAV must be complete, finite and non-negative': 'performance_rows',
+  'capital_contributed must be finite and strictly positive': 'performance_rows',
+  'return_is_pending is required': 'performance_rows',
+  'pending return must have null cumulative_return_pct': 'performance_rows',
+  'non-pending return must be complete and finite': 'performance_rows',
+  'performance_rows must contain distinct US and EU snapshots': 'performance_rows'
+};
+
+export function categorizeRpcError(message) {
+  return RPC_ERROR_CATEGORIES[message] || 'rpc_unknown';
+}
+
 function isPositiveFinite(value) {
   const number = Number(value);
   return Number.isFinite(number) && number > 0;
@@ -532,7 +570,11 @@ export function createSyncHandler({
     };
 
     const { data: rpcResult, error: rpcError } = await admin.rpc('apply_portfolio_price_snapshot', { payload });
-    if (rpcError) throw new Error('snapshot_commit_failed');
+    if (rpcError) {
+      const err = new Error('snapshot_commit_failed');
+      err.rpcCategory = categorizeRpcError(rpcError.message);
+      throw err;
+    }
     if (rpcResult && rpcResult.applied === false) {
       return res.status(200).json({ success: true, applied: false, reason: rpcResult.reason || 'state_changed' });
     }
@@ -553,10 +595,14 @@ export function createSyncHandler({
         quotaProjected: auditQuotaProjected
       });
     }
-    // Doar eticheta etapei + numele constructorului erorii - niciodata
-    // error.message/stack (pot contine detalii de la Supabase/DB), token,
-    // URL sau body.
-    console.error('[portfolio-sync] run failed', { stage, errorName: (error && error.name) || 'Unknown' });
+    // Doar eticheta etapei + numele constructorului erorii + categoria
+    // sanitizata RPC (daca exista) - niciodata error.message/stack/details/
+    // hint (pot contine detalii de la Supabase/DB), token, URL sau body.
+    console.error('[portfolio-sync] run failed', {
+      stage,
+      errorName: (error && error.name) || 'Unknown',
+      rpcErrorCategory: (error && error.rpcCategory) || null
+    });
     return res.status(500).json({ error: 'Server error' });
   } finally {
     if (leaseAcquired) {
