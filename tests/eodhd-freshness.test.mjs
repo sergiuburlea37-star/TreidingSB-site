@@ -6,16 +6,28 @@
 // (cerinta 3): orice status != 'fresh' forteaza runul intreg sa nu publice
 // niciun snapshot.
 //
+// Piata deschisa -> pragul orar plat STALE_THRESHOLD_MS (1h) ramane semnalul
+// de sincronizare esuata. Piata inchisa (weekend, pre-open, post-close) ->
+// se compara fata de lastCompletedSessionClose (close-ul ultimei sesiuni
+// COMPLETE, calculat explicit, nu dedus dintr-un steag extern), cu
+// tolerantele deja existente. Vezi api/_lib/eodhd.js pt. detalii.
+//
 // Rulare: node --test tests/
 // Fara retea, fara Supabase - functie pura, `now` injectabil.
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { classifyQuoteFreshness, isWeeklyFinalWindow, STALE_THRESHOLD_MS } from '../api/_lib/eodhd.js';
+import {
+  classifyQuoteFreshness,
+  isWeeklyFinalWindow,
+  isMarketOpenNow,
+  lastCompletedSessionClose,
+  STALE_THRESHOLD_MS
+} from '../api/_lib/eodhd.js';
 
 const NOW = new Date('2026-08-14T12:00:00Z');
 
-describe('classifyQuoteFreshness', () => {
+describe('classifyQuoteFreshness - fara sesiune cunoscuta (fallback prag orar plat)', () => {
   test('lipsa timestamp -> missing', () => {
     assert.equal(classifyQuoteFreshness(null, NOW), 'missing');
     assert.equal(classifyQuoteFreshness(undefined, NOW), 'missing');
@@ -57,128 +69,151 @@ describe('classifyQuoteFreshness', () => {
   });
 });
 
-describe('Friday weekly final pe sesiuni', () => {
-  const SAFE_FRIDAY = new Date('2026-08-14T22:30:00Z');
+describe('isMarketOpenNow / lastCompletedSessionClose - functii de baza', () => {
+  test('AAPL.US: deschisa in timpul sesiunii, inchisa in afara', () => {
+    // 2026-08-14 = vineri, vara (EDT, UTC-4): sesiune 13:30Z-20:00Z.
+    assert.equal(isMarketOpenNow(new Date('2026-08-14T15:00:00Z'), { timeZone: 'America/New_York', openHour: 9, openMinute: 30, closeHour: 16, closeMinute: 0 }), true);
+    assert.equal(isMarketOpenNow(new Date('2026-08-14T21:00:00Z'), { timeZone: 'America/New_York', openHour: 9, openMinute: 30, closeHour: 16, closeMinute: 0 }), false);
+  });
 
+  test('weekend -> intotdeauna inchisa, indiferent de ora', () => {
+    const session = { timeZone: 'America/New_York', openHour: 9, openMinute: 30, closeHour: 16, closeMinute: 0 };
+    assert.equal(isMarketOpenNow(new Date('2026-08-15T15:00:00Z'), session), false); // sambata
+    assert.equal(isMarketOpenNow(new Date('2026-08-16T15:00:00Z'), session), false); // duminica
+  });
+
+  test('lastCompletedSessionClose: weekend -> vineri; luni pre-open -> vineri; alta zi pre-open -> ziua precedenta', () => {
+    const session = { timeZone: 'America/New_York', openHour: 9, openMinute: 30, closeHour: 16, closeMinute: 0 };
+    const fridayCloseUtc = new Date('2026-08-14T20:00:00Z').getTime();
+    assert.equal(lastCompletedSessionClose(new Date('2026-08-15T12:00:00Z'), session), fridayCloseUtc); // sambata
+    assert.equal(lastCompletedSessionClose(new Date('2026-08-16T12:00:00Z'), session), fridayCloseUtc); // duminica
+    assert.equal(lastCompletedSessionClose(new Date('2026-08-17T08:00:00Z'), session), fridayCloseUtc); // luni pre-open (08:00 EDT < 09:30)
+    // marti pre-open -> luni (18-a)
+    const mondayCloseUtc = new Date('2026-08-17T20:00:00Z').getTime();
+    assert.equal(lastCompletedSessionClose(new Date('2026-08-18T08:00:00Z'), session), mondayCloseUtc);
+  });
+});
+
+describe('sesiune deschisa -> pragul orar plat (US si UK/LSE)', () => {
+  test('AAPL.US, vineri in timpul pietei: prag orar plat', () => {
+    const now = new Date('2026-08-14T15:00:00Z'); // 11:00 EDT, piata deschisa (9:30-16:00)
+    assert.equal(isMarketOpenNow(now, { timeZone: 'America/New_York', openHour: 9, openMinute: 30, closeHour: 16, closeMinute: 0 }), true);
+    assert.equal(classifyQuoteFreshness('2026-08-14T14:55:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // 5 min
+    assert.equal(classifyQuoteFreshness('2026-08-14T13:30:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // 90 min
+  });
+
+  test('IWDA.LSE, vineri in timpul pietei: prag orar plat', () => {
+    const now = new Date('2026-08-14T10:00:00Z'); // 11:00 BST, piata deschisa (8:00-16:30)
+    assert.equal(classifyQuoteFreshness('2026-08-14T09:55:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // 5 min
+    assert.equal(classifyQuoteFreshness('2026-08-14T08:30:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'stale'); // 90 min
+  });
+
+  test('AAPL.US, luni in timpul pietei: prag orar plat (nu doar vineri)', () => {
+    const now = new Date('2026-08-17T15:00:00Z'); // 11:00 EDT, luni
+    assert.equal(classifyQuoteFreshness('2026-08-17T14:55:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-17T13:30:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale');
+  });
+});
+
+describe('sesiune inchisa -> comparatie fata de lastCompletedSessionClose', () => {
+  test('AAPL.US, vineri dupa close: close-ul zilei curente', () => {
+    const now = new Date('2026-08-14T21:00:00Z'); // 17:00 EDT, dupa close (16:00)
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:45:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close-15min
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:00:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // close-1h
+  });
+
+  test('IWDA.LSE, vineri dupa close: close-ul zilei curente', () => {
+    const now = new Date('2026-08-14T17:00:00Z'); // 18:00 BST, dupa close (16:30)
+    assert.equal(classifyQuoteFreshness('2026-08-14T15:20:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-14T14:00:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'stale');
+  });
+
+  test('AAPL.US, sambata: close-ul de vineri', () => {
+    const now = new Date('2026-08-15T12:00:00Z');
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:50:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-14T18:00:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale');
+  });
+
+  test('IWDA.LSE, sambata: close-ul de vineri', () => {
+    const now = new Date('2026-08-15T12:00:00Z');
+    assert.equal(classifyQuoteFreshness('2026-08-14T15:20:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-14T13:00:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'stale');
+  });
+
+  test('AAPL.US, duminica: close-ul de vineri', () => {
+    const now = new Date('2026-08-16T12:00:00Z');
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:55:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-13T19:55:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // joi
+  });
+
+  test('AAPL.US, luni pre-open: close-ul de vineri (nu al lui luni)', () => {
+    const now = new Date('2026-08-17T12:00:00Z'); // 08:00 EDT, inainte de 09:30
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:55:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-13T19:55:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // joi
+  });
+
+  test('AAPL.US, luni dupa close: close-ul zilei curente (luni), nu al lui vineri', () => {
+    const now = new Date('2026-08-17T21:00:00Z'); // 17:00 EDT, dupa close
+    assert.equal(classifyQuoteFreshness('2026-08-17T19:50:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:50:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // vineri, prea vechi
+  });
+});
+
+describe('validarea future ramane neschimbata, chiar cu piata inchisa', () => {
+  test('un timestamp viitor e respins ca "future" inainte de orice comparatie de sesiune', () => {
+    const now = new Date('2026-08-14T21:00:00Z'); // vineri, dupa close
+    // close+toleranta ar fi 20:02Z; testam un timestamp explicit dupa now+toleranta (21:02Z).
+    assert.equal(classifyQuoteFreshness('2026-08-14T21:05:00Z', now, { providerSymbol: 'AAPL.US' }), 'future');
+  });
+});
+
+describe('DST: US si doua burse europene, iarna vs. vara', () => {
+  test('AAPL.US dupa close - iarna (EST, UTC-5) vs. vara (EDT, UTC-4)', () => {
+    const winterNow = new Date('2026-01-16T22:00:00Z'); // 17:00 EST, dupa close (16:00 EST = 21:00Z)
+    assert.equal(classifyQuoteFreshness('2026-01-16T20:50:00Z', winterNow, { providerSymbol: 'AAPL.US' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-01-16T19:00:00Z', winterNow, { providerSymbol: 'AAPL.US' }), 'stale');
+
+    const summerNow = new Date('2026-08-14T21:00:00Z'); // 17:00 EDT, dupa close (16:00 EDT = 20:00Z)
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:50:00Z', summerNow, { providerSymbol: 'AAPL.US' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-14T18:00:00Z', summerNow, { providerSymbol: 'AAPL.US' }), 'stale');
+  });
+
+  test('IWDA.LSE dupa close - iarna (GMT, UTC+0) vs. vara (BST, UTC+1)', () => {
+    const winterNow = new Date('2026-01-16T18:00:00Z'); // 18:00 GMT, dupa close (16:30 GMT = 16:30Z)
+    assert.equal(classifyQuoteFreshness('2026-01-16T16:20:00Z', winterNow, { providerSymbol: 'IWDA.LSE' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-01-16T15:00:00Z', winterNow, { providerSymbol: 'IWDA.LSE' }), 'stale');
+
+    const summerNow = new Date('2026-08-14T17:00:00Z'); // 18:00 BST, dupa close (16:30 BST = 15:30Z)
+    assert.equal(classifyQuoteFreshness('2026-08-14T15:20:00Z', summerNow, { providerSymbol: 'IWDA.LSE' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-14T14:00:00Z', summerNow, { providerSymbol: 'IWDA.LSE' }), 'stale');
+  });
+
+  test('NOVO-B.CO dupa close - iarna (CET, UTC+1) vs. vara (CEST, UTC+2)', () => {
+    const winterNow = new Date('2026-01-16T18:00:00Z'); // 19:00 CET, dupa close (17:00 CET = 16:00Z)
+    assert.equal(classifyQuoteFreshness('2026-01-16T15:50:00Z', winterNow, { providerSymbol: 'NOVO-B.CO' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-01-16T14:00:00Z', winterNow, { providerSymbol: 'NOVO-B.CO' }), 'stale');
+
+    const summerNow = new Date('2026-08-14T17:00:00Z'); // 19:00 CEST, dupa close (17:00 CEST = 15:00Z)
+    assert.equal(classifyQuoteFreshness('2026-08-14T14:50:00Z', summerNow, { providerSymbol: 'NOVO-B.CO' }), 'fresh');
+    assert.equal(classifyQuoteFreshness('2026-08-14T13:00:00Z', summerNow, { providerSymbol: 'NOVO-B.CO' }), 'stale');
+  });
+});
+
+describe('isWeeklyFinalWindow - ramas neschimbat, folosit doar pt. snapshot_kind', () => {
   test('fereastra weekly final incepe abia vineri la 22:30 UTC', () => {
     assert.equal(isWeeklyFinalWindow(new Date('2026-08-14T22:29:59Z')), false);
-    assert.equal(isWeeklyFinalWindow(SAFE_FRIDAY), true);
+    assert.equal(isWeeklyFinalWindow(new Date('2026-08-14T22:30:00Z')), true);
     assert.equal(isWeeklyFinalWindow(new Date('2026-08-13T22:30:00Z')), false);
   });
+});
 
-  test('Friday EU close + US close sunt acceptate impreuna dupa ora sigura', () => {
-    assert.equal(classifyQuoteFreshness('2026-08-14T15:30:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'IWDA.LSE', allowOfficialClose: true
-    }), 'fresh');
-    assert.equal(classifyQuoteFreshness('2026-08-14T20:00:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'AAPL.US', allowOfficialClose: true
-    }), 'fresh');
-  });
-
-  test('aceleasi date EU raman fail-closed intraday', () => {
-    assert.equal(classifyQuoteFreshness('2026-08-14T15:30:00Z', new Date('2026-08-14T19:00:00Z'), {
-      providerSymbol: 'IWDA.LSE', allowOfficialClose: false
-    }), 'stale');
-  });
-
-  test('un close din ziua precedenta nu este acceptat drept final de vineri', () => {
-    assert.equal(classifyQuoteFreshness('2026-08-13T15:30:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'IWDA.LSE', allowOfficialClose: true
-    }), 'stale');
-  });
-
-  test('close minus aproape doua ore este respins pentru US, LSE si FX', () => {
-    assert.equal(classifyQuoteFreshness('2026-08-14T18:01:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'AAPL.US', allowOfficialClose: true
-    }), 'stale');
-    assert.equal(classifyQuoteFreshness('2026-08-14T13:31:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'IWDA.LSE', allowOfficialClose: true
-    }), 'stale');
-    assert.equal(classifyQuoteFreshness('2026-08-14T20:01:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'USDGBP.FOREX', allowOfficialClose: true
-    }), 'stale');
-  });
-
-  test('ultimul trade in cele 20 minute inainte de close este acceptat', () => {
-    assert.equal(classifyQuoteFreshness('2026-08-14T19:40:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'AAPL.US', allowOfficialClose: true
-    }), 'fresh');
-    assert.equal(classifyQuoteFreshness('2026-08-14T19:39:59Z', SAFE_FRIDAY, {
-      providerSymbol: 'AAPL.US', allowOfficialClose: true
-    }), 'stale');
-    assert.equal(classifyQuoteFreshness('2026-08-14T19:45:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'AAPL.US', allowOfficialClose: true
-    }), 'fresh');
-    assert.equal(classifyQuoteFreshness('2026-08-14T15:15:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'IWDA.LSE', allowOfficialClose: true
-    }), 'fresh');
-    // 17:00 New York = 21:00 UTC in august.
-    assert.equal(classifyQuoteFreshness('2026-08-14T20:45:00Z', SAFE_FRIDAY, {
-      providerSymbol: 'USDGBP.FOREX', allowOfficialClose: true
-    }), 'fresh');
-  });
-
-  test('Forex urmareste DST New York: 21:00Z vara, 22:00Z iarna', () => {
-    const winterRun = new Date('2026-01-16T22:30:00Z');
-    const winterCase = (timestamp) => classifyQuoteFreshness(timestamp, winterRun, {
-      providerSymbol: 'EURGBP.FOREX', allowOfficialClose: true
-    });
-    assert.equal(winterCase('2026-01-16T21:39:59Z'), 'stale');
-    assert.equal(winterCase('2026-01-16T21:40:00Z'), 'fresh');
-    assert.equal(winterCase('2026-01-16T21:45:00Z'), 'fresh');
-    assert.equal(winterCase('2026-01-16T22:02:00Z'), 'fresh');
-    assert.equal(winterCase('2026-01-16T22:02:01Z'), 'stale');
-    assert.equal(winterCase('2026-01-16T22:20:00Z'), 'stale');
-
-    const summerCase = (timestamp) => classifyQuoteFreshness(timestamp, SAFE_FRIDAY, {
-      providerSymbol: 'EURGBP.FOREX', allowOfficialClose: true
-    });
-    assert.equal(summerCase('2026-08-14T20:39:59Z'), 'stale');
-    assert.equal(summerCase('2026-08-14T20:40:00Z'), 'fresh');
-    assert.equal(summerCase('2026-08-14T21:02:00Z'), 'fresh');
-    assert.equal(summerCase('2026-08-14T21:02:01Z'), 'stale');
-  });
-
-  test('saptamana cu decalaj DST US/Europa foloseste close-ul fiecarei piete', () => {
-    const now = new Date('2026-03-20T22:30:00Z');
-    assert.equal(classifyQuoteFreshness('2026-03-20T20:00:00Z', now, {
-      providerSymbol: 'AAPL.US', allowOfficialClose: true
-    }), 'fresh');
-    assert.equal(classifyQuoteFreshness('2026-03-20T16:30:00Z', now, {
-      providerSymbol: 'IWDA.LSE', allowOfficialClose: true
-    }), 'fresh');
-  });
-
-  test('Nasdaq Copenhagen .CO foloseste 17:00 Europe/Copenhagen si nu diverge intraday/weekly', () => {
-    const summerCase = (timestamp) => classifyQuoteFreshness(timestamp, SAFE_FRIDAY, {
-      providerSymbol: 'NOVO-B.CO', allowOfficialClose: true
-    });
-    // 17:00 CEST = 15:00Z in august.
-    assert.equal(summerCase('2026-08-14T14:39:59Z'), 'stale');
-    assert.equal(summerCase('2026-08-14T14:40:00Z'), 'fresh');
-    assert.equal(summerCase('2026-08-14T14:45:00Z'), 'fresh');
-    assert.equal(summerCase('2026-08-14T15:02:00Z'), 'fresh');
-    assert.equal(summerCase('2026-08-14T15:02:01Z'), 'stale');
-
-    // Intraday ramane pragul generic de o ora, fara a cere close-ul sesiunii.
-    assert.equal(classifyQuoteFreshness('2026-08-14T14:30:00Z', new Date('2026-08-14T15:00:00Z'), {
-      providerSymbol: 'NOVO-B.CO', allowOfficialClose: false
-    }), 'fresh');
-    // Un close din joi nu poate deveni weekly-final vineri.
-    assert.equal(summerCase('2026-08-13T15:00:00Z'), 'stale');
-
-    // 17:00 CET = 16:00Z iarna.
-    assert.equal(classifyQuoteFreshness('2026-01-16T15:40:00Z', new Date('2026-01-16T22:30:00Z'), {
-      providerSymbol: 'NOVO-B.CO', allowOfficialClose: true
-    }), 'fresh');
-  });
-
-  test('early-close si holiday raman fail-closed fara calendar explicit', () => {
+describe('early-close si holiday raman fail-closed fara calendar explicit', () => {
+  test('sarbatoare (Thanksgiving/Craciun): quote-ul nu se potriveste cu programul presupus -> stale', () => {
     assert.equal(classifyQuoteFreshness('2026-11-27T18:00:00Z', new Date('2026-11-27T22:30:00Z'), {
-      providerSymbol: 'AAPL.US', allowOfficialClose: true
+      providerSymbol: 'AAPL.US'
     }), 'stale');
     assert.equal(classifyQuoteFreshness('2026-12-24T21:00:00Z', new Date('2026-12-25T22:30:00Z'), {
-      providerSymbol: 'AAPL.US', allowOfficialClose: true
+      providerSymbol: 'AAPL.US'
     }), 'stale');
   });
 });

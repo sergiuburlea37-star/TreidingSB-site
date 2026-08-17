@@ -75,23 +75,33 @@ export const WEEKLY_FINAL_SAFE_UTC_MINUTE = 30;
 // de livrare este acoperit separat de fereastra safe 22:30 UTC.
 const MAX_LAST_TRADE_BEFORE_CLOSE_MS = 20 * 60 * 1000;
 const MARKET_SESSIONS = {
-  US: { timeZone: 'America/New_York', closeHour: 16, closeMinute: 0 },
-  LSE: { timeZone: 'Europe/London', closeHour: 16, closeMinute: 30 },
-  XETRA: { timeZone: 'Europe/Berlin', closeHour: 17, closeMinute: 30 },
-  AS: { timeZone: 'Europe/Amsterdam', closeHour: 17, closeMinute: 30 },
-  PA: { timeZone: 'Europe/Paris', closeHour: 17, closeMinute: 30 },
-  SW: { timeZone: 'Europe/Zurich', closeHour: 17, closeMinute: 30 },
-  MC: { timeZone: 'Europe/Madrid', closeHour: 17, closeMinute: 30 },
-  MI: { timeZone: 'Europe/Rome', closeHour: 17, closeMinute: 30 },
-  BR: { timeZone: 'Europe/Brussels', closeHour: 17, closeMinute: 30 },
-  ST: { timeZone: 'Europe/Stockholm', closeHour: 17, closeMinute: 30 },
+  US: { timeZone: 'America/New_York', openHour: 9, openMinute: 30, closeHour: 16, closeMinute: 0 },
+  LSE: { timeZone: 'Europe/London', openHour: 8, openMinute: 0, closeHour: 16, closeMinute: 30 },
+  XETRA: { timeZone: 'Europe/Berlin', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 30 },
+  AS: { timeZone: 'Europe/Amsterdam', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 30 },
+  PA: { timeZone: 'Europe/Paris', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 30 },
+  SW: { timeZone: 'Europe/Zurich', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 30 },
+  MC: { timeZone: 'Europe/Madrid', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 30 },
+  MI: { timeZone: 'Europe/Rome', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 30 },
+  BR: { timeZone: 'Europe/Brussels', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 30 },
+  ST: { timeZone: 'Europe/Stockholm', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 30 },
   // EODHD CO = Nasdaq Copenhagen. Programul normal se inchide la 17:00
   // ora locala; Europe/Copenhagen aplica automat CET/CEST.
-  CO: { timeZone: 'Europe/Copenhagen', closeHour: 17, closeMinute: 0 },
+  CO: { timeZone: 'Europe/Copenhagen', openHour: 9, openMinute: 0, closeHour: 17, closeMinute: 0 },
   // Saptamana FX se inchide vineri la 17:00 New York: 21:00 UTC vara,
   // 22:00 UTC iarna. America/New_York rezolva inclusiv DST si saptamanile
   // in care US si Europa schimba ora la date diferite.
-  FOREX: { timeZone: 'America/New_York', closeHour: 17, closeMinute: 0 }
+  //
+  // Simplificare cunoscuta, documentata: FX tranzactioneaza de fapt continuu
+  // Luni-Vineri (24h), dar modelul de sesiune de mai jos (o singura sesiune
+  // zilnica, 00:00-17:00 New York) e mostenit din codul dinainte de aceasta
+  // modificare, care trata deja FX identic cu o bursa cu sesiune unica -
+  // schimbarea de fata generalizeaza doar comportamentul deja existent
+  // (close-ul saptamanal de vineri), nu introduce o presupunere noua. Efect:
+  // intre 17:00-24:00 New York, Luni-Joi, codul trateaza FX ca "inchis" si
+  // foloseste toleranta relativa la ultimul close in loc de pragul orar plat
+  // - conservator, nu gresit (nu accepta niciodata o cotatie invalida).
+  FOREX: { timeZone: 'America/New_York', openHour: 0, openMinute: 0, closeHour: 17, closeMinute: 0 }
 };
 
 export const SUPPORTED_MARKET_SUFFIXES = Object.freeze(Object.keys(MARKET_SESSIONS));
@@ -241,10 +251,12 @@ export async function fetchLiveDelayedFxRates(pairs, opts = {}) {
     .filter(Boolean);
 }
 
-// Pura, fara retea - testabila izolat. 'missing' (fara timestamp valid),
-// 'future' (peste toleranta de drift), 'stale' (mai vechi de STALE_THRESHOLD_MS),
-// altfel 'fresh'. Orice status != 'fresh' forteaza runul curent sa fie
-// 'partial' (vezi api/cron/sync-portfolio-prices.js).
+// DEPRECAT pentru clasificarea de prospetime (classifyQuoteFreshness nu-l
+// mai foloseste - vezi isMarketOpenNow/lastCompletedSessionClose mai jos,
+// care decid asta per-simbol, din orele reale de tranzactionare, nu dintr-un
+// singur steag global). Ramane folosit STRICT pentru etichetarea
+// snapshot_kind ('weekly_final' vs. 'intraday') in api/cron/sync-portfolio-prices.js
+// - o preocupare de audit/raportare, separata de decizia de prospetime.
 export function isWeeklyFinalWindow(now = new Date()) {
   return now.getUTCDay() === 5 && (
     now.getUTCHours() > WEEKLY_FINAL_SAFE_UTC_HOUR ||
@@ -277,35 +289,87 @@ function localSessionCloseUtc(localDate, session) {
   return guess;
 }
 
-function officialCloseUtc(now, session) {
-  const localNow = zonedParts(now, session.timeZone);
-  let close = localSessionCloseUtc(localNow, session);
-  // Runul weekly-final poate avea loc dupa miezul noptii locale (de ex.
-  // Copenhagen vara la 22:30Z = sambata 00:30 CEST). In acel caz close-ul
-  // relevant este ultima zi locala, nu close-ul viitor de sambata.
-  if (close > now.getTime()) {
-    const previousLocalDate = new Date(Date.UTC(localNow.year, localNow.month - 1, localNow.day) - 24 * 60 * 60 * 1000);
-    close = localSessionCloseUtc({
-      year: previousLocalDate.getUTCFullYear(),
-      month: previousLocalDate.getUTCMonth() + 1,
-      day: previousLocalDate.getUTCDate()
-    }, session);
-  }
-  return close;
+// Ziua saptamanii (0=Duminica..6=Sambata) a datei LOCALE de tranzactionare
+// (nu a lui `now` in UTC) - relevanta pt. o piata poate cadea in alta zi
+// calendaristica decat UTC, de ex. aproape de miezul noptii local.
+function localDayOfWeek(localDate) {
+  return new Date(Date.UTC(localDate.year, localDate.month - 1, localDate.day)).getUTCDay();
 }
 
+// true doar Luni-Vineri, intre openHour:openMinute si closeHour:closeMinute
+// (interval semi-deschis [open, close)), calculat din ora LOCALA reala a
+// bursei (DST-aware, via zonedParts - aceeasi infrastructura folosita si de
+// localSessionCloseUtc mai sus).
+export function isMarketOpenNow(now, session) {
+  const local = zonedParts(now, session.timeZone);
+  const dayOfWeek = localDayOfWeek(local);
+  if (dayOfWeek === 0 || dayOfWeek === 6) return false;
+  const nowMinutes = local.hour * 60 + local.minute;
+  const openMinutes = session.openHour * 60 + session.openMinute;
+  const closeMinutes = session.closeHour * 60 + session.closeMinute;
+  return nowMinutes >= openMinutes && nowMinutes < closeMinutes;
+}
+
+// Close-ul ultimei sesiuni COMPLETE, calculat explicit (nu dedus dintr-un
+// "daca close-ul de azi e in viitor, ia-l pe cel de ieri" generic):
+//   - weekend (sambata/duminica)              -> close-ul de vineri
+//   - luni, inainte de deschidere              -> close-ul de vineri
+//   - alta zi lucratoare, inainte de deschidere -> close-ul zilei lucratoare precedente
+//   - dupa close (orice zi lucratoare)          -> close-ul zilei curente
+// Nu se apeleaza cat timp piata e deschisa (isMarketOpenNow) - apelantul
+// (classifyQuoteFreshness) verifica asta separat, inainte.
+export function lastCompletedSessionClose(now, session) {
+  const local = zonedParts(now, session.timeZone);
+  const dayOfWeek = localDayOfWeek(local);
+  const nowMinutes = local.hour * 60 + local.minute;
+  const openMinutes = session.openHour * 60 + session.openMinute;
+
+  let targetDateMs = Date.UTC(local.year, local.month - 1, local.day);
+  const oneDayMs = 24 * 60 * 60 * 1000;
+
+  if (dayOfWeek === 0) {
+    targetDateMs -= 2 * oneDayMs; // Duminica -> vineri
+  } else if (dayOfWeek === 6) {
+    targetDateMs -= 1 * oneDayMs; // Sambata -> vineri
+  } else if (dayOfWeek === 1 && nowMinutes < openMinutes) {
+    targetDateMs -= 3 * oneDayMs; // Luni, pre-open -> vineri precedenta
+  } else if (nowMinutes < openMinutes) {
+    targetDateMs -= 1 * oneDayMs; // Marti-Vineri, pre-open -> ziua lucratoare precedenta
+  }
+  // altfel: dupa close in ziua curenta (sau in timpul sesiunii, caz care nu
+  // ar trebui sa ajunga aici) -> ramane data curenta, targetDateMs neschimbat
+
+  const target = new Date(targetDateMs);
+  return localSessionCloseUtc({
+    year: target.getUTCFullYear(),
+    month: target.getUTCMonth() + 1,
+    day: target.getUTCDate()
+  }, session);
+}
+
+// Pura, fara retea - testabila izolat. 'missing' (fara timestamp valid),
+// 'future' (peste toleranta de drift). Altfel:
+//   - piata deschisa acum (per orele reale ale bursei simbolului) -> pragul
+//     orar plat STALE_THRESHOLD_MS ramane semnalul de sincronizare esuata;
+//   - piata inchisa (weekend, inainte de deschidere, dupa close) -> se
+//     compara fata de lastCompletedSessionClose, cu tolerantele existente
+//     (MAX_LAST_TRADE_BEFORE_CLOSE_MS / FUTURE_SKEW_TOLERANCE_MS);
+//   - simbol fara sesiune cunoscuta -> pragul orar plat, ca inainte.
+// Sarbatorile legale si close-urile anticipate raman fail-closed (nu exista
+// calendar explicit) - cerinta e sa nu accepte niciodata tacit o cotatie
+// nesigura, nu sa "ghiceasca" un program corect.
+// Orice status != 'fresh' forteaza runul curent sa fie 'partial' (vezi
+// api/cron/sync-portfolio-prices.js).
 export function classifyQuoteFreshness(providerTimestampIso, now = new Date(), options = {}) {
   if (!providerTimestampIso) return 'missing';
   const ts = new Date(providerTimestampIso).getTime();
   if (!Number.isFinite(ts)) return 'missing';
   if (ts > now.getTime() + FUTURE_SKEW_TOLERANCE_MS) return 'future';
-  if (options.allowOfficialClose) {
-    const session = getSession(options.providerSymbol);
-    if (!session) return 'stale';
-    const close = officialCloseUtc(now, session);
-    if (now.getTime() < close || ts < close - MAX_LAST_TRADE_BEFORE_CLOSE_MS || ts > close + FUTURE_SKEW_TOLERANCE_MS) {
-      return 'stale';
-    }
+
+  const session = getSession(options.providerSymbol);
+  if (session && !isMarketOpenNow(now, session)) {
+    const close = lastCompletedSessionClose(now, session);
+    if (ts < close - MAX_LAST_TRADE_BEFORE_CLOSE_MS || ts > close + FUTURE_SKEW_TOLERANCE_MS) return 'stale';
     return 'fresh';
   }
   if (now.getTime() - ts > STALE_THRESHOLD_MS) return 'stale';

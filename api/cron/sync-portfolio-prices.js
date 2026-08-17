@@ -383,6 +383,9 @@ export function createSyncHandler({
       return res.status(200).json({ success: true, applied: false, reason: 'fetch_failed', problems: fetchProblems });
     }
 
+    // Doar pt. etichetarea snapshot_kind mai jos - classifyQuoteFreshness nu
+    // mai citeste acest steag, decide singura, per simbol, din orele reale
+    // ale bursei (vezi api/_lib/eodhd.js, isMarketOpenNow/lastCompletedSessionClose).
     const allowOfficialClose = isWeeklyFinalWindow(now);
     const quoteBySymbol = new Map(priceQuotes.map((quote) => [quote.providerSymbol, quote]));
     const positionOutcomes = positions.map((position) => {
@@ -390,8 +393,7 @@ export function createSyncHandler({
       const quote = quoteBySymbol.get(position.provider_symbol);
       if (!quote || !isPositiveFinite(quote.price)) return { position, portfolio, status: 'invalid_price' };
       const freshness = classifyQuoteFreshness(quote.providerTimestamp, now, {
-        providerSymbol: position.provider_symbol,
-        allowOfficialClose
+        providerSymbol: position.provider_symbol
       });
       return { position, portfolio, quote, status: freshness === 'fresh' ? 'ok' : freshness };
     });
@@ -401,8 +403,7 @@ export function createSyncHandler({
       const quote = fxQuoteByPair.get(`${pair.base}_${pair.quote}`);
       if (!quote || !isPositiveFinite(quote.rate)) return { pair, status: 'invalid_rate' };
       const freshness = classifyQuoteFreshness(quote.providerTimestamp, now, {
-        providerSymbol: `${pair.base}${pair.quote}.FOREX`,
-        allowOfficialClose
+        providerSymbol: `${pair.base}${pair.quote}.FOREX`
       });
       return { pair, quote, status: freshness === 'fresh' ? 'ok' : freshness };
     });
