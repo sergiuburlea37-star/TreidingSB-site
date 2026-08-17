@@ -74,6 +74,16 @@ export const WEEKLY_FINAL_SAFE_UTC_MINUTE = 30;
 // toleranta pentru ultimul trade al unui instrument mai putin lichid; delay-ul
 // de livrare este acoperit separat de fereastra safe 22:30 UTC.
 const MAX_LAST_TRADE_BEFORE_CLOSE_MS = 20 * 60 * 1000;
+
+// Toleranta pt. cat de TARZIU dupa close poate veni printul real de
+// inchidere - distincta de FUTURE_SKEW_TOLERANCE_MS (gandita pt. drift de
+// ceas fata de `now`, nu pt. distanta fata de `close`). Confirmat empiric
+// (2026-08-16, test real Preview): EODHD a raportat pt. AAPL.US un timestamp
+// de inchidere la +28 min fata de close-ul nominal (20:28Z vs. close 20:00Z)
+// - normal pt. licitatia de inchidere + delay-ul propriu EODHD de 15-20 min,
+// nu o eroare de date. 2 minute (FUTURE_SKEW_TOLERANCE_MS) respingea gresit
+// acest caz real.
+const MAX_CLOSING_PRINT_DELAY_MS = 60 * 60 * 1000;
 const MARKET_SESSIONS = {
   US: { timeZone: 'America/New_York', openHour: 9, openMinute: 30, closeHour: 16, closeMinute: 0 },
   LSE: { timeZone: 'Europe/London', openHour: 8, openMinute: 0, closeHour: 16, closeMinute: 30 },
@@ -352,8 +362,8 @@ export function lastCompletedSessionClose(now, session) {
 //   - piata deschisa acum (per orele reale ale bursei simbolului) -> pragul
 //     orar plat STALE_THRESHOLD_MS ramane semnalul de sincronizare esuata;
 //   - piata inchisa (weekend, inainte de deschidere, dupa close) -> se
-//     compara fata de lastCompletedSessionClose, cu tolerantele existente
-//     (MAX_LAST_TRADE_BEFORE_CLOSE_MS / FUTURE_SKEW_TOLERANCE_MS);
+//     compara fata de lastCompletedSessionClose, cu tolerantele dedicate
+//     (MAX_LAST_TRADE_BEFORE_CLOSE_MS inainte de close / MAX_CLOSING_PRINT_DELAY_MS dupa close);
 //   - simbol fara sesiune cunoscuta -> pragul orar plat, ca inainte.
 // Sarbatorile legale si close-urile anticipate raman fail-closed (nu exista
 // calendar explicit) - cerinta e sa nu accepte niciodata tacit o cotatie
@@ -369,7 +379,7 @@ export function classifyQuoteFreshness(providerTimestampIso, now = new Date(), o
   const session = getSession(options.providerSymbol);
   if (session && !isMarketOpenNow(now, session)) {
     const close = lastCompletedSessionClose(now, session);
-    if (ts < close - MAX_LAST_TRADE_BEFORE_CLOSE_MS || ts > close + FUTURE_SKEW_TOLERANCE_MS) return 'stale';
+    if (ts < close - MAX_LAST_TRADE_BEFORE_CLOSE_MS || ts > close + MAX_CLOSING_PRINT_DELAY_MS) return 'stale';
     return 'fresh';
   }
   if (now.getTime() - ts > STALE_THRESHOLD_MS) return 'stale';

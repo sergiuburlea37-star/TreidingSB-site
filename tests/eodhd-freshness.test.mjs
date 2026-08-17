@@ -159,6 +159,46 @@ describe('sesiune inchisa -> comparatie fata de lastCompletedSessionClose', () =
   });
 });
 
+describe('MAX_CLOSING_PRINT_DELAY_MS - toleranta separata pt. printul de inchidere (nu FUTURE_SKEW_TOLERANCE_MS)', () => {
+  // Caz real observat (2026-08-16, test Preview): AAPL.US, close nominal
+  // 20:00Z, EODHD a raportat timestamp 20:28Z (+28 min) - respins gresit
+  // inainte de aceasta schimbare, pentru ca folosea FUTURE_SKEW_TOLERANCE_MS
+  // (2 min) ca limita superioara fata de close, in loc de o toleranta
+  // dedicata, mult mai generoasa (licitatie de inchidere + delay EODHD).
+  test('AAPL.US: close+28min si close+59min fresh, close+61min stale', () => {
+    const now = new Date('2026-08-14T22:00:00Z'); // 18:00 EDT, mult dupa close (16:00 EDT = 20:00Z)
+    assert.equal(classifyQuoteFreshness('2026-08-14T20:28:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close+28min - cazul real
+    assert.equal(classifyQuoteFreshness('2026-08-14T20:59:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close+59min
+    assert.equal(classifyQuoteFreshness('2026-08-14T21:01:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // close+61min
+  });
+
+  test('AAPL.US: close-20min fresh (neschimbat), close-21min stale', () => {
+    const now = new Date('2026-08-14T22:00:00Z');
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:40:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close-20min
+    assert.equal(classifyQuoteFreshness('2026-08-14T19:39:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // close-21min
+  });
+
+  test('IWDA.LSE (bursa europeana): close+28min si close+59min fresh, close+61min stale', () => {
+    const now = new Date('2026-08-14T18:00:00Z'); // 19:00 BST, dupa close (16:30 BST = 15:30Z)
+    assert.equal(classifyQuoteFreshness('2026-08-14T15:58:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // close+28min
+    assert.equal(classifyQuoteFreshness('2026-08-14T16:29:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // close+59min
+    assert.equal(classifyQuoteFreshness('2026-08-14T16:31:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'stale'); // close+61min
+  });
+
+  test('IWDA.LSE: close-20min fresh (neschimbat), close-21min stale', () => {
+    const now = new Date('2026-08-14T18:00:00Z');
+    assert.equal(classifyQuoteFreshness('2026-08-14T15:10:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // close-20min
+    assert.equal(classifyQuoteFreshness('2026-08-14T15:09:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'stale'); // close-21min
+  });
+
+  test('un timestamp viitor fata de `now` tot devine "future", nu "fresh"/"stale" fata de close', () => {
+    const now = new Date('2026-08-14T22:00:00Z');
+    // close+61min (21:01Z) ar fi stale fata de close, dar aici testam strict
+    // fata de `now`: +10 min peste now e peste FUTURE_SKEW_TOLERANCE_MS.
+    assert.equal(classifyQuoteFreshness('2026-08-14T22:10:00Z', now, { providerSymbol: 'AAPL.US' }), 'future');
+  });
+});
+
 describe('validarea future ramane neschimbata, chiar cu piata inchisa', () => {
   test('un timestamp viitor e respins ca "future" inainte de orice comparatie de sesiune', () => {
     const now = new Date('2026-08-14T21:00:00Z'); // vineri, dupa close
