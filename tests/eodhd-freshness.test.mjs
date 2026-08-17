@@ -160,42 +160,46 @@ describe('sesiune inchisa -> comparatie fata de lastCompletedSessionClose', () =
 });
 
 describe('MAX_CLOSING_PRINT_DELAY_MS - toleranta separata pt. printul de inchidere (nu FUTURE_SKEW_TOLERANCE_MS)', () => {
-  // Caz real observat (2026-08-16, test Preview): AAPL.US, close nominal
-  // 20:00Z, EODHD a raportat timestamp 20:28Z (+28 min) - respins gresit
-  // inainte de aceasta schimbare, pentru ca folosea FUTURE_SKEW_TOLERANCE_MS
-  // (2 min) ca limita superioara fata de close, in loc de o toleranta
-  // dedicata, mult mai generoasa (licitatie de inchidere + delay EODHD).
-  test('AAPL.US: close+28min si close+59min fresh, close+61min stale', () => {
-    const now = new Date('2026-08-14T22:00:00Z'); // 18:00 EDT, mult dupa close (16:00 EDT = 20:00Z)
-    assert.equal(classifyQuoteFreshness('2026-08-14T20:28:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close+28min - cazul real
-    assert.equal(classifyQuoteFreshness('2026-08-14T20:59:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close+59min
-    assert.equal(classifyQuoteFreshness('2026-08-14T21:01:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // close+61min
+  // Caz real #1 (2026-08-16, test Preview): AAPL.US, close nominal 20:00Z,
+  // EODHD a raportat timestamp 20:28Z (+28 min) - respins gresit inainte de
+  // prima schimbare (FUTURE_SKEW_TOLERANCE_MS de 2 min folosit gresit ca
+  // limita fata de close).
+  //
+  // Caz real #2 (2026-08-16, test Preview): IWDA.LSE, close nominal 15:30Z,
+  // EODHD a raportat timestamp 17:05Z (+95 min) - respins gresit de prima
+  // toleranta dedicata (1 ora), care a fost extinsa la 2 ore in urma acestui
+  // al doilea caz real.
+  test('AAPL.US: close+28min (cazul real #1) si close+119min fresh, close+121min stale', () => {
+    const now = new Date('2026-08-15T00:00:00Z'); // 20:00 EDT, mult dupa close (16:00 EDT = 20:00Z)
+    assert.equal(classifyQuoteFreshness('2026-08-14T20:28:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close+28min
+    assert.equal(classifyQuoteFreshness('2026-08-14T21:59:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close+119min
+    assert.equal(classifyQuoteFreshness('2026-08-14T22:01:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // close+121min
   });
 
   test('AAPL.US: close-20min fresh (neschimbat), close-21min stale', () => {
-    const now = new Date('2026-08-14T22:00:00Z');
+    const now = new Date('2026-08-15T00:00:00Z');
     assert.equal(classifyQuoteFreshness('2026-08-14T19:40:00Z', now, { providerSymbol: 'AAPL.US' }), 'fresh'); // close-20min
     assert.equal(classifyQuoteFreshness('2026-08-14T19:39:00Z', now, { providerSymbol: 'AAPL.US' }), 'stale'); // close-21min
   });
 
-  test('IWDA.LSE (bursa europeana): close+28min si close+59min fresh, close+61min stale', () => {
-    const now = new Date('2026-08-14T18:00:00Z'); // 19:00 BST, dupa close (16:30 BST = 15:30Z)
-    assert.equal(classifyQuoteFreshness('2026-08-14T15:58:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // close+28min
-    assert.equal(classifyQuoteFreshness('2026-08-14T16:29:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // close+59min
-    assert.equal(classifyQuoteFreshness('2026-08-14T16:31:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'stale'); // close+61min
+  test('IWDA.LSE (bursa europeana): close+95min (cazul real #2) si close+119min fresh, close+121min stale', () => {
+    const now = new Date('2026-08-14T20:00:00Z'); // 21:00 BST, mult dupa close (16:30 BST = 15:30Z)
+    assert.equal(classifyQuoteFreshness('2026-08-14T17:05:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // close+95min
+    assert.equal(classifyQuoteFreshness('2026-08-14T17:29:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // close+119min
+    assert.equal(classifyQuoteFreshness('2026-08-14T17:31:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'stale'); // close+121min
   });
 
   test('IWDA.LSE: close-20min fresh (neschimbat), close-21min stale', () => {
-    const now = new Date('2026-08-14T18:00:00Z');
+    const now = new Date('2026-08-14T20:00:00Z');
     assert.equal(classifyQuoteFreshness('2026-08-14T15:10:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'fresh'); // close-20min
     assert.equal(classifyQuoteFreshness('2026-08-14T15:09:00Z', now, { providerSymbol: 'IWDA.LSE' }), 'stale'); // close-21min
   });
 
   test('un timestamp viitor fata de `now` tot devine "future", nu "fresh"/"stale" fata de close', () => {
-    const now = new Date('2026-08-14T22:00:00Z');
-    // close+61min (21:01Z) ar fi stale fata de close, dar aici testam strict
+    const now = new Date('2026-08-15T00:00:00Z');
+    // close+121min (22:01Z) ar fi stale fata de close, dar aici testam strict
     // fata de `now`: +10 min peste now e peste FUTURE_SKEW_TOLERANCE_MS.
-    assert.equal(classifyQuoteFreshness('2026-08-14T22:10:00Z', now, { providerSymbol: 'AAPL.US' }), 'future');
+    assert.equal(classifyQuoteFreshness('2026-08-15T00:10:00Z', now, { providerSymbol: 'AAPL.US' }), 'future');
   });
 });
 

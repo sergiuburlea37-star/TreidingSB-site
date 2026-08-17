@@ -82,8 +82,10 @@ const MAX_LAST_TRADE_BEFORE_CLOSE_MS = 20 * 60 * 1000;
 // de inchidere la +28 min fata de close-ul nominal (20:28Z vs. close 20:00Z)
 // - normal pt. licitatia de inchidere + delay-ul propriu EODHD de 15-20 min,
 // nu o eroare de date. 2 minute (FUTURE_SKEW_TOLERANCE_MS) respingea gresit
-// acest caz real.
-const MAX_CLOSING_PRINT_DELAY_MS = 60 * 60 * 1000;
+// acest caz real. Extins la 2 ore (2026-08-16, al doilea caz real observat):
+// IWDA.LSE a venit la +1h35m fata de close-ul nominal (17:05Z vs. close
+// 15:30Z) - 1 ora tot respingea gresit acest caz real.
+const MAX_CLOSING_PRINT_DELAY_MS = 2 * 60 * 60 * 1000;
 const MARKET_SESSIONS = {
   US: { timeZone: 'America/New_York', openHour: 9, openMinute: 30, closeHour: 16, closeMinute: 0 },
   LSE: { timeZone: 'Europe/London', openHour: 8, openMinute: 0, closeHour: 16, closeMinute: 30 },
