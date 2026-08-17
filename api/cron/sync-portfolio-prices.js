@@ -391,6 +391,7 @@ export function createSyncHandler({
       return res.status(200).json({ success: true, applied: false, reason: 'fetch_failed', problems: fetchProblems });
     }
 
+    stage = 'process_quotes';
     // Doar pt. etichetarea snapshot_kind mai jos - classifyQuoteFreshness nu
     // mai citeste acest steag, decide singura, per simbol, din orele reale
     // ale bursei (vezi api/_lib/eodhd.js, isMarketOpenNow/lastCompletedSessionClose).
@@ -438,6 +439,7 @@ export function createSyncHandler({
       return res.status(200).json({ success: true, applied: false, reason: 'partial', problems });
     }
 
+    stage = 'apply_prices';
     const newFxRows = fxOutcomes.map((outcome) => ({
       base_currency: outcome.pair.base,
       quote_currency: outcome.pair.quote,
@@ -451,6 +453,7 @@ export function createSyncHandler({
       Number(outcome.quote.price) * Number(outcome.position.provider_price_multiplier)
     ]));
 
+    stage = 'history';
     const valuationProblems = [];
     const performanceRows = portfolios.map((portfolio) => {
       const portfolioPositions = positionOutcomes.filter((outcome) => outcome.position.portfolio_id === portfolio.id);
@@ -507,6 +510,7 @@ export function createSyncHandler({
       return res.status(200).json({ success: true, applied: false, reason: 'partial', problems: valuationProblems });
     }
 
+    stage = 'snapshot';
     const payload = {
       run_id: runId,
       snapshot_kind: allowOfficialClose ? 'weekly_final' : 'intraday',
