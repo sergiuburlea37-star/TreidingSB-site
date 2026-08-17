@@ -293,6 +293,10 @@ export function createSyncHandler({
   let attemptedProviderSymbols = 0;
   let auditQuotaLimit = null;
   let auditQuotaProjected = null;
+  // Etapa curenta de executie - loghata DOAR ca eticheta in catch-ul extern
+  // (niciodata error.message/stack/date din DB), ca sa localizam rapid un
+  // 500 generic fara sa expunem nimic sensibil.
+  let stage = 'lease';
 
   try {
     // Invariant: aceasta este prima operatie DB. Nicio citire/fetch nu are loc fara lease.
@@ -302,6 +306,7 @@ export function createSyncHandler({
       return res.status(409).json({ success: true, applied: false, reason: 'locked' });
     }
 
+    stage = 'db_read';
     const now = clock();
     const todayIso = now.toISOString().slice(0, 10);
     const dayStartIso = `${todayIso}T00:00:00.000Z`;
@@ -320,6 +325,7 @@ export function createSyncHandler({
       if (result.error) throw new Error('db_read_failed');
     }
 
+    stage = 'validate';
     const portfolios = portfoliosRes.data || [];
     const positions = (positionsRes.data || []).map((row) => ({
       ...row,
@@ -339,6 +345,7 @@ export function createSyncHandler({
       return res.status(200).json({ success: true, applied: false, reason: 'partial', problems: universeProblems });
     }
 
+    stage = 'quota';
     const requestPlan = buildProviderRequestPlan(portfolios, positions, transactions, dividends);
     const evaluationBasis = buildEvaluationBasis(portfolios, positions, transactions, dividends, existingFxRows);
     const usedToday = (usageRes.data || []).reduce((sum, row) => sum + (Number(row.provider_call_units) || 0), 0);
@@ -360,6 +367,7 @@ export function createSyncHandler({
     attemptedProviderSymbols = requestPlan.providerCallUnits;
     auditQuotaLimit = quota.limit;
     auditQuotaProjected = quota.projected;
+    stage = 'fetch';
     let priceQuotes;
     let fxQuotes;
     try {
@@ -541,7 +549,10 @@ export function createSyncHandler({
         quotaProjected: auditQuotaProjected
       });
     }
-    console.error('[portfolio-sync] run failed');
+    // Doar eticheta etapei + numele constructorului erorii - niciodata
+    // error.message/stack (pot contine detalii de la Supabase/DB), token,
+    // URL sau body.
+    console.error('[portfolio-sync] run failed', { stage, errorName: (error && error.name) || 'Unknown' });
     return res.status(500).json({ error: 'Server error' });
   } finally {
     if (leaseAcquired) {
