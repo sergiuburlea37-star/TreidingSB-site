@@ -8,28 +8,23 @@
 
 .mp-body{min-height:100vh}
 
-/* Padding-ul orizontal era 5vw pana acum (2026-08-06: adus la 0) - cu
-   .mp-shell folosind acum "calc(100vw - 64px)" ca sa isi calculeze singur
-   gutter-ul, un padding orizontal suplimentar aici facea ca latimea
-   calculata sa depaseasca spatiul disponibil in interiorul .mp-main, iar
-   flexbox micsora (flex-shrink) cardul inapoi sub latimea intentionata (ex.
-   1296px in loc de 1376px la 1440px viewport). .mp-shell ramane centrat de
-   "justify-content:center" de mai jos, exact ca inainte. */
+/* Padding orizontal 0 - .mp-shell isi calculeaza singur gutter-ul (vezi mai
+   jos), un padding suplimentar aici ar face ca latimea calculata sa
+   depaseasca spatiul disponibil in interiorul .mp-main. .mp-shell ramane
+   centrat de "justify-content:center" de mai jos. */
 .mp-main{
   padding:158px 0 90px;
   display:flex;
   justify-content:center;
 }
 
-/* Latimea containerului paginii (2026-08-06, corectie layout): formula
-   fluida ceruta explicit - umple aproape tot viewport-ul pe ecrane late (nu
-   mai plafoneaza devreme la 1520/1320px), cu un gutter minim de 32px pe
-   fiecare parte cand viewport-ul scade sub ~1464px. Inlocuieste vechiul
-   max-width fix + breakpoint-ul de la 1440px (nu mai e necesar - formula de
-   mai jos acopera deja acea tranzitie continuu). */
+/* Latimea containerului paginii (2026-08-25: aliniata la acelasi plafon ca
+   restul site-ului - .content-shell.wide din style.css, folosit pe
+   About/Educatie/teaser-ele de portofolii de pe index.html). Inainte pagina
+   folosea propriul plafon de 1400px, cu ~176px mai lat decat restul
+   paginilor la 1440px viewport - de-asta Cabinetul parea "alt design". */
 .mp-shell{
-  width:min(1400px, calc(100vw - 64px));
-  max-width:1400px;
+  width:min(1200px, 96vw);
   margin-inline:auto;
 }
 
@@ -147,12 +142,30 @@
 }
 .mp-incomplete-note[hidden]{display:none}
 
+/* Sincronizare partiala (Etapa 4 - EODHD Live Delayed): distinct de
+   mp-incomplete-note (care e despre "Pondere initiala"/curs istoric
+   indisponibil) - acesta semnaleaza ca ultima RULARE de sincronizare a
+   preturilor nu a putut publica un instantaneu complet, deci datele
+   afisate raman cele din ultima sincronizare reusita. Ton similar
+   (avertisment, nu eroare), aceeasi paleta ca mp-incomplete-note. */
+.mp-sync-partial-note{
+  margin:0 0 18px;
+  padding:10px 14px;
+  border:1px solid rgba(255,159,22,.4);
+  background:rgba(255,159,22,.08);
+  border-radius:10px;
+  font-size:12.5px;
+  color:#ffd493;
+  line-height:1.6;
+}
+.mp-sync-partial-note[hidden]{display:none}
+
 /* ---------- stat cards row ---------- */
 .mp-cards-row{
   display:grid;
   grid-template-columns:repeat(3, 1fr);
-  gap:14px;
-  margin-bottom:22px;
+  gap:12px;
+  margin-bottom:18px;
 }
 
 /* Cardurile de sumar (2026-08-05, redesign): exact 3 carduri (Capital
@@ -167,38 +180,38 @@
 .mp-stat-card{
   display:flex;
   align-items:center;
-  gap:14px;
+  gap:11px;
   background:rgba(6,13,24,.42);
   border:1px solid var(--line);
-  border-radius:16px;
-  padding:16px 18px;
+  border-radius:14px;
+  padding:13px 15px;
 }
 .mp-stat-icon{
-  flex:0 0 44px;
-  width:44px;
-  height:44px;
+  flex:0 0 36px;
+  width:36px;
+  height:36px;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   background:rgba(255,255,255,.05);
 }
-.mp-stat-icon-svg{width:22px;height:22px}
+.mp-stat-icon-svg{width:18px;height:18px}
 .mp-stat-icon-gold{background:rgba(232,185,35,.14);color:var(--gold)}
 .mp-stat-icon-silver{background:rgba(198,211,230,.12);color:var(--muted)}
 .mp-stat-icon-green{background:rgba(24,217,139,.14);color:var(--green)}
 .mp-stat-icon-red{background:rgba(255,64,86,.14);color:var(--red)}
 .mp-stat-body{min-width:0}
 .mp-stat-label{
-  font-size:11.5px;
+  font-size:10.5px;
   color:var(--muted);
   font-weight:700;
   text-transform:uppercase;
   letter-spacing:.04em;
-  margin-bottom:4px;
+  margin-bottom:3px;
 }
 .mp-stat-value{
-  font-size:20px;
+  font-size:17.5px;
   font-weight:900;
   color:var(--text);
   line-height:1.2;
@@ -217,9 +230,9 @@
 .mp-card{
   background:rgba(6,13,24,.42);
   border:1px solid var(--line);
-  border-radius:16px;
-  padding:18px 18px 8px;
-  margin-bottom:20px;
+  border-radius:14px;
+  padding:15px 15px 6px;
+  margin-bottom:16px;
   overflow:hidden;
 }
 .mp-card-head{
@@ -228,9 +241,9 @@
   justify-content:space-between;
   flex-wrap:wrap;
   gap:10px;
-  padding-bottom:14px;
-  margin-bottom:6px;
-  font-size:13px;
+  padding-bottom:11px;
+  margin-bottom:5px;
+  font-size:12px;
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:.05em;
@@ -289,8 +302,8 @@
    automata, nu fixa). */
 .mp-chart-wrap{
   width:100%;
-  height:clamp(480px, 38vw, 620px);
-  padding:14px 4px 18px;
+  height:clamp(340px, 28vw, 440px);
+  padding:12px 4px 16px;
   display:flex;
   flex-direction:column;
 }
@@ -499,10 +512,10 @@
 .mp-subgrid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:20px;
+  gap:16px;
   margin-bottom:0;
 }
-.mp-subgrid .mp-card{margin-bottom:20px}
+.mp-subgrid .mp-card{margin-bottom:16px}
 
 /* ---------- disclaimer ---------- */
 #mpDisclaimer{margin-top:6px;padding-top:16px;border-top:1px solid var(--line)}
