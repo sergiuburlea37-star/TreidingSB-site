@@ -8,6 +8,12 @@
 // Rulare manuala:
 //   BASE_URL="https://<preview-sau-production>.vercel.app" node tests/portfolio-sync-endpoint.auth.test.mjs
 //
+// Daca deploy-ul tintit are Vercel Deployment Protection activa (SSO), setati
+// si VERCEL_PROTECTION_BYPASS (secretul de "Protection Bypass for Automation"
+// din Vercel) - altfel orice request primeste pagina HTML de login (status
+// 200) in loc de raspunsul JSON real, iar testele de mai jos pica fara sa fi
+// atins vreodata codul de autentificare propriu-zis.
+//
 // Cazurile "fara secret" / "secret gresit" NU declanseaza niciun apel EODHD
 // sau scriere in DB - raspunsul 401 e dat inainte de orice logica de
 // business (vezi handler() in api/cron/sync-portfolio-prices.js). Rularea

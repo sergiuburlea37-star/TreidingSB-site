@@ -6,6 +6,12 @@
 // Rulare manuala:
 //   BASE_URL="https://<preview-sau-production>.vercel.app" node tests/account-portfolios.auth.test.mjs
 //
+// Daca deploy-ul tintit are Vercel Deployment Protection activa (SSO), setati
+// si VERCEL_PROTECTION_BYPASS (secretul de "Protection Bypass for Automation"
+// din Vercel), altfel orice request primeste pagina HTML de login (status 200)
+// in loc de raspunsul JSON real al aplicatiei, iar testele de mai jos pica
+// fara sa fi atins vreodata codul de autentificare propriu-zis.
+//
 // Cele 3 teste de mai jos (fara token / token malformat / token sintactic
 // valid dar cu semnatura invalida - echivalentul practic al unui token expirat
 // sau falsificat) NU ating baza de date si pot rula oricand, inclusiv acum,
@@ -36,8 +42,12 @@ const SIGNATURE_INVALID_JWT =
 let passed = 0;
 let failed = 0;
 
+const BYPASS_HEADERS = process.env.VERCEL_PROTECTION_BYPASS
+  ? { 'x-vercel-protection-bypass': process.env.VERCEL_PROTECTION_BYPASS }
+  : {};
+
 async function check(name, { headers } = {}) {
-  const res = await fetch(ENDPOINT, { method: 'GET', headers: headers || {} });
+  const res = await fetch(ENDPOINT, { method: 'GET', headers: { ...BYPASS_HEADERS, ...headers } });
   const text = await res.text();
   let body;
   try { body = JSON.parse(text); } catch (e) { body = text.slice(0, 200); }
