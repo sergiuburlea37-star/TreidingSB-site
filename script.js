@@ -2556,7 +2556,7 @@ function portfolioRenderActiveTab() {
         portfolioStatHtml(portfolioFormatMoney(p.initialCapital, p.baseCurrency), portfolioT("initialCapital")),
         portfolioStatHtml(p.currentValueBaseCcy != null ? portfolioFormatMoney(p.currentValueBaseCcy, p.baseCurrency) : "—", portfolioT("currentValue")),
         portfolioStatHtml(p.profitSinceFoundedBaseCcy != null ? portfolioFormatMoney(p.profitSinceFoundedBaseCcy, p.baseCurrency) : "—", portfolioT("profitSince")),
-        portfolioStatHtml(p.totalReturnPct != null ? portfolioFormatPct(p.totalReturnPct) : "—", portfolioT("totalReturn"))
+        portfolioStatHtml(typeof p.totalReturnPct === "number" ? portfolioFormatPct(p.totalReturnPct) : "—", portfolioT("totalReturn"))
       ].join("");
     }
   }

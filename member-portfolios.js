@@ -41,6 +41,9 @@
     activeCode: "US",
     activeInterval: "1M",
     delayedDataMinutes: 15,
+    // Etapa 4: garda impotriva cererilor suprapuse (poll la 60s + un retry
+    // manual/revenire pe tab intamplate simultan) - vezi loadPortfolios.
+    loading: false,
     // Punctele (filtrate dupa interval) ale graficului curent afisat -
     // pastrate aici doar ca sa poata fi redesenate la resize (vezi
     // renderChart/drawChart mai jos), fara sa mai treaca din nou prin
@@ -69,7 +72,13 @@
       retry: "Reîncearcă",
       eyebrow: "Cabinet",
       title: "Portofoliile tale",
-      delayedBadge: "Date live indisponibile momentan",
+      // Etapa 4 (EODHD Live Delayed): sablon cu {min}, interpolat in
+      // applyStaticTexts() cu STATE.delayedDataMinutes - vezi acolo.
+      delayedBadge: "Date întârziate ~{min}-20 min",
+      syncPartialNote:
+        "⚠️ Ultima sincronizare de prețuri a fost parțială — datele afișate sunt din ultima sincronizare completă reușită.",
+      returnPending: "Randament în calcul (TWR)",
+      holdingsValueLabel: "Valoare poziții (fără numerar): {amount}",
       lastUpdated: "Ultima actualizare:",
       tabUs: "Portofoliu US",
       tabEu: "Portofoliu EU",
@@ -144,7 +153,11 @@
       retry: "Retry",
       eyebrow: "Dashboard",
       title: "Your portfolios",
-      delayedBadge: "Live data currently unavailable",
+      delayedBadge: "Delayed data ~{min}-20 min",
+      syncPartialNote:
+        "⚠️ The latest price sync was partial — the data shown is from the last fully successful sync.",
+      returnPending: "Return pending (TWR)",
+      holdingsValueLabel: "Positions value (excluding cash): {amount}",
       lastUpdated: "Last updated:",
       tabUs: "US Portfolio",
       tabEu: "EU Portfolio",
@@ -219,7 +232,11 @@
       retry: "Повторить",
       eyebrow: "Кабинет",
       title: "Ваши портфели",
-      delayedBadge: "Данные в реальном времени сейчас недоступны",
+      delayedBadge: "Данные с задержкой ~{min}-20 мин",
+      syncPartialNote:
+        "⚠️ Последняя синхронизация цен была частичной — показаны данные последней полностью успешной синхронизации.",
+      returnPending: "Доходность в ожидании (TWR)",
+      holdingsValueLabel: "Стоимость позиций (без учёта денежных средств): {amount}",
       lastUpdated: "Последнее обновление:",
       tabUs: "Портфель US",
       tabEu: "Портфель EU",
@@ -295,7 +312,11 @@
       retry: "Повторити",
       eyebrow: "Кабінет",
       title: "Ваші портфелі",
-      delayedBadge: "Дані в реальному часі наразі недоступні",
+      delayedBadge: "Дані із затримкою ~{min}-20 хв",
+      syncPartialNote:
+        "⚠️ Остання синхронізація цін була частковою — показані дані останньої повністю успішної синхронізації.",
+      returnPending: "Дохідність очікується (TWR)",
+      holdingsValueLabel: "Вартість позицій (без урахування готівки): {amount}",
       lastUpdated: "Останнє оновлення:",
       tabUs: "Портфель US",
       tabEu: "Портфель EU",
@@ -370,7 +391,11 @@
       retry: "Ponów",
       eyebrow: "Panel",
       title: "Twoje portfele",
-      delayedBadge: "Dane na żywo są obecnie niedostępne",
+      delayedBadge: "Dane opóźnione ~{min}-20 min",
+      syncPartialNote:
+        "⚠️ Ostatnia synchronizacja cen była częściowa — wyświetlane dane pochodzą z ostatniej w pełni udanej synchronizacji.",
+      returnPending: "Zwrot w trakcie obliczania (TWR)",
+      holdingsValueLabel: "Wartość pozycji (bez gotówki): {amount}",
       lastUpdated: "Ostatnia aktualizacja:",
       tabUs: "Portfel US",
       tabEu: "Portfel EU",
@@ -526,17 +551,15 @@
     set("mpDividendsEmpty", t("dividendsEmpty"));
     set("mpTransactionsEmpty", t("transactionsEmpty"));
     set("mpDisclaimer", t("disclaimer"));
-    // (2026-07-30) Badge-ul NU mai promite un interval de intarziere ("~15
-    // minute") - nicio integrare de preturi live nu e activa inca (vezi
-    // price_source = 'manual' pe toate pozitiile), deci acea promisiune nu
-    // putea fi sustinuta de infrastructura curenta. Textul e acum onest:
-    // "date live indisponibile momentan", fara sa depinda de
-    // STATE.delayedDataMinutes. Cand un furnizor de preturi live va fi
-    // integrat si activ, acest badge (si traducerile din I18N) trebuie
-    // revizuite din nou, cu cadenta reala confirmata (vezi raportul separat
-    // despre limitele planului Vercel curent - cron o data/zi pe Hobby).
+    // (2026-08-14, Etapa 4 - EODHD Live Delayed) Badge-ul afiseaza acum
+    // intervalul real de intarziere al furnizorului (~15-20 min),
+    // interpolat din STATE.delayedDataMinutes (primit de la API, vezi
+    // loadPortfolios) in sablonul I18N "delayedBadge" ({min}) - acelasi
+    // tipar ca mpFxNote (.replace("{ccy}", ...)).
     var delayedBadge = document.getElementById("mpDelayedBadge");
-    if (delayedBadge) delayedBadge.textContent = t("delayedBadge");
+    if (delayedBadge) {
+      delayedBadge.textContent = t("delayedBadge").replace("{min}", STATE.delayedDataMinutes);
+    }
     document.documentElement.lang = STATE.lang;
   }
 
@@ -844,15 +867,25 @@
       .catch(function () {});
   }
 
-  function loadPortfolios() {
+  // Etapa 4 (EODHD Live Delayed), cerinta 15: refresh discret la 60s, DOAR
+  // cat timp pagina e vizibila - vezi startPolling/stopPolling mai jos.
+  // isBackgroundRefresh: true la reincercarile din polling/revenire pe tab,
+  // ca sa NU trecem prin ecranul de "Se incarca..." (STATE.portfolios ramane
+  // afisat neschimbat pana sosesc datele noi - un refresh silentios, nu un
+  // reload vizibil la fiecare minut).
+  function loadPortfolios(isBackgroundRefresh) {
     var token = getToken();
     STATE.token = token;
     if (!token) {
       redirectToLogin();
       return;
     }
+    if (STATE.loading) return; // evita cereri suprapuse (poll + retry manual etc.)
+    STATE.loading = true;
 
-    showState("mpStateLoading");
+    if (!isBackgroundRefresh) {
+      showState("mpStateLoading");
+    }
     loadEmailHeader(token);
 
     fetch("/api/account-portfolios", { headers: { Authorization: "Bearer " + token } })
@@ -862,6 +895,7 @@
         });
       })
       .then(function (res) {
+        STATE.loading = false;
         if (res.status === 401) {
           try {
             localStorage.removeItem(TOKEN_KEY);
@@ -884,12 +918,38 @@
           showState("mpStateDashboard");
           return;
         }
-        showState("mpStateError");
+        if (!isBackgroundRefresh) showState("mpStateError");
       })
       .catch(function () {
-        showState("mpStateError");
+        STATE.loading = false;
+        if (!isBackgroundRefresh) showState("mpStateError");
       });
   }
+
+  var POLL_INTERVAL_MS = 60000;
+  var pollTimer = null;
+  function startPolling() {
+    if (pollTimer) return;
+    pollTimer = setInterval(function () {
+      if (document.visibilityState === "visible" && STATE.token) {
+        loadPortfolios(true);
+      }
+    }, POLL_INTERVAL_MS);
+  }
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") {
+      if (STATE.token) loadPortfolios(true); // refresh imediat la revenirea pe tab, nu doar la urmatorul tick de 60s
+      startPolling();
+    } else {
+      stopPolling();
+    }
+  });
 
   var CONTROLS_WIRED = false;
   function wireDashboardControlsOnce() {
@@ -984,6 +1044,22 @@
     var fxNote = document.getElementById("mpFxNote");
     if (fxNote) fxNote.textContent = p ? t("fxNote").replace("{ccy}", p.baseCurrency) : "";
 
+    // Etapa 4: valoarea NUMAI a pozitiilor (holdingsValueBaseCcy), distincta
+    // de NAV-ul total afisat in cardul "Ultimul instantaneu disponibil"
+    // (care include si cash-ul din ledger) - vezi api/account-portfolios.js.
+    // Afisata doar cand e cunoscuta (nu si "0"/o valoare inventata).
+    var holdingsNote = document.getElementById("mpHoldingsNote");
+    if (holdingsNote) {
+      var hasHoldingsValue = !!(p && p.holdingsValueBaseCcy != null);
+      holdingsNote.hidden = !hasHoldingsValue;
+      if (hasHoldingsValue) {
+        holdingsNote.textContent = t("holdingsValueLabel").replace(
+          "{amount}",
+          fmtMoney(p.holdingsValueBaseCcy, p.baseCurrency),
+        );
+      }
+    }
+
     var incompleteNote = document.getElementById("mpIncompleteNote");
     if (incompleteNote) {
       // Banner-ul e legat de "Pondere initiala" (initialWeightsComplete),
@@ -992,6 +1068,19 @@
       var incomplete = !!(p && p.initialWeightsComplete === false);
       incompleteNote.hidden = !incomplete;
       if (incomplete) incompleteNote.textContent = t("incompleteNote");
+    }
+
+    // Etapa 4: banner distinct pentru "ultima rulare de sincronizare a fost
+    // partiala" (p.lastSyncStatus) - NU acelasi concept ca mpIncompleteNote
+    // (care e despre pondere initiala/curs istoric). wasPartial acopera atat
+    // 'partial' (simbol/pret lipsa sau stale) cat si 'fetch_failed' (EODHD
+    // inaccesibil) - in ambele cazuri datele afisate raman din ultima
+    // sincronizare reusita, niciodata date partiale publicate.
+    var syncPartialNote = document.getElementById("mpSyncPartialNote");
+    if (syncPartialNote) {
+      var wasPartial = !!(p && p.lastSyncStatus && p.lastSyncStatus.wasPartial);
+      syncPartialNote.hidden = !wasPartial;
+      if (wasPartial) syncPartialNote.textContent = t("syncPartialNote");
     }
 
     renderStatCards(p);
@@ -1050,7 +1139,13 @@
     var history = p.performanceHistory || [];
     var last = history.length ? history[history.length - 1] : null;
     var lastMetrics = last ? computePointMetrics(last) : null;
-    var returnPct = lastMetrics ? lastMetrics.returnPct : null;
+    // Etapa 4, cerinta 13: p.totalReturnPct e autoritatea LIVE (calculata
+    // din ledger la fiecare cerere, vezi api/account-portfolios.js) - daca
+    // valoarea e string-ul 'pending' (a existat un DEPOSIT/WITHDRAWAL dupa
+    // fondare), randamentul simplu din istoric NU mai e afisat ca numar,
+    // indiferent ce contine ultimul rand din performanceHistory.
+    var isReturnPending = p.totalReturnPct === "pending";
+    var returnPct = isReturnPending ? null : lastMetrics ? lastMetrics.returnPct : null;
     var returnSign = signClass(returnPct);
     var returnIconCls =
       returnSign === "mp-chart-pos"
@@ -1088,10 +1183,14 @@
         "mp-icon-trend",
         returnIconCls,
         t("returnSinceFounding"),
-        returnPct != null ? fmtSignedPct(returnPct) : t("awaitingLiveData"),
+        isReturnPending
+          ? t("returnPending")
+          : returnPct != null
+            ? fmtSignedPct(returnPct)
+            : t("awaitingLiveData"),
         returnValCls,
         null,
-        returnPct == null,
+        isReturnPending || returnPct == null,
       ),
     ].join("");
   }
@@ -1136,34 +1235,26 @@
     });
   }
 
-  // Calculeaza profitul/pierderea si randamentul cumulativ pentru un
-  // instantaneu, EXACT dupa formulele cerute:
+  // Calculeaza profitul/pierderea pentru un instantaneu si respecta starea
+  // persistata a randamentului:
   // profit_pierdere = nav_value - capital_contributed
-  // randament_pct = ((nav_value / capital_contributed) - 1) * 100
-  // Daca tabela are deja cumulative_return_pct (h.cumulativeReturnPct),
-  // valoarea din baza de date e folosita pentru AFISARE doar daca e
-  // consistenta cu formula (diferenta sub CONSISTENCY_EPSILON puncte
-  // procentuale) - altfel se foloseste valoarea calculata aici, niciodata
-  // o valoare din baza de date nereconciliata cu formula ceruta.
-  var RETURN_CONSISTENCY_EPSILON = 0.05;
+  // return_is_pending=true interzice orice recalculare in browser. Cand
+  // este false, singura valoare afisabila este cumulative_return_pct deja
+  // validata/persistata de snapshotul atomic; null ramane null.
   function computePointMetrics(h) {
     var nav = h.navValue;
     var capital = h.capitalContributed;
     var profitLoss = nav != null && capital != null ? nav - capital : null;
-    var computedPct = nav != null && capital ? (nav / capital - 1) * 100 : null;
     var dbPct =
       h.cumulativeReturnPct === null || h.cumulativeReturnPct === undefined
         ? null
         : Number(h.cumulativeReturnPct);
-    var returnPct = computedPct;
-    if (
-      computedPct != null &&
-      dbPct != null &&
-      Math.abs(dbPct - computedPct) < RETURN_CONSISTENCY_EPSILON
-    ) {
-      returnPct = dbPct;
-    }
+    var returnPct = !h.returnIsPending && Number.isFinite(dbPct) ? dbPct : null;
     return { profitLoss: profitLoss, returnPct: returnPct };
+  }
+
+  function pointReturnText(h, metrics) {
+    return h && h.returnIsPending ? t("returnPending") : fmtSignedPct(metrics ? metrics.returnPct : null);
   }
 
   // Grafic in SVG inline vanilla JS - fara librarie externa, ca sa nu fie
@@ -1796,6 +1887,7 @@
     // NAV, randament, data) - NU foloseste cuvantul "live", e strict ultimul
     // instantaneu inregistrat.
     var lastMetrics = computePointMetrics(lastPt.h);
+    var lastReturnText = pointReturnText(lastPt.h, lastMetrics);
     // Daca ultimul punct e in treimea de sus a graficului, eticheta se
     // afiseaza SUB punct in loc de deasupra, ca sa nu iasa din cardul cu
     // overflow:hidden (vezi .mp-card in member-portfolios.css).
@@ -1814,8 +1906,10 @@
       "</div>" +
       '<div class="mp-chart-last-pct ' +
       signClass(lastMetrics.returnPct) +
+      '" data-return-state="' +
+      (lastPt.h.returnIsPending ? "pending" : "ready") +
       '">' +
-      esc(fmtSignedPct(lastMetrics.returnPct)) +
+      esc(lastReturnText) +
       "</div>" +
       '<div class="mp-chart-last-date">' +
       esc(fmtDateLong(lastPt.h.asOfDate)) +
@@ -1897,7 +1991,11 @@
         row(null, t("chartTotalValue"), fmtMoneyLocale(p.h.navValue, currency)) +
         row(null, t("chartCapitalInvested"), fmtMoneyLocale(p.h.capitalContributed, currency)) +
         row(signClass(m.profitLoss), t("chartProfit"), fmtSignedMoney(m.profitLoss, currency)) +
-        row(signClass(m.returnPct), t("totalReturn"), fmtSignedPct(m.returnPct));
+        row(
+          signClass(m.returnPct) + (p.h.returnIsPending ? " is-pending" : ""),
+          t("totalReturn"),
+          pointReturnText(p.h, m),
+        );
       tooltip.hidden = false;
 
       var plotRect = plot.getBoundingClientRect();
@@ -1967,7 +2065,7 @@
         // nici macar pretul de referinta - ci explicit "In asteptarea
         // datelor live". Vezi cerinta: nu prezenta pretul de referinta ca
         // pret live.
-        var isLive = pos.priceSource === "live_feed";
+        var isLive = pos.priceSource === "delayed_feed" || pos.priceSource === "live_feed";
         var currentPriceHtml =
           isLive && pos.currentPrice != null
             ? esc(fmtMoney(pos.currentPrice, pos.instrumentCurrency))
@@ -2117,6 +2215,21 @@
     updateLangSwitcherUI();
     applyStaticTexts();
     loadPortfolios();
+    // Etapa 4, cerinta 15: pagina porneste mereu vizibila la incarcare, deci
+    // pornim polling-ul direct - handler-ul visibilitychange de mai sus
+    // preia controlul (stopPolling/startPolling) dupa aceea.
+    startPolling();
+  }
+
+  // Hook inert in productie, folosit doar de testele locale de render cu un
+  // DOM minimal injectat. Expune exact functiile folosite de UI, nu copii.
+  if (typeof globalThis !== "undefined" && globalThis.__TSB_TEST_HOOKS__) {
+    globalThis.__TSB_TEST_HOOKS__.memberPortfolios = {
+      computePointMetrics: computePointMetrics,
+      pointReturnText: pointReturnText,
+      drawChart: drawChart,
+      wireChartInteraction: wireChartInteraction,
+    };
   }
 
   if (document.readyState === "loading") {
