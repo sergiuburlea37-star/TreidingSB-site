@@ -16,6 +16,8 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: node --test tests/website-integration.test.mjs
+      - run: node --test tests/keepalive.test.mjs
+      - run: node --check api/cron/keepalive.js
       - run: node --check api/tsb/trading-ideas.js
       - run: node --check lib/validate-idea.mjs
       - run: node --check lib/verify-signature.mjs
